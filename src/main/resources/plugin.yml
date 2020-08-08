@@ -1,0 +1,8 @@
+name: Queste
+version: @version@
+main: net.islandearth.queste.Queste
+api-version: 1.13
+softdepend: [Languagy, RPGRegions]
+authors: [SamB440]
+description: A river of adventure in a land of quests
+website: https://www.convallyria.com

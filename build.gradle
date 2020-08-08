@@ -1,0 +1,75 @@
+plugins {
+    id 'com.github.johnrengelman.shadow' version '4.0.4'
+    id 'java'
+}
+
+group = pluginGroup
+version = pluginVersion
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
+repositories {
+    mavenCentral()
+    maven {
+        name = 'spigotmc-repo'
+        url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/'
+    }
+
+    maven {
+        name = 'papermc-repo'
+        url = 'https://papermc.io/repo/repository/maven-public/'
+    }
+
+    maven {
+        name = 'sonatype'
+        url = 'https://oss.sonatype.org/content/groups/public/'
+    }
+
+    maven { url = "https://repo.aikar.co/content/groups/aikar/" }
+
+    // languagy
+    maven {
+        url = 'https://campfire.islandearth.net/maven/'
+    }
+
+    maven { url 'https://jitpack.io' }
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.5'
+    testImplementation 'com.github.seeseemelk:MockBukkit-v1.15:0.3.0-SNAPSHOT'
+    testImplementation 'org.reflections:reflections:0.9.12'
+
+    implementation 'net.islandearth:languagy-api:2.0.2-SNAPSHOT' // languagy
+    implementation 'co.aikar:acf-paper:0.5.0-SNAPSHOT' // commands
+    implementation 'co.aikar:idb-core:1.0.0-SNAPSHOT' // database
+    implementation 'com.zaxxer:HikariCP:2.4.1' // database
+    implementation 'org.apache.commons:commons-lang3:3.6' // apache commons (included as it has changed in versions)
+    implementation 'com.github.stefvanschie.inventoryframework:IF:0.5.19' // inventory framework
+    implementation 'org.bstats:bstats-bukkit:1.7' // plugin stats
+    implementation 'io.papermc:paperlib:1.0.4' // paperlib - async teleport on Paper
+    implementation 'com.github.WesJD.AnvilGUI:anvilgui:master-SNAPSHOT' // anvilgui
+
+    compileOnly 'org.spigotmc:spigot-api:1.16.1-R0.1-SNAPSHOT'
+    compileOnly 'org.jetbrains:annotations:19.0.0'
+}
+
+shadowJar {
+    relocate 'net.islandearth.languagy', 'net.islandearth.queste.libs.languagy'
+    relocate 'co.aikar.commands', 'net.islandearth.queste.libs.acf'
+    relocate 'co.aikar.idb', 'net.islandearth.queste.libs.idb'
+    relocate 'com.github.stefvanschie.inventoryframework', 'net.islandearth.queste.libs.inventoryframework'
+    relocate 'org.bstats', 'net.islandearth.queste.libs.bstats'
+    relocate 'io.papermc.lib', 'net.islandearth.queste.libs.paperlib'
+}
+
+build.dependsOn shadowJar
+
+import org.apache.tools.ant.filters.ReplaceTokens
+
+processResources {
+    from(sourceSets.main.resources.srcDirs) {
+        filter ReplaceTokens, tokens: [version: version]
+    }
+}
