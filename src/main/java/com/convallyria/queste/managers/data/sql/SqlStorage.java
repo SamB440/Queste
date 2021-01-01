@@ -1,12 +1,12 @@
-package net.islandearth.queste.managers.data.sql;
+package com.convallyria.queste.managers.data.sql;
 
 import co.aikar.idb.DB;
 import co.aikar.idb.Database;
 import co.aikar.idb.DatabaseOptions;
 import co.aikar.idb.PooledDatabaseOptions;
-import net.islandearth.queste.Queste;
-import net.islandearth.queste.managers.data.StorageManager;
-import net.islandearth.queste.managers.data.account.QuesteAccount;
+import com.convallyria.queste.managers.data.account.QuesteAccount;
+import com.convallyria.queste.Queste;
+import com.convallyria.queste.managers.data.StorageManager;
 
 import java.sql.SQLException;
 import java.util.UUID;

@@ -1,6 +1,6 @@
-package net.islandearth.queste.managers.data;
+package com.convallyria.queste.managers.data;
 
-import net.islandearth.queste.managers.data.account.QuesteAccount;
+import com.convallyria.queste.managers.data.account.QuesteAccount;
 
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;

@@ -1,14 +1,15 @@
-package net.islandearth.queste.managers.data;
+package com.convallyria.queste.managers.data;
 
-import net.islandearth.queste.Queste;
-import net.islandearth.queste.managers.data.sql.SqlStorage;
+import com.convallyria.queste.Queste;
+import com.convallyria.queste.managers.data.sql.SqlStorage;
+import com.convallyria.queste.managers.data.yml.YamlStorage;
 import org.bukkit.Bukkit;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Optional;
 
 public enum StorageType {
+	FILE(YamlStorage.class),
 	SQL(SqlStorage.class);
 
 	private final Class<? extends StorageManager> clazz;
@@ -17,8 +18,7 @@ public enum StorageType {
 		this.clazz = clazz;
 	}
 
-	public Optional<StorageManager> get() {
-		Queste plugin = JavaPlugin.getPlugin(Queste.class);
+	public Optional<StorageManager> get(Queste plugin) {
 		plugin.getLogger().info("Loading StorageManager implementation...");
 		StorageManager generatedClazz = null;
 		try {

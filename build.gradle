@@ -1,6 +1,7 @@
 plugins {
     id 'com.github.johnrengelman.shadow' version '4.0.4'
     id 'java'
+    id 'org.jetbrains.kotlin.jvm' version '1.4.30-M1'
 }
 
 group = pluginGroup
@@ -34,11 +35,17 @@ repositories {
     }
 
     maven { url 'https://jitpack.io' }
+
+    // PAPI
+    maven {
+        url = 'http://repo.extendedclip.com/content/repositories/placeholderapi/'
+    }
+    maven { url 'https://dl.bintray.com/kotlin/kotlin-eap' }
 }
 
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.5'
-    testImplementation 'com.github.seeseemelk:MockBukkit-v1.15:0.3.0-SNAPSHOT'
+    testImplementation 'com.github.seeseemelk:MockBukkit-v1.16:0.5.0'
     testImplementation 'org.reflections:reflections:0.9.12'
 
     implementation 'net.islandearth:languagy-api:2.0.2-SNAPSHOT' // languagy
@@ -46,13 +53,15 @@ dependencies {
     implementation 'co.aikar:idb-core:1.0.0-SNAPSHOT' // database
     implementation 'com.zaxxer:HikariCP:2.4.1' // database
     implementation 'org.apache.commons:commons-lang3:3.6' // apache commons (included as it has changed in versions)
-    implementation 'com.github.stefvanschie.inventoryframework:IF:0.5.19' // inventory framework
+    implementation 'com.github.stefvanschie.inventoryframework:IF:0.9.1' // inventory framework
     implementation 'org.bstats:bstats-bukkit:1.7' // plugin stats
     implementation 'io.papermc:paperlib:1.0.4' // paperlib - async teleport on Paper
     implementation 'com.github.WesJD.AnvilGUI:anvilgui:master-SNAPSHOT' // anvilgui
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
 
-    compileOnly 'org.spigotmc:spigot-api:1.16.1-R0.1-SNAPSHOT'
-    compileOnly 'org.jetbrains:annotations:19.0.0'
+    compileOnly 'org.spigotmc:spigot-api:1.16.4-R0.1-SNAPSHOT'
+    compileOnly 'org.jetbrains:annotations:20.1.0'
+    compileOnly 'me.clip:placeholderapi:2.10.4' // PAPI
 }
 
 shadowJar {
@@ -71,5 +80,17 @@ import org.apache.tools.ant.filters.ReplaceTokens
 processResources {
     from(sourceSets.main.resources.srcDirs) {
         filter ReplaceTokens, tokens: [version: version]
+    }
+}
+
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+
+compileTestKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
     }
 }
