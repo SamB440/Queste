@@ -4,16 +4,16 @@ import com.convallyria.queste.Queste;
 import com.convallyria.queste.quest.Quest;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.block.BlockBreakEvent;
 
-public final class PlaceBlockQuestObjective extends QuestObjective {
+public class BreakBlockQuestObjective extends QuestObjective {
 
-    public PlaceBlockQuestObjective(Queste plugin, Quest quest) {
-        super(plugin, QuestObjectiveEnum.PLACE_BLOCK, quest);
+    public BreakBlockQuestObjective(Queste plugin, Quest quest) {
+        super(plugin, QuestObjectiveEnum.BREAK_BLOCK, quest);
     }
 
     @EventHandler
-    public void onPlace(BlockPlaceEvent event) {
+    public void onBreak(BlockBreakEvent event) {
         Player player = event.getPlayer();
         getPlugin().getManagers().getStorageManager().getAccount(player.getUniqueId()).thenAccept(account -> {
             account.getActiveQuests().forEach(quest -> {

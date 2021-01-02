@@ -3,6 +3,9 @@ package com.convallyria.queste.quest;
 import com.convallyria.queste.Queste;
 import com.convallyria.queste.quest.objective.QuestObjective;
 import com.google.gson.Gson;
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -35,6 +38,25 @@ public final class Quest  {
 
     public String getName() {
         return name;
+    }
+
+    public boolean isCompleted(@NotNull Player player) {
+        boolean objectivesCompleted = true;
+        for (QuestObjective objective : objectives) {
+            if (!objective.hasCompleted(player)) {
+                objectivesCompleted = false;
+                break;
+            }
+        }
+        return objectivesCompleted;
+    }
+
+    public boolean tryComplete(@NotNull Player player) {
+        if (isCompleted(player)) {
+            player.sendTitle(ChatColor.GREEN + "Quest Completed", getName(), 40, 60, 40);
+            return true;
+        }
+        return false;
     }
 
     public boolean save(Queste plugin) {

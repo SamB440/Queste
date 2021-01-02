@@ -65,12 +65,12 @@ dependencies {
 }
 
 shadowJar {
-    relocate 'net.islandearth.languagy', 'net.islandearth.queste.libs.languagy'
-    relocate 'co.aikar.commands', 'net.islandearth.queste.libs.acf'
-    relocate 'co.aikar.idb', 'net.islandearth.queste.libs.idb'
-    relocate 'com.github.stefvanschie.inventoryframework', 'net.islandearth.queste.libs.inventoryframework'
-    relocate 'org.bstats', 'net.islandearth.queste.libs.bstats'
-    relocate 'io.papermc.lib', 'net.islandearth.queste.libs.paperlib'
+    relocate 'net.islandearth.languagy', 'com.convallyria.queste.libs.languagy'
+    relocate 'co.aikar.commands', 'com.convallyria.queste.libs.acf'
+    relocate 'co.aikar.idb', 'com.convallyria.queste.libs.idb'
+    relocate 'com.github.stefvanschie.inventoryframework', 'com.convallyria.queste.libs.inventoryframework'
+    relocate 'org.bstats', 'com.convallyria.queste.libs.bstats'
+    relocate 'io.papermc.lib', 'com.convallyria.queste.libs.paperlib'
 }
 
 build.dependsOn shadowJar

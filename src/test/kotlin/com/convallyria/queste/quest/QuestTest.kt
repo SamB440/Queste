@@ -42,6 +42,14 @@ class QuestTest {
     }
 
     @Test
+    fun completeTest() {
+        quest.objectives.forEach { questObjective: QuestObjective ->
+            questObjective.setIncrement(player, questObjective.completionAmount)
+            Assert.assertTrue(questObjective.hasCompleted(player))
+        }
+    }
+
+    @Test
     fun saveTest() {
         Assert.assertTrue(quest.save(plugin))
     }

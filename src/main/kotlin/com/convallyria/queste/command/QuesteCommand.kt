@@ -11,7 +11,7 @@ import org.bukkit.ChatColor
 import org.bukkit.command.CommandSender
 
 @CommandAlias("queste")
-class QuesteCommand(private val plugin: Queste) : BaseCommand() {
+class QuesteCommand(private val plugin: Queste) : BaseCommand(), IQuesteCommand {
 
     @Default
     fun onDefault(sender: CommandSender) {

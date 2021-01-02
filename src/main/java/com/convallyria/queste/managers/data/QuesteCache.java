@@ -3,6 +3,7 @@ package com.convallyria.queste.managers.data;
 import com.convallyria.queste.Queste;
 import com.convallyria.queste.quest.Quest;
 import com.google.common.collect.ImmutableMap;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -19,6 +20,11 @@ public class QuesteCache {
 
 	public ImmutableMap<String, Quest> getQuests() {
 		return ImmutableMap.copyOf(quests);
+	}
+
+	@Nullable
+	public Quest getQuest(String name) {
+		return quests.get(name);
 	}
 
 	public void addQuest(Quest quest) {

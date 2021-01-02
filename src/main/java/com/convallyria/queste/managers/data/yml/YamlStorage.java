@@ -18,7 +18,7 @@ import java.util.concurrent.ConcurrentMap;
 
 public class YamlStorage implements StorageManager {
 
-    private ConcurrentMap<UUID, QuesteAccount> cachedAccounts;
+    private final ConcurrentMap<UUID, QuesteAccount> cachedAccounts;
 
     private final Queste plugin;
 

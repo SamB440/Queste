@@ -1,10 +1,16 @@
 package com.convallyria.queste;
 
+import co.aikar.commands.BukkitCommandCompletionContext;
+import co.aikar.commands.CommandCompletions;
+import co.aikar.commands.InvalidCommandArgument;
 import co.aikar.commands.PaperCommandManager;
 import com.convallyria.queste.api.QuesteAPI;
 import com.convallyria.queste.command.QuestCommand;
 import com.convallyria.queste.command.QuesteCommand;
+import com.convallyria.queste.gson.AbstractAdapter;
 import com.convallyria.queste.managers.QuesteManagers;
+import com.convallyria.queste.quest.Quest;
+import com.convallyria.queste.quest.objective.QuestObjective;
 import com.convallyria.queste.translation.Translations;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -19,6 +25,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.java.JavaPluginLoader;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.logging.Level;
 
 public final class Queste extends JavaPlugin implements QuesteAPI, LanguagyPluginHook {
@@ -85,13 +92,40 @@ public final class Queste extends JavaPlugin implements QuesteAPI, LanguagyPlugi
 
     private void registerCommands() {
         PaperCommandManager manager = new PaperCommandManager(this);
+        registerCommandContexts(manager);
+        registerCommandCompletions(manager);
         manager.enableUnstableAPI("help");
         manager.registerCommand(new QuesteCommand(this));
         manager.registerCommand(new QuestCommand(this));
     }
 
+    private void registerCommandContexts(PaperCommandManager manager) {
+        // Quest.class
+        manager.getCommandContexts().registerContext(Quest.class, context -> {
+            String name = context.popFirstArg();
+            Quest quest = managers.getQuesteCache().getQuest(name);
+            if (quest != null) return quest;
+            throw new InvalidCommandArgument("Could not find a quest with that name.");
+        });
+    }
+
+    private void registerCommandCompletions(PaperCommandManager manager) {
+        CommandCompletions<BukkitCommandCompletionContext> commandCompletions = manager.getCommandCompletions();
+        // Quests
+        commandCompletions.registerAsyncCompletion("quests", context -> new ArrayList<>(managers.getQuesteCache().getQuests().keySet()));
+        // Objectives
+        commandCompletions.registerAsyncCompletion("objectives", context -> {
+            ArrayList<String> objectives = new ArrayList<>();
+            for (QuestObjective.QuestObjectiveEnum objective : QuestObjective.QuestObjectiveEnum.values()) {
+                objectives.add(objective.toString());
+            }
+            return objectives;
+        });
+    }
+
     public Gson getGson() {
         return new GsonBuilder()
+                .registerTypeAdapter(QuestObjective.class, new AbstractAdapter<QuestObjective>(null))
                 .setPrettyPrinting()
                 .serializeNulls()
                 .create();
