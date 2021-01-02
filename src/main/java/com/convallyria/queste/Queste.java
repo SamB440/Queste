@@ -23,6 +23,11 @@ import java.util.logging.Level;
 
 public final class Queste extends JavaPlugin implements QuesteAPI, LanguagyPluginHook {
 
+    // This is for normal instantiation by the server.
+    public Queste() {
+        super();
+    }
+    
     // This is for MockBukkit.
     protected Queste(JavaPluginLoader loader, PluginDescriptionFile description, File dataFolder, File file) {
         super(loader, description, dataFolder, file);
@@ -46,7 +51,7 @@ public final class Queste extends JavaPlugin implements QuesteAPI, LanguagyPlugi
         this.managers = new QuesteManagers(this);
         try {
             this.registerCommands();
-        } catch (Exception e) {
+        } catch (Exception e) { // MockBukkit support. Throws an exception stating commands are unsupported.
             plugin.getLogger().log(Level.WARNING, "Unable to initialise commands", e);
         }
     }

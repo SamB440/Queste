@@ -15,7 +15,7 @@ import java.io.Reader;
 public class QuesteManagers {
 
     private StorageManager storageManager;
-    private QuesteCache questeCache;
+    private final QuesteCache questeCache;
 
     public QuesteManagers(Queste plugin) {
         StorageType.valueOf(plugin.getConfig().getString("settings.storage.mode").toUpperCase())
@@ -25,6 +25,9 @@ public class QuesteManagers {
 
         this.questeCache = new QuesteCache(plugin);
 
+        File accountsFolder = new File(plugin.getDataFolder() + "/accounts/");
+        if (!accountsFolder.exists()) accountsFolder.mkdirs();
+        
         File folder = new File(plugin.getDataFolder() + "/quests/");
         if (!folder.exists()) folder.mkdirs();
         for (File file : folder.listFiles()) {

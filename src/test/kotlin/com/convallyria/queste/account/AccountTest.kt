@@ -3,7 +3,6 @@ package com.convallyria.queste.account
 import be.seeseemelk.mockbukkit.MockBukkit
 import be.seeseemelk.mockbukkit.ServerMock
 import com.convallyria.queste.Queste
-import com.convallyria.queste.managers.data.account.QuesteAccount
 import com.convallyria.queste.quest.Quest
 import com.convallyria.queste.quest.objective.PlaceBlockQuestObjective
 import org.bukkit.entity.Player
@@ -26,6 +25,7 @@ class AccountTest {
         player = server.addPlayer()
         quest = Quest("Test")
         quest.addObjective(PlaceBlockQuestObjective(plugin, quest))
+        plugin.managers.questeCache.addQuest(quest)
     }
 
     @After
@@ -35,27 +35,17 @@ class AccountTest {
 
     @Test
     fun saveTest() {
-        plugin.managers.storageManager.getAccount(player.uniqueId).thenAccept { account: QuesteAccount ->
-            account.addActiveQuest(quest)
-            account.save(plugin)
-        }
+        val account = plugin.managers.storageManager.getAccount(player.uniqueId).get()
+        account.addActiveQuest(quest)
+        plugin.managers.storageManager.removeCachedAccount(player.uniqueId)
+        Assert.assertFalse(plugin.managers.storageManager.cachedAccounts.containsKey(player.uniqueId))
     }
 
     @Test
     fun loadTest() {
-        System.out.println("load1")
-        if (plugin.managers.storageManager.cachedAccounts.containsKey(player.uniqueId)) {
-            System.out.println("load")
-            plugin.managers.storageManager.removeCachedAccount(player.uniqueId)
-        }
-        plugin.managers.storageManager.getAccount(player.uniqueId).thenAccept { account: QuesteAccount ->
-            plugin.logger.info(account.activeQuests.toString())
-            Assert.assertTrue(!account.activeQuests.isEmpty())
-        }
-        plugin.managers.storageManager.getAccount(player.uniqueId).whenComplete { questeAccount: QuesteAccount, throwable: Throwable ->
-            Assert.assertNull(throwable)
-            plugin.logger.info(questeAccount.activeQuests.toString())
-            Assert.assertTrue(!questeAccount.activeQuests.isEmpty())
-        }
+        saveTest() // Save so we can load
+
+        val account = plugin.managers.storageManager.getAccount(player.uniqueId).get()
+        Assert.assertFalse(account.activeQuests.isEmpty())
     }
 }

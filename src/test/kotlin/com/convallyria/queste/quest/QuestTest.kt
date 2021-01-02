@@ -1,17 +1,15 @@
 package com.convallyria.queste.quest
 
 import be.seeseemelk.mockbukkit.MockBukkit
+import be.seeseemelk.mockbukkit.ServerMock
 import com.convallyria.queste.Queste
 import com.convallyria.queste.quest.objective.PlaceBlockQuestObjective
 import com.convallyria.queste.quest.objective.QuestObjective
-import org.junit.Assert
-import org.junit.Test
-import org.junit.After
-
-import org.junit.Before
-
-import be.seeseemelk.mockbukkit.ServerMock
 import org.bukkit.entity.Player
+import org.junit.After
+import org.junit.Assert
+import org.junit.Before
+import org.junit.Test
 
 
 class QuestTest {
