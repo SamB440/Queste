@@ -27,4 +27,10 @@ class QuesteCommand(private val plugin: Queste) : BaseCommand(), IQuesteCommand 
     fun onHelp(commandHelp: CommandHelp) {
         commandHelp.showHelp()
     }
+
+    @Subcommand("reload")
+    fun onReload(commandSender: CommandSender) {
+        plugin.reloadConfig()
+        commandSender.sendMessage(translate("&aReloaded the configuration file."))
+    }
 }
