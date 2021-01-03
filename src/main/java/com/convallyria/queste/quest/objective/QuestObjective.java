@@ -89,17 +89,33 @@ public abstract class QuestObjective implements Listener {
 
     public enum QuestObjectiveEnum {
         PLACE_BLOCK(PlaceBlockQuestObjective.class, "Place Block"),
-        BREAK_BLOCK(BreakBlockQuestObjective.class, "Break Block");
+        BREAK_BLOCK(BreakBlockQuestObjective.class, "Break Block"),
+        DISCOVER_REGION(DiscoverRegionObjective.class, "Discover Region", "RPGRegions");
 
         private final Class<? extends QuestObjective> clazz;
         private final String name;
+        private final String pluginName;
 
         QuestObjectiveEnum(Class<? extends QuestObjective> clazz, String name) {
             this.clazz = clazz;
             this.name = name;
+            this.pluginName = null;
         }
 
+        QuestObjectiveEnum(Class<? extends QuestObjective> clazz, String name, String pluginName) {
+            this.clazz = clazz;
+            this.name = name;
+            this.pluginName = pluginName;
+        }
+
+        @Nullable
         public QuestObjective getNewObjective(Queste plugin, Quest quest) {
+            if (getPluginRequirement() != null) {
+                if (Bukkit.getPluginManager().getPlugin(getPluginRequirement()) == null) {
+                    return null;
+                }
+            }
+
             try {
                 Constructor<?> constructor = clazz.getConstructor(Queste.class, Quest.class);
                 return (QuestObjective) constructor.newInstance(plugin, quest);
@@ -111,6 +127,10 @@ public abstract class QuestObjective implements Listener {
 
         public String getName() {
             return name;
+        }
+
+        public String getPluginRequirement() {
+            return pluginName;
         }
     }
 }

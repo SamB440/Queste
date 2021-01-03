@@ -5,11 +5,17 @@ import be.seeseemelk.mockbukkit.ServerMock
 import com.convallyria.queste.Queste
 import com.convallyria.queste.quest.objective.PlaceBlockQuestObjective
 import com.convallyria.queste.quest.objective.QuestObjective
+import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.junit.After
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
+import java.io.File
+import java.io.FileNotFoundException
+import java.io.FileReader
+import java.io.Reader
+import java.util.function.Consumer
 
 
 class QuestTest {
@@ -52,5 +58,24 @@ class QuestTest {
     @Test
     fun saveTest() {
         Assert.assertTrue(quest.save(plugin))
+    }
+
+    @Test
+    fun loadTest() {
+        saveTest() // Save so we can load
+
+        val folder = File(plugin.dataFolder.toString() + "/quests/")
+        if (!folder.exists()) folder.mkdirs()
+        for (file in folder.listFiles()) {
+            try {
+                val reader: Reader = FileReader(file)
+                val quest = plugin.gson.fromJson(reader, Quest::class.java)
+                if (plugin.debug()) {
+                    plugin.logger.info("Loaded quest " + quest.name + ".")
+                }
+            } catch (e: FileNotFoundException) {
+                e.printStackTrace()
+            }
+        }
     }
 }

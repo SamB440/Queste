@@ -26,6 +26,7 @@ public class QuestAdapter implements JsonSerializer<Quest>, JsonDeserializer<Que
         quest.getObjectives().forEach(questObjective -> {
             objectives.add(objectiveAdapter.serialize(questObjective, typeOfSrc, context));
         });
+        result.add("objectives", objectives);
         return result;
     }
 
@@ -40,7 +41,7 @@ public class QuestAdapter implements JsonSerializer<Quest>, JsonDeserializer<Que
         AbstractAdapter<QuestObjective> objectiveAdapter = new AbstractAdapter<>(null);
         JsonArray objectives = jsonObject.getAsJsonArray("objectives");
         objectives.forEach(jsonElement -> {
-            quest.addObjective(objectiveAdapter.deserialize(json, typeOfT, context));
+            quest.addObjective(objectiveAdapter.deserialize(jsonElement, typeOfT, context));
         });
         return quest;
     }

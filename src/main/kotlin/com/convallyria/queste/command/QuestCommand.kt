@@ -37,6 +37,14 @@ class QuestCommand(private val plugin: Queste) : BaseCommand(), IQuesteCommand {
         sender.sendMessage(translate("&aAdded new objective " + objective.name + " to " + quest.name + "."))
     }
 
+    @Subcommand("setrestart")
+    @CommandCompletion("@quests")
+    fun onSetRestart(sender: CommandSender, quest: Quest, restart: Boolean) {
+        quest.setCanRestart(restart)
+        quest.save(plugin)
+        sender.sendMessage(translate("&aQuest " + quest.name + " has had 'canRestart' set to: " + quest.canRestart() + "."))
+    }
+
     @Subcommand("addplayer")
     @CommandCompletion("@players @quests @options")
     fun onAddPlayer(sender: CommandSender, playerName: String, quest: Quest, arguments: Array<String>) {
@@ -59,25 +67,5 @@ class QuestCommand(private val plugin: Queste) : BaseCommand(), IQuesteCommand {
         } else {
             sender.sendMessage(translate("&cThat player is not online."))
         }
-    }
-
-    @Subcommand("setrestart")
-    @CommandCompletion("@quests")
-    fun onSetRestart(sender: CommandSender, quest: Quest, restart: Boolean) {
-        quest.setCanRestart(restart)
-        sender.sendMessage(translate("&aQuest " + quest.name + " has had 'canRestart' set to: " + quest.canRestart() + "."))
-    }
-
-    @Subcommand("setcompletion")
-    @CommandCompletion("@objectives @quests @range:20")
-    fun onSetCompletion(sender: CommandSender, objective: QuestObjective.QuestObjectiveEnum, quest: Quest, completion: Int) {
-        for (questObjective in quest.objectives) {
-            if (objective == questObjective.type) {
-                questObjective.completionAmount = completion
-                sender.sendMessage(translate("&aSet objective " + questObjective.type.getName() + " completion requirement to " + completion + "."))
-                return
-            }
-        }
-        sender.sendMessage(translate("&cThe quest " + quest.name + " does not have the objective &6" + objective.getName() + "."))
     }
 }

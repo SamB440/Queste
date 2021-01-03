@@ -6,6 +6,7 @@ import co.aikar.commands.InvalidCommandArgument;
 import co.aikar.commands.PaperCommandManager;
 import com.convallyria.queste.api.QuesteAPI;
 import com.convallyria.queste.command.QuestCommand;
+import com.convallyria.queste.command.QuestObjectiveCommand;
 import com.convallyria.queste.command.QuesteCommand;
 import com.convallyria.queste.gson.QuestAdapter;
 import com.convallyria.queste.listener.PlayerQuitListener;
@@ -102,6 +103,7 @@ public final class Queste extends JavaPlugin implements QuesteAPI, LanguagyPlugi
         manager.enableUnstableAPI("help");
         manager.registerCommand(new QuesteCommand(this));
         manager.registerCommand(new QuestCommand(this));
+        manager.registerCommand(new QuestObjectiveCommand(this));
     }
 
     private void registerCommandContexts(PaperCommandManager manager) {
@@ -122,6 +124,12 @@ public final class Queste extends JavaPlugin implements QuesteAPI, LanguagyPlugi
         commandCompletions.registerAsyncCompletion("objectives", context -> {
             ArrayList<String> objectives = new ArrayList<>();
             for (QuestObjective.QuestObjectiveEnum objective : QuestObjective.QuestObjectiveEnum.values()) {
+                if (objective.getPluginRequirement() != null) {
+                    if (Bukkit.getPluginManager().getPlugin(objective.getPluginRequirement()) == null) { // Filter out plugin-specific objectives that are not enabled
+                        continue;
+                    }
+                }
+
                 objectives.add(objective.toString());
             }
             return objectives;

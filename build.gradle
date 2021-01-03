@@ -40,7 +40,10 @@ repositories {
     maven {
         url = 'http://repo.extendedclip.com/content/repositories/placeholderapi/'
     }
+
     maven { url 'https://dl.bintray.com/kotlin/kotlin-eap' }
+
+    flatDir { dir 'libraries' }
 }
 
 dependencies {
@@ -62,6 +65,7 @@ dependencies {
     compileOnly 'org.spigotmc:spigot-api:1.16.4-R0.1-SNAPSHOT'
     compileOnly 'org.jetbrains:annotations:20.1.0'
     compileOnly 'me.clip:placeholderapi:2.10.4' // PAPI
+    compileOnly name: 'RPGRegions-api-1.2.8'
 }
 
 shadowJar {
