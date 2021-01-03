@@ -16,12 +16,6 @@ public final class BreakBlockQuestObjective extends QuestObjective {
     public void onBreak(BlockBreakEvent event) {
         Player player = event.getPlayer();
         if (this.hasCompleted(player)) return;
-        getPlugin().getManagers().getStorageManager().getAccount(player.getUniqueId()).thenAccept(account -> {
-            account.getActiveQuests().forEach(quest -> {
-                if (quest.getName().equals(this.getQuestName())) {
-                    this.increment(player);
-                }
-            });
-        });
+        this.increment(player);
     }
 }

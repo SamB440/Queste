@@ -4,16 +4,16 @@ import com.convallyria.queste.Queste;
 import com.convallyria.queste.quest.Quest;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.player.PlayerFishEvent;
 
-public final class PlaceBlockQuestObjective extends QuestObjective {
+public final class FishQuestObjective extends QuestObjective {
 
-    public PlaceBlockQuestObjective(Queste plugin, Quest quest) {
-        super(plugin, QuestObjectiveEnum.PLACE_BLOCK, quest);
+    public FishQuestObjective(Queste plugin, Quest quest) {
+        super(plugin, QuestObjectiveEnum.FISH, quest);
     }
 
     @EventHandler
-    public void onPlace(BlockPlaceEvent event) {
+    public void onFish(PlayerFishEvent event) {
         Player player = event.getPlayer();
         if (this.hasCompleted(player)) return;
         this.increment(player);

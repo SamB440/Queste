@@ -66,16 +66,17 @@ public abstract class QuestObjective implements Listener {
     }
 
     public void increment(@NotNull Player player) {
-        progress.put(player.getUniqueId(), progress.getOrDefault(player.getUniqueId(), 0) + 1);
-        player.sendMessage("status: " + this.getIncrement(player) + " / " + this.getCompletionAmount());
-        if (progress.get(player.getUniqueId()) >= completionAmount) {
-            Quest quest = getQuest();
-            if (quest != null) {
-                quest.tryComplete(player);
-            } else {
-                plugin.getLogger().warning("Unable to find quest " + getQuestName());
-            }
-        }
+        getPlugin().getManagers().getStorageManager().getAccount(player.getUniqueId()).thenAccept(account -> {
+            account.getActiveQuests().forEach(quest -> {
+                if (quest.getName().equals(this.getQuestName())) {
+                    progress.put(player.getUniqueId(), progress.getOrDefault(player.getUniqueId(), 0) + 1);
+                    player.sendMessage("status: " + this.getIncrement(player) + " / " + this.getCompletionAmount());
+                    if (progress.get(player.getUniqueId()) >= completionAmount) {
+                        quest.tryComplete(player);
+                    }
+                }
+            });
+        });
     }
 
     public void setIncrement(@NotNull Player player, int increment) {
@@ -90,7 +91,12 @@ public abstract class QuestObjective implements Listener {
     public enum QuestObjectiveEnum {
         PLACE_BLOCK(PlaceBlockQuestObjective.class, "Place Block"),
         BREAK_BLOCK(BreakBlockQuestObjective.class, "Break Block"),
-        DISCOVER_REGION(DiscoverRegionObjective.class, "Discover Region", "RPGRegions");
+        DISCOVER_REGION(DiscoverRegionQuestObjective.class, "Discover Region", "RPGRegions"),
+        BREED(BreedQuestObjective.class, "Breed Animals"),
+        SHEAR_SHEEP(ShearSheepQuestObjective.class, "Shear Sheep"),
+        FISH(FishQuestObjective.class, "Fish"),
+        ENCHANT(EnchantQuestObjective.class, "Enchant Item"),
+        KILL_ENTITY(KillEntityQuestObjective.class, "Kill Entity");
 
         private final Class<? extends QuestObjective> clazz;
         private final String name;
