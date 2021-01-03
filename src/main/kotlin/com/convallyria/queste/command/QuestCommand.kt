@@ -50,6 +50,7 @@ class QuestCommand(private val plugin: Queste) : BaseCommand(), IQuesteCommand {
     @CommandCompletion("@quests @quests")
     fun onAddRequirement(sender: CommandSender, quest: Quest, requirement: Quest) {
         quest.addRequiredQuest(requirement)
+        quest.save(plugin)
         sender.sendMessage(translate("&aAdded required quest " + requirement.name + " to quest " + quest.name + "."))
     }
 
@@ -57,7 +58,16 @@ class QuestCommand(private val plugin: Queste) : BaseCommand(), IQuesteCommand {
     @CommandCompletion("@quests @rewards")
     fun onAddReward(sender: CommandSender, quest: Quest, reward: QuestReward) {
         quest.addReward(reward)
+        quest.save(plugin)
         sender.sendMessage(translate("&aAdded reward &6" + reward.name + "&a to quest &6" + quest.name + "&a."))
+    }
+
+    @Subcommand("setdisplayname")
+    @CommandCompletion("@quests")
+    fun onSetDisplayName(sender: CommandSender, quest: Quest, name: String) {
+        quest.displayName = name
+        quest.save(plugin)
+        sender.sendMessage(translate("&aSet " + quest.name + "'s display name to &6" + name + "&a."))
     }
 
     @Subcommand("addplayer")

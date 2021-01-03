@@ -15,6 +15,7 @@ import java.io.File
 import java.io.FileNotFoundException
 import java.io.FileReader
 import java.io.Reader
+import java.lang.reflect.Modifier
 import java.util.function.Consumer
 
 
@@ -70,12 +71,46 @@ class QuestTest {
             try {
                 val reader: Reader = FileReader(file)
                 val quest = plugin.gson.fromJson(reader, Quest::class.java)
-                if (plugin.debug()) {
-                    plugin.logger.info("Loaded quest " + quest.name + ".")
-                }
+                Assert.assertNotNull(quest)
             } catch (e: FileNotFoundException) {
                 e.printStackTrace()
             }
+        }
+    }
+
+    @Test
+    fun serialiseTest() {
+        saveTest() // Save so we can check
+
+        // Load it
+        var loadedQuest: Quest? = null
+        val folder = File(plugin.dataFolder.toString() + "/quests/")
+        if (!folder.exists()) folder.mkdirs()
+        for (file in folder.listFiles()) {
+            try {
+                val reader: Reader = FileReader(file)
+                loadedQuest = plugin.gson.fromJson(reader, Quest::class.java)
+            } catch (e: FileNotFoundException) {
+                e.printStackTrace()
+            }
+        }
+
+        if (loadedQuest != null) {
+            for (declaredField in quest.javaClass.declaredFields) {
+                declaredField.isAccessible = true
+                if (!Modifier.isTransient(declaredField.modifiers)) {
+                    for (loadedQuestField in loadedQuest.javaClass.declaredFields) {
+                        loadedQuestField.isAccessible = true
+                        if (loadedQuestField.name == declaredField.name) {
+                            if (loadedQuestField.get(loadedQuest) == null) {
+                                Assert.fail(loadedQuestField.name + " was null at loading after save")
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            Assert.fail("loadedQuest is null")
         }
     }
 }

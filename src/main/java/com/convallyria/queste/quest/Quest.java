@@ -21,6 +21,7 @@ public final class Quest  {
 
     private transient Queste plugin;
     private final String name;
+    private String displayName;
     private boolean canRestart;
     private final List<QuestObjective> objectives;
     private final List<Quest> requiredQuests;
@@ -35,6 +36,14 @@ public final class Quest  {
 
     public String getName() {
         return name;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
     }
 
     public boolean canRestart() {

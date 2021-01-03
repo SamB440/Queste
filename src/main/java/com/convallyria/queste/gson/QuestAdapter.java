@@ -21,6 +21,8 @@ public class QuestAdapter implements JsonSerializer<Quest>, JsonDeserializer<Que
     public JsonElement serialize(Quest quest, Type typeOfSrc, JsonSerializationContext context) {
         JsonObject result = new JsonObject();
         result.add("name", new JsonPrimitive(quest.getName()));
+        String displayName = quest.getDisplayName() == null ? quest.getName() : quest.getDisplayName();
+        result.add("displayName", new JsonPrimitive(displayName));
         result.add("canRestart", new JsonPrimitive(quest.canRestart()));
         AbstractAdapter<QuestObjective> objectiveAdapter = new AbstractAdapter<>(null);
         JsonArray objectives = new JsonArray();
@@ -42,6 +44,7 @@ public class QuestAdapter implements JsonSerializer<Quest>, JsonDeserializer<Que
     public Quest deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
         JsonObject jsonObject = json.getAsJsonObject();
         Quest quest = new Quest(jsonObject.get("name").getAsString());
+        quest.setDisplayName(jsonObject.get("displayName").getAsString());
 
         boolean canRestart = jsonObject.get("canRestart").getAsBoolean();
         quest.setCanRestart(canRestart);

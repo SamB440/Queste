@@ -8,6 +8,7 @@ import com.convallyria.queste.api.QuesteAPI;
 import com.convallyria.queste.command.QuestCommand;
 import com.convallyria.queste.command.QuestObjectiveCommand;
 import com.convallyria.queste.command.QuesteCommand;
+import com.convallyria.queste.command.QuestsCommand;
 import com.convallyria.queste.gson.QuestAdapter;
 import com.convallyria.queste.listener.PlayerQuitListener;
 import com.convallyria.queste.managers.QuesteManagers;
@@ -106,6 +107,7 @@ public final class Queste extends JavaPlugin implements QuesteAPI, LanguagyPlugi
         manager.registerCommand(new QuesteCommand(this));
         manager.registerCommand(new QuestCommand(this));
         manager.registerCommand(new QuestObjectiveCommand(this));
+        manager.registerCommand(new QuestsCommand(this));
     }
 
     private void registerCommandContexts(PaperCommandManager manager) {
