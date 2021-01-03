@@ -44,8 +44,18 @@ public class YamlStorage implements StorageManager {
                 }
             }
 
+            List<Quest> completedQuests = new ArrayList<>();
+            for (String completedQuest : config.getStringList("CompletedQuests")) {
+                if (plugin.getManagers().getQuesteCache().getQuests().containsKey(completedQuest)) {
+                    completedQuests.add(plugin.getManagers().getQuesteCache().getQuests().get(completedQuest));
+                } else {
+                    plugin.getLogger().warning(completedQuest + " quest not found.");
+                }
+            }
+
             QuesteAccount account = new QuesteAccount(uuid);
             activeQuests.forEach(account::addActiveQuest);
+            completedQuests.forEach(account::addCompletedQuest);
             cachedAccounts.put(uuid, account);
             future.complete(account);
         }
@@ -71,11 +81,13 @@ public class YamlStorage implements StorageManager {
         FileConfiguration config = YamlConfiguration.loadConfiguration(file);
 
         List<String> newData = new ArrayList<>();
-        account.getActiveQuests().forEach(quest -> {
-            newData.add(quest.getName());
-        });
+        account.getActiveQuests().forEach(quest -> newData.add(quest.getName()));
+
+        List<String> completedQuests = new ArrayList<>();
+        account.getCompletedQuests().forEach(completedQuest -> completedQuests.add(completedQuest.getName()));
 
         config.set("Quests", newData);
+        config.set("CompletedQuests", completedQuests);
         try {
             config.save(file);
         } catch (IOException e) {

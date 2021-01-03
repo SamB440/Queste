@@ -15,6 +15,7 @@ public final class PlaceBlockQuestObjective extends QuestObjective {
     @EventHandler
     public void onPlace(BlockPlaceEvent event) {
         Player player = event.getPlayer();
+        if (this.hasCompleted(player)) return;
         getPlugin().getManagers().getStorageManager().getAccount(player.getUniqueId()).thenAccept(account -> {
             account.getActiveQuests().forEach(quest -> {
                 if (quest.getName().equals(this.getQuestName())) {

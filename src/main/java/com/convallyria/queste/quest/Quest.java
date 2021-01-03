@@ -5,6 +5,7 @@ import com.convallyria.queste.quest.objective.QuestObjective;
 import com.google.gson.Gson;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -13,15 +14,32 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public final class Quest  {
 
+    private Queste plugin;
     private final String name;
+    private boolean canRestart;
     private final List<QuestObjective> objectives;
+    private final List<Quest> requiredQuests;
 
     public Quest(String name) {
         this.name = name;
         this.objectives = new ArrayList<>();
+        this.requiredQuests = new ArrayList<>();
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public boolean canRestart() {
+        return canRestart;
+    }
+
+    public void setCanRestart(boolean canRestart) {
+        this.canRestart = canRestart;
     }
 
     public void addObjective(QuestObjective objective) {
@@ -36,10 +54,23 @@ public final class Quest  {
         return objectives;
     }
 
-    public String getName() {
-        return name;
+    public void addRequiredQuest(Quest quest) {
+        requiredQuests.add(quest);
     }
 
+    public void removeRequiredQuest(Quest quest) {
+        requiredQuests.remove(quest);
+    }
+
+    public List<Quest> getRequiredQuests() {
+        return requiredQuests;
+    }
+
+    /**
+     * Checks if a player has completed this quest.
+     * @param player player to check
+     * @return true if all quest objectives are completed, false otherwise
+     */
     public boolean isCompleted(@NotNull Player player) {
         boolean objectivesCompleted = true;
         for (QuestObjective objective : objectives) {
@@ -51,12 +82,73 @@ public final class Quest  {
         return objectivesCompleted;
     }
 
+    /**
+     * Attempts to complete a quest for a player.
+     * @param player player to complete quest for
+     * @return true if objectives are completed and player has completed quest entirely, false otherwise
+     */
     public boolean tryComplete(@NotNull Player player) {
+        player.sendMessage("try complete");
         if (isCompleted(player)) {
             player.sendTitle(ChatColor.GREEN + "Quest Completed", getName(), 40, 60, 40);
+            getPlugin().getManagers().getStorageManager().getAccount(player.getUniqueId()).thenAccept(account -> {
+                account.addCompletedQuest(this);
+                account.removeActiveQuest(this);
+            });
             return true;
         }
         return false;
+    }
+
+    /**
+     * Attempts to start a quest for a player.
+     * @param player player to start quest for
+     * @return true if quest was started, false if player has already completed and cannot restart
+     *         or does not meet required quests beforehand
+     */
+    public CompletableFuture<Boolean> tryStart(@NotNull Player player) {
+        CompletableFuture<Boolean> future = new CompletableFuture<>();
+        getPlugin().getManagers().getStorageManager().getAccount(player.getUniqueId()).thenAccept(account -> {
+            if (isCompleted(player) && !canRestart) {
+                future.complete(false);
+                return;
+            }
+
+            if (!getRequiredQuests().isEmpty()) {
+                for (Quest requiredQuest : requiredQuests) {
+                    if (!account.getCompletedQuests().contains(requiredQuest)) {
+                        future.complete(false);
+                        return;
+                    }
+                }
+            }
+
+            objectives.forEach(objectives -> objectives.setIncrement(player, 0));
+            player.sendTitle(ChatColor.GREEN + "Quest Started", getName(), 40, 60, 40);
+            account.addActiveQuest(this);
+            future.complete(true);
+        }).exceptionally(err -> {
+            err.printStackTrace();
+            return null;
+        });
+        return future;
+    }
+
+    public void forceStart(@NotNull Player player) {
+        getPlugin().getManagers().getStorageManager().getAccount(player.getUniqueId()).thenAccept(account -> {
+            objectives.forEach(objectives -> objectives.setIncrement(player, 0));
+            player.sendTitle(ChatColor.GREEN + "Quest Started", getName(), 40, 60, 40);
+            account.addActiveQuest(this);
+        }).exceptionally(err -> {
+            err.printStackTrace();
+            return null;
+        });
+    }
+
+    @NotNull
+    public Queste getPlugin() {
+        if (plugin == null) this.plugin = JavaPlugin.getPlugin(Queste.class);
+        return plugin;
     }
 
     public boolean save(Queste plugin) {

@@ -38,20 +38,46 @@ class QuestCommand(private val plugin: Queste) : BaseCommand(), IQuesteCommand {
     }
 
     @Subcommand("addplayer")
-    @CommandCompletion("@players @quests")
-    fun onAddPlayer(sender: CommandSender, playerName: String, quest: Quest) {
+    @CommandCompletion("@players @quests @options")
+    fun onAddPlayer(sender: CommandSender, playerName: String, quest: Quest, arguments: Array<String>) {
         val player = Bukkit.getPlayer(playerName)
         if (player != null) {
-            plugin.managers.storageManager.getAccount(player.uniqueId).thenAccept { account: QuesteAccount ->
-                account.addActiveQuest(quest)
-                sender.sendMessage(translate("&aPlayer " + playerName + " now has the quest " + quest.name + "."))
-            }.exceptionally { err ->
-                sender.sendMessage(translate("&cError performing command. See console for details."))
-                err.printStackTrace()
-                null
+            if (arguments.contains("--force")) {
+                quest.forceStart(player)
+                sender.sendMessage(translate("&aPlayer " + playerName + " now has the quest " + quest.name + ". &c(FORCED)"))
+                return
+            }
+
+            quest.tryStart(player).thenAccept { started ->
+                if (started) {
+                    sender.sendMessage(translate("&aPlayer " + playerName + " now has the quest " + quest.name + "."))
+                } else {
+                    sender.sendMessage(translate("&cCould not start the quest for this player. Did they already complete it and 'restartable' is false? Have they completed all required quests?"))
+                    sender.sendMessage(translate("&aTIP: &fTry running with &6--force &fto force a quest start."))
+                }
             }
         } else {
             sender.sendMessage(translate("&cThat player is not online."))
         }
+    }
+
+    @Subcommand("setrestart")
+    @CommandCompletion("@quests")
+    fun onSetRestart(sender: CommandSender, quest: Quest, restart: Boolean) {
+        quest.setCanRestart(restart)
+        sender.sendMessage(translate("&aQuest " + quest.name + " has had 'canRestart' set to: " + quest.canRestart() + "."))
+    }
+
+    @Subcommand("setcompletion")
+    @CommandCompletion("@objectives @quests @range:20")
+    fun onSetCompletion(sender: CommandSender, objective: QuestObjective.QuestObjectiveEnum, quest: Quest, completion: Int) {
+        for (questObjective in quest.objectives) {
+            if (objective == questObjective.type) {
+                questObjective.completionAmount = completion
+                sender.sendMessage(translate("&aSet objective " + questObjective.type.getName() + " completion requirement to " + completion + "."))
+                return
+            }
+        }
+        sender.sendMessage(translate("&cThe quest " + quest.name + " does not have the objective &6" + objective.getName() + "."))
     }
 }

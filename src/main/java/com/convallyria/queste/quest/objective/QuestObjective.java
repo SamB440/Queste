@@ -83,6 +83,7 @@ public abstract class QuestObjective implements Listener {
     }
 
     public boolean hasCompleted(@NotNull Player player) {
+        player.sendMessage("completed? " + (progress.getOrDefault(player.getUniqueId(), 0) == completionAmount));
         return progress.getOrDefault(player.getUniqueId(), 0) == completionAmount;
     }
 

@@ -7,20 +7,24 @@ import co.aikar.commands.PaperCommandManager;
 import com.convallyria.queste.api.QuesteAPI;
 import com.convallyria.queste.command.QuestCommand;
 import com.convallyria.queste.command.QuesteCommand;
-import com.convallyria.queste.gson.AbstractAdapter;
+import com.convallyria.queste.gson.QuestAdapter;
+import com.convallyria.queste.listener.PlayerQuitListener;
 import com.convallyria.queste.managers.QuesteManagers;
 import com.convallyria.queste.quest.Quest;
 import com.convallyria.queste.quest.objective.QuestObjective;
 import com.convallyria.queste.translation.Translations;
+import com.google.common.collect.ImmutableList;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.islandearth.languagy.api.language.Language;
 import net.islandearth.languagy.api.language.LanguagyImplementation;
 import net.islandearth.languagy.api.language.LanguagyPluginHook;
 import net.islandearth.languagy.api.language.Translator;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.PluginDescriptionFile;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.java.JavaPluginLoader;
 
@@ -58,8 +62,9 @@ public final class Queste extends JavaPlugin implements QuesteAPI, LanguagyPlugi
         this.managers = new QuesteManagers(this);
         try {
             this.registerCommands();
+            this.registerListeners();
         } catch (Exception e) { // MockBukkit support. Throws an exception stating commands are unsupported.
-            plugin.getLogger().log(Level.WARNING, "Unable to initialise commands", e);
+            plugin.getLogger().log(Level.WARNING, "Unable to initialise listeners/commands", e);
         }
     }
 
@@ -121,11 +126,18 @@ public final class Queste extends JavaPlugin implements QuesteAPI, LanguagyPlugi
             }
             return objectives;
         });
+        // Options
+        manager.getCommandCompletions().registerCompletion("options", c -> ImmutableList.of("--force"));
+    }
+
+    private void registerListeners() {
+        PluginManager pm = Bukkit.getPluginManager();
+        pm.registerEvents(new PlayerQuitListener(this), this);
     }
 
     public Gson getGson() {
         return new GsonBuilder()
-                .registerTypeAdapter(QuestObjective.class, new AbstractAdapter<QuestObjective>(null))
+                .registerTypeAdapter(Quest.class, new QuestAdapter())
                 .setPrettyPrinting()
                 .serializeNulls()
                 .create();

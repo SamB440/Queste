@@ -6,7 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.BlockBreakEvent;
 
-public class BreakBlockQuestObjective extends QuestObjective {
+public final class BreakBlockQuestObjective extends QuestObjective {
 
     public BreakBlockQuestObjective(Queste plugin, Quest quest) {
         super(plugin, QuestObjectiveEnum.BREAK_BLOCK, quest);
@@ -15,6 +15,7 @@ public class BreakBlockQuestObjective extends QuestObjective {
     @EventHandler
     public void onBreak(BlockBreakEvent event) {
         Player player = event.getPlayer();
+        if (this.hasCompleted(player)) return;
         getPlugin().getManagers().getStorageManager().getAccount(player.getUniqueId()).thenAccept(account -> {
             account.getActiveQuests().forEach(quest -> {
                 if (quest.getName().equals(this.getQuestName())) {
