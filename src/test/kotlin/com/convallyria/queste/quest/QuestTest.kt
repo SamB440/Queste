@@ -42,6 +42,8 @@ class QuestTest {
 
     @Test
     fun incrementTest() {
+        val account = plugin.managers.storageManager.getAccount(player.uniqueId).get()
+        account.addActiveQuest(quest)
         quest.objectives.forEach { questObjective: QuestObjective ->
             questObjective.increment(player)
             Assert.assertEquals(1, questObjective.getIncrement(player))
