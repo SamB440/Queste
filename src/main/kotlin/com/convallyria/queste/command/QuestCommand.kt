@@ -7,6 +7,7 @@ import com.convallyria.queste.Queste
 import com.convallyria.queste.managers.data.account.QuesteAccount
 import com.convallyria.queste.quest.Quest
 import com.convallyria.queste.quest.objective.QuestObjective
+import com.convallyria.queste.quest.reward.QuestReward
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.command.CommandSender
@@ -43,6 +44,20 @@ class QuestCommand(private val plugin: Queste) : BaseCommand(), IQuesteCommand {
         quest.setCanRestart(restart)
         quest.save(plugin)
         sender.sendMessage(translate("&aQuest " + quest.name + " has had 'canRestart' set to: " + quest.canRestart() + "."))
+    }
+
+    @Subcommand("addrequirement")
+    @CommandCompletion("@quests @quests")
+    fun onAddRequirement(sender: CommandSender, quest: Quest, requirement: Quest) {
+        quest.addRequiredQuest(requirement)
+        sender.sendMessage(translate("&aAdded required quest " + requirement.name + " to quest " + quest.name + "."))
+    }
+
+    @Subcommand("addreward")
+    @CommandCompletion("@quests @rewards")
+    fun onAddReward(sender: CommandSender, quest: Quest, reward: QuestReward) {
+        quest.addReward(reward)
+        sender.sendMessage(translate("&aAdded reward &6" + reward.name + "&a to quest &6" + quest.name + "&a."))
     }
 
     @Subcommand("addplayer")

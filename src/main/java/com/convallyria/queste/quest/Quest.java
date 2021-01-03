@@ -2,6 +2,7 @@ package com.convallyria.queste.quest;
 
 import com.convallyria.queste.Queste;
 import com.convallyria.queste.quest.objective.QuestObjective;
+import com.convallyria.queste.quest.reward.QuestReward;
 import com.google.gson.Gson;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -18,16 +19,18 @@ import java.util.concurrent.CompletableFuture;
 
 public final class Quest  {
 
-    private Queste plugin;
+    private transient Queste plugin;
     private final String name;
     private boolean canRestart;
     private final List<QuestObjective> objectives;
     private final List<Quest> requiredQuests;
+    private final List<QuestReward> rewards;
 
     public Quest(String name) {
         this.name = name;
         this.objectives = new ArrayList<>();
         this.requiredQuests = new ArrayList<>();
+        this.rewards = new ArrayList<>();
     }
 
     public String getName() {
@@ -66,6 +69,18 @@ public final class Quest  {
         return requiredQuests;
     }
 
+    public void addReward(QuestReward reward) {
+        rewards.add(reward);
+    }
+
+    public void removeReward(QuestReward reward) {
+        rewards.remove(reward);
+    }
+
+    public List<QuestReward> getRewards() {
+        return rewards;
+    }
+
     /**
      * Checks if a player has completed this quest.
      * @param player player to check
@@ -91,6 +106,7 @@ public final class Quest  {
         player.sendMessage("try complete");
         if (isCompleted(player)) {
             player.sendTitle(ChatColor.GREEN + "Quest Completed", getName(), 40, 60, 40);
+            rewards.forEach(reward -> reward.award(player));
             getPlugin().getManagers().getStorageManager().getAccount(player.getUniqueId()).thenAccept(account -> {
                 account.addCompletedQuest(this);
                 account.removeActiveQuest(this);
@@ -125,6 +141,7 @@ public final class Quest  {
 
             objectives.forEach(objectives -> objectives.setIncrement(player, 0));
             player.sendTitle(ChatColor.GREEN + "Quest Started", getName(), 40, 60, 40);
+            if (account.getActiveQuests().contains(this)) account.removeActiveQuest(this);
             account.addActiveQuest(this);
             future.complete(true);
         }).exceptionally(err -> {

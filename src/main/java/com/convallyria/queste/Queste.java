@@ -13,6 +13,7 @@ import com.convallyria.queste.listener.PlayerQuitListener;
 import com.convallyria.queste.managers.QuesteManagers;
 import com.convallyria.queste.quest.Quest;
 import com.convallyria.queste.quest.objective.QuestObjective;
+import com.convallyria.queste.quest.reward.QuestReward;
 import com.convallyria.queste.translation.Translations;
 import com.google.common.collect.ImmutableList;
 import com.google.gson.Gson;
@@ -31,6 +32,7 @@ import org.bukkit.plugin.java.JavaPluginLoader;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 
 public final class Queste extends JavaPlugin implements QuesteAPI, LanguagyPluginHook {
@@ -114,6 +116,15 @@ public final class Queste extends JavaPlugin implements QuesteAPI, LanguagyPlugi
             if (quest != null) return quest;
             throw new InvalidCommandArgument("Could not find a quest with that name.");
         });
+        // QuestReward.class
+        manager.getCommandContexts().registerContext(QuestReward.class, context -> {
+            String name = context.popFirstArg();
+            QuestReward reward = QuestReward.QuestRewardEnum.valueOf(name).getReward();
+            if (reward != null) {
+                return reward;
+            }
+            throw new InvalidCommandArgument("Could not find a reward with that name.");
+        });
     }
 
     private void registerCommandCompletions(PaperCommandManager manager) {
@@ -122,7 +133,7 @@ public final class Queste extends JavaPlugin implements QuesteAPI, LanguagyPlugi
         commandCompletions.registerAsyncCompletion("quests", context -> new ArrayList<>(managers.getQuesteCache().getQuests().keySet()));
         // Objectives
         commandCompletions.registerAsyncCompletion("objectives", context -> {
-            ArrayList<String> objectives = new ArrayList<>();
+            List<String> objectives = new ArrayList<>();
             for (QuestObjective.QuestObjectiveEnum objective : QuestObjective.QuestObjectiveEnum.values()) {
                 if (objective.getPluginRequirement() != null) {
                     if (Bukkit.getPluginManager().getPlugin(objective.getPluginRequirement()) == null) { // Filter out plugin-specific objectives that are not enabled
@@ -133,6 +144,14 @@ public final class Queste extends JavaPlugin implements QuesteAPI, LanguagyPlugi
                 objectives.add(objective.toString());
             }
             return objectives;
+        });
+        // Rewards
+        commandCompletions.registerAsyncCompletion("rewards", context -> {
+            List<String> rewards = new ArrayList<>();
+            for (QuestReward.QuestRewardEnum reward : QuestReward.QuestRewardEnum.values()) {
+                rewards.add(reward.toString());
+            }
+            return rewards;
         });
         // Options
         manager.getCommandCompletions().registerCompletion("options", c -> ImmutableList.of("--force"));

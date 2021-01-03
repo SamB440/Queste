@@ -17,6 +17,8 @@ public class PlayerQuitListener implements Listener {
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
-        plugin.getManagers().getStorageManager().removeCachedAccount(player.getUniqueId());
+        if (plugin.getManagers().getStorageManager().getCachedAccounts().containsKey(player.getUniqueId())) {
+            plugin.getManagers().getStorageManager().removeCachedAccount(player.getUniqueId());
+        }
     }
 }
