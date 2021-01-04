@@ -11,7 +11,7 @@ public final class LevelQuestObjective extends QuestObjective {
     private int level;
 
     public LevelQuestObjective(Queste plugin, Quest quest) {
-        super(plugin, QuestObjectiveEnum.FISH, quest);
+        super(plugin, QuestObjectiveEnum.LEVEL, quest);
         this.level = 1;
     }
 

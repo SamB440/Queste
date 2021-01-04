@@ -34,7 +34,7 @@ public class QuestAdapter implements JsonSerializer<Quest>, JsonDeserializer<Que
         AbstractAdapter<QuestReward> rewardAdapter = new AbstractAdapter<>(null);
         JsonArray rewards = new JsonArray();
         quest.getRewards().forEach(questReward -> {
-            objectives.add(rewardAdapter.serialize(questReward, typeOfSrc, context));
+            rewards.add(rewardAdapter.serialize(questReward, typeOfSrc, context));
         });
         result.add("rewards", rewards);
         return result;

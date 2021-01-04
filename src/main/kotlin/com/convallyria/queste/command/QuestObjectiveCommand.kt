@@ -44,10 +44,23 @@ class QuestObjectiveCommand(private val plugin: Queste) : BaseCommand(), IQueste
             if (objective == questObjective.type) {
                 questObjective.completionAmount = completion
                 quest.save(plugin)
-                sender.sendMessage(translate("&aSet objective " + questObjective.type.getName() + " completion requirement to " + completion + "."))
+                sender.sendMessage(translate("&aSet objective &6" + questObjective.type.getName() + "&a completion requirement to &6" + completion + "&a."))
                 return
             }
         }
         sender.sendMessage(translate("&cThe quest " + quest.name + " does not have the objective &6" + objective.getName() + "."))
+    }
+
+    @Subcommand("setstorykey")
+    @CommandCompletion("@objectives @quests @range:20")
+    fun onSetStoryKey(sender: CommandSender, objective: QuestObjective.QuestObjectiveEnum, quest: Quest, storyKey: Int) {
+        for (questObjective in quest.objectives) {
+            if (objective == questObjective.type) {
+                questObjective.storyModeKey = storyKey
+                quest.save(plugin)
+                sender.sendMessage(translate("&aSet objective &6" + questObjective.type.getName() + "&a story key to &6" + storyKey + "&a."))
+                break
+            }
+        }
     }
 }

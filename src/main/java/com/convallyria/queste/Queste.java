@@ -75,6 +75,9 @@ public final class Queste extends JavaPlugin implements QuesteAPI, LanguagyPlugi
     @Override
     public void onDisable() {
         getManagers().getQuesteCache().getQuests().values().forEach(quest -> quest.save(this));
+        getManagers().getStorageManager().getCachedAccounts().forEach((uuid, account) -> {
+            getManagers().getStorageManager().removeCachedAccount(uuid);
+        });
     }
 
     private void createConfig() {

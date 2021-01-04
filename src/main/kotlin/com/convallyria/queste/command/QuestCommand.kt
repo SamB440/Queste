@@ -10,6 +10,7 @@ import com.convallyria.queste.quest.objective.QuestObjective
 import com.convallyria.queste.quest.reward.QuestReward
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
+import org.bukkit.Sound
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
@@ -68,6 +69,46 @@ class QuestCommand(private val plugin: Queste) : BaseCommand(), IQuesteCommand {
         quest.displayName = name
         quest.save(plugin)
         sender.sendMessage(translate("&aSet " + quest.name + "'s display name to &6" + name + "&a."))
+    }
+
+    @Subcommand("setstorymode")
+    @CommandCompletion("@quests")
+    fun onSetStoryMode(sender: CommandSender, quest: Quest, storyMode: Boolean) {
+        val currentStoryMode = quest.isStoryMode
+        quest.isStoryMode = storyMode
+        sender.sendMessage(translate("&aSet story mode from &6$currentStoryMode &ato &6$storyMode&a."))
+        sender.sendMessage(translate("&aTIP: &fYou will need to set story keys with &6/questobjective setstorykey&a."))
+    }
+
+    @Subcommand("setcompletesound")
+    @CommandCompletion("@quests")
+    fun onSetCompleteSound(sender: CommandSender, quest: Quest, sound: Sound) {
+        val currentSound = quest.completeSound
+        quest.completeSound = sound
+        sender.sendMessage(translate("&aSet complete sound from &6$currentSound &ato &6$sound&a."))
+    }
+
+    @Subcommand("complete")
+    @CommandCompletion("@players @quests @options")
+    fun onComplete(sender: CommandSender, playerName: String, quest: Quest, arguments: Array<String>) {
+        val player = Bukkit.getPlayer(playerName)
+        if (player != null) {
+            if (arguments.contains("--force")) {
+                quest.forceComplete(player)
+                sender.sendMessage(translate("&aPlayer " + playerName + " has now completed the quest " + quest.name + ". &c(FORCED)"))
+                return
+            }
+
+            val completed = quest.tryComplete(player)
+            if (completed) {
+                sender.sendMessage(translate("&aPlayer " + playerName + " has now completed the quest " + quest.name + "."))
+            } else {
+                sender.sendMessage(translate("&cCould not complete the quest for this player. Have they completed all required objectives?"))
+                sender.sendMessage(translate("&aTIP: &fTry running with &6--force &fto force a quest completion."))
+            }
+        } else {
+            sender.sendMessage(translate("&cThat player is not online."))
+        }
     }
 
     @Subcommand("addplayer")

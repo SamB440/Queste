@@ -5,6 +5,8 @@ import com.convallyria.queste.quest.objective.QuestObjective;
 import com.convallyria.queste.quest.reward.QuestReward;
 import com.google.gson.Gson;
 import org.bukkit.ChatColor;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
@@ -26,12 +28,15 @@ public final class Quest  {
     private final List<QuestObjective> objectives;
     private final List<Quest> requiredQuests;
     private final List<QuestReward> rewards;
+    private boolean storyMode;
+    private Sound completeSound;
 
     public Quest(String name) {
         this.name = name;
         this.objectives = new ArrayList<>();
         this.requiredQuests = new ArrayList<>();
         this.rewards = new ArrayList<>();
+        this.completeSound = Sound.UI_TOAST_CHALLENGE_COMPLETE;
     }
 
     public String getName() {
@@ -90,6 +95,22 @@ public final class Quest  {
         return rewards;
     }
 
+    public boolean isStoryMode() {
+        return storyMode;
+    }
+
+    public void setStoryMode(boolean storyMode) {
+        this.storyMode = storyMode;
+    }
+
+    public Sound getCompleteSound() {
+        return completeSound;
+    }
+
+    public void setCompleteSound(Sound completeSound) {
+        this.completeSound = completeSound;
+    }
+
     /**
      * Checks if a player has completed this quest.
      * @param player player to check
@@ -114,15 +135,26 @@ public final class Quest  {
     public boolean tryComplete(@NotNull Player player) {
         player.sendMessage("try complete");
         if (isCompleted(player)) {
-            player.sendTitle(ChatColor.GREEN + "Quest Completed", getName(), 40, 60, 40);
-            rewards.forEach(reward -> reward.award(player));
-            getPlugin().getManagers().getStorageManager().getAccount(player.getUniqueId()).thenAccept(account -> {
-                account.addCompletedQuest(this);
-                account.removeActiveQuest(this);
-            });
+            forceComplete(player);
             return true;
         }
         return false;
+    }
+
+    public void forceComplete(Player player) {
+        giveEffectsAndRewards(player);
+        getPlugin().getManagers().getStorageManager().getAccount(player.getUniqueId()).thenAccept(account -> {
+            account.addCompletedQuest(this);
+            account.removeActiveQuest(this);
+        });
+    }
+
+    private void giveEffectsAndRewards(Player player) {
+        player.sendTitle(ChatColor.GREEN + "Quest Completed", getName(), 40, 60, 40);
+        player.playSound(player.getLocation(),
+                completeSound == null ? Sound.UI_TOAST_CHALLENGE_COMPLETE : completeSound, 1f, 1f);
+        player.getWorld().spawnParticle(Particle.TOTEM, player.getLocation(), 1000, 0.25, 0.25, 0.25, 1);
+        rewards.forEach(reward -> reward.award(player));
     }
 
     /**

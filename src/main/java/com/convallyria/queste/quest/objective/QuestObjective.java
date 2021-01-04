@@ -12,6 +12,7 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.reflect.Constructor;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class QuestObjective implements Listener {
@@ -22,6 +23,7 @@ public abstract class QuestObjective implements Listener {
     private final QuestObjectiveEnum type;
     private int completionAmount;
     private final Map<UUID, Integer> progress;
+    private int storyModeKey;
 
     public QuestObjective(Queste plugin, @NotNull QuestObjectiveEnum type, Quest quest) {
         this.plugin = plugin;
@@ -29,6 +31,7 @@ public abstract class QuestObjective implements Listener {
         this.type = type;
         this.completionAmount = 10;
         this.progress = new ConcurrentHashMap<>();
+        this.storyModeKey = 0; // Auto set it as first - maybe change this in the future to set it as last compared to other objectives.
         Bukkit.getPluginManager().registerEvents(this, plugin);
     }
 
@@ -65,11 +68,25 @@ public abstract class QuestObjective implements Listener {
         return progress.getOrDefault(player.getUniqueId(), 0);
     }
 
-    public void increment(@NotNull Player player) {
+    public CompletableFuture<Boolean> increment(@NotNull Player player) {
+        CompletableFuture<Boolean> future = new CompletableFuture<>();
         getPlugin().getManagers().getStorageManager().getAccount(player.getUniqueId()).thenAccept(account -> {
             account.getActiveQuests().forEach(quest -> {
                 if (quest.getName().equals(this.getQuestName())) {
+                    for (QuestObjective otherObjective : quest.getObjectives()) {
+                        // If the player has not completed another objective, story mode is enabled, and our story
+                        // is later on, do not continue.
+                        if (!otherObjective.hasCompleted(player)
+                                && quest.isStoryMode()
+                                && this.getStoryModeKey() > otherObjective.getStoryModeKey()) {
+                            player.sendMessage("can't do this objective yet");
+                            future.complete(false);
+                            return;
+                        }
+                    }
+
                     progress.put(player.getUniqueId(), progress.getOrDefault(player.getUniqueId(), 0) + 1);
+                    future.complete(true);
                     player.sendMessage("status: " + this.getIncrement(player) + " / " + this.getCompletionAmount());
                     if (progress.get(player.getUniqueId()) >= completionAmount) {
                         quest.tryComplete(player);
@@ -77,10 +94,19 @@ public abstract class QuestObjective implements Listener {
                 }
             });
         });
+        return future;
     }
 
     public void setIncrement(@NotNull Player player, int increment) {
         progress.put(player.getUniqueId(), increment);
+    }
+
+    public int getStoryModeKey() {
+        return storyModeKey;
+    }
+
+    public void setStoryModeKey(int storyModeKey) {
+        this.storyModeKey = storyModeKey;
     }
 
     public boolean hasCompleted(@NotNull Player player) {
@@ -96,7 +122,8 @@ public abstract class QuestObjective implements Listener {
         SHEAR_SHEEP(ShearSheepQuestObjective.class, "Shear Sheep"),
         FISH(FishQuestObjective.class, "Fish"),
         ENCHANT(EnchantQuestObjective.class, "Enchant Item"),
-        KILL_ENTITY(KillEntityQuestObjective.class, "Kill Entity");
+        KILL_ENTITY(KillEntityQuestObjective.class, "Kill Entity"),
+        LEVEL(LevelQuestObjective.class, "Level Up");
 
         private final Class<? extends QuestObjective> clazz;
         private final String name;
