@@ -2,6 +2,7 @@ package com.convallyria.queste.quest.objective;
 
 import com.convallyria.queste.Queste;
 import com.convallyria.queste.quest.Quest;
+import com.convallyria.queste.translation.Translations;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
@@ -86,13 +87,24 @@ public abstract class QuestObjective implements Listener {
                     }
 
                     progress.put(player.getUniqueId(), progress.getOrDefault(player.getUniqueId(), 0) + 1);
+                    account.update(quest);
                     future.complete(true);
                     player.sendMessage("status: " + this.getIncrement(player) + " / " + this.getCompletionAmount());
                     if (progress.get(player.getUniqueId()) >= completionAmount) {
+                        if (quest.getCurrentObjective(player) != null) {
+                            Translations.OBJECTIVE_COMPLETE.sendList(player, this.getIncrement(player) - 1,
+                                    this.getCompletionAmount(),
+                                    this.getIncrement(player),
+                                    this.getCompletionAmount(),
+                                    quest.getCurrentObjective(player).getType().getName());
+                        }
                         quest.tryComplete(player);
                     }
                 }
             });
+        }).exceptionally(err -> {
+            err.printStackTrace();
+            return null;
         });
         return future;
     }

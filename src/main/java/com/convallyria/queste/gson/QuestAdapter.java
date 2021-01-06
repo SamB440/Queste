@@ -37,6 +37,7 @@ public class QuestAdapter implements JsonSerializer<Quest>, JsonDeserializer<Que
             rewards.add(rewardAdapter.serialize(questReward, typeOfSrc, context));
         });
         result.add("rewards", rewards);
+        result.add("storyMode", new JsonPrimitive(quest.isStoryMode()));
         return result;
     }
 
@@ -61,6 +62,11 @@ public class QuestAdapter implements JsonSerializer<Quest>, JsonDeserializer<Que
             rewards.forEach(jsonElement -> {
                 quest.addReward(rewardAdapter.deserialize(jsonElement, typeOfT, context));
             });
+        }
+
+        if (jsonObject.get("storyMode") != null) {
+            boolean storyMode = jsonObject.get("storyMode").getAsBoolean();
+            quest.setStoryMode(storyMode);
         }
         return quest;
     }

@@ -7,7 +7,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Sheep;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.player.PlayerInteractAtEntityEvent;
+import org.bukkit.event.player.PlayerShearEntityEvent;
 import org.bukkit.inventory.ItemStack;
 
 public final class ShearSheepQuestObjective extends QuestObjective {
@@ -17,8 +17,8 @@ public final class ShearSheepQuestObjective extends QuestObjective {
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void onShear(PlayerInteractAtEntityEvent event) {
-        Entity rightClicked = event.getRightClicked();
+    public void onShear(PlayerShearEntityEvent event) {
+        Entity rightClicked = event.getEntity();
         if (rightClicked instanceof Sheep) {
             Player player = event.getPlayer();
             if (this.hasCompleted(player)) return;

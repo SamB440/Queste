@@ -65,6 +65,7 @@ public final class Queste extends JavaPlugin implements QuesteAPI, LanguagyPlugi
         this.generateLang();
         this.managers = new QuesteManagers(this);
         try {
+            this.hook(this);
             this.registerCommands();
             this.registerListeners();
         } catch (Exception e) { // MockBukkit support. Throws an exception stating commands are unsupported.

@@ -14,7 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public enum Translations {
-    ;
+    OBJECTIVE_COMPLETE(" &e&lObjective Complete! &8(%0/%1)", true),
+    QUEST_COMPLETED("&e&lQuest Completed!", true);
 
     private final String defaultValue;
     private final boolean isList;
@@ -46,7 +47,7 @@ public enum Translations {
         player.sendMessage(message);
     }
 
-    public void send(Player player, String... values) {
+    public void send(Player player, Object... values) {
         String message = Queste.getAPI().getTranslator().getTranslationFor(player, this.getPath());
         message = this.setPapi(player, replaceVariables(message, values));
         player.sendMessage(message);
@@ -57,7 +58,7 @@ public enum Translations {
         messages.forEach(player::sendMessage);
     }
 
-    public void sendList(Player player, String... values) {
+    public void sendList(Player player, Object... values) {
         List<String> messages = Queste.getAPI().getTranslator().getTranslationListFor(player, this.getPath());
         messages.forEach(message -> {
             message = this.setPapi(player, replaceVariables(message, values));
@@ -69,7 +70,7 @@ public enum Translations {
         return this.setPapi(player, Queste.getAPI().getTranslator().getTranslationFor(player, this.getPath()));
     }
 
-    public String get(Player player, String... values) {
+    public String get(Player player, Object... values) {
         String message = Queste.getAPI().getTranslator().getTranslationFor(player, this.getPath());
         message = replaceVariables(message, values);
         return this.setPapi(player, message);
@@ -81,7 +82,7 @@ public enum Translations {
         return list;
     }
 
-    public List<String> getList(Player player, String... values) {
+    public List<String> getList(Player player, Object... values) {
         List<String> messages = new ArrayList<>();
         Queste.getAPI().getTranslator()
                 .getTranslationListFor(player, this.getPath())
@@ -113,10 +114,10 @@ public enum Translations {
     }
 
     @NotNull
-    private String replaceVariables(String message, String... values) {
+    private String replaceVariables(String message, Object... values) {
         String modifiedMessage = message;
         for (int i = 0; i < 10; i++) {
-            if (values.length > i) modifiedMessage = modifiedMessage.replaceAll("%" + i, values[i]);
+            if (values.length > i) modifiedMessage = modifiedMessage.replaceAll("%" + i, String.valueOf(values[i]));
             else break;
         }
 

@@ -3,6 +3,7 @@ package com.convallyria.queste.quest;
 import com.convallyria.queste.Queste;
 import com.convallyria.queste.quest.objective.QuestObjective;
 import com.convallyria.queste.quest.reward.QuestReward;
+import com.convallyria.queste.translation.Translations;
 import com.google.gson.Gson;
 import org.bukkit.ChatColor;
 import org.bukkit.Particle;
@@ -10,6 +11,7 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -111,6 +113,27 @@ public final class Quest  {
         this.completeSound = completeSound;
     }
 
+    @Nullable
+    public QuestObjective getCurrentObjective(@NotNull Player player) {
+        if (isStoryMode()) {
+            QuestObjective currentObjective = null;
+            for (QuestObjective objective : getObjectives()) {
+                if (currentObjective == null && !objective.hasCompleted(player)) {
+                    currentObjective = objective;
+                    continue;
+                }
+
+                if (currentObjective != null
+                        && objective.getStoryModeKey() < currentObjective.getStoryModeKey()
+                        && !objective.hasCompleted(player)) {
+                    currentObjective = objective;
+                }
+            }
+            return currentObjective;
+        }
+        return null;
+    }
+
     /**
      * Checks if a player has completed this quest.
      * @param player player to check
@@ -155,6 +178,7 @@ public final class Quest  {
                 completeSound == null ? Sound.UI_TOAST_CHALLENGE_COMPLETE : completeSound, 1f, 1f);
         player.getWorld().spawnParticle(Particle.TOTEM, player.getLocation(), 1000, 0.25, 0.25, 0.25, 1);
         rewards.forEach(reward -> reward.award(player));
+        Translations.QUEST_COMPLETED.sendList(player, getDisplayName());
     }
 
     /**
