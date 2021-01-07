@@ -3,7 +3,11 @@ package com.convallyria.queste.quest.objective;
 import com.convallyria.queste.Queste;
 import com.convallyria.queste.quest.Quest;
 import com.convallyria.queste.translation.Translations;
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -80,25 +84,29 @@ public abstract class QuestObjective implements Listener {
                         if (!otherObjective.hasCompleted(player)
                                 && quest.isStoryMode()
                                 && this.getStoryModeKey() > otherObjective.getStoryModeKey()) {
-                            player.sendMessage("can't do this objective yet");
+                            if (plugin.debug()) {
+                                player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.RED + "You cannot complete the objective " + type.getName() + " yet."));
+                            }
                             future.complete(false);
                             return;
                         }
                     }
 
+                    // Increase progress, update bossbar, if this objective is completed play effects
                     progress.put(player.getUniqueId(), progress.getOrDefault(player.getUniqueId(), 0) + 1);
                     account.update(quest);
                     future.complete(true);
-                    player.sendMessage("status: " + this.getIncrement(player) + " / " + this.getCompletionAmount());
                     if (progress.get(player.getUniqueId()) >= completionAmount) {
-                        if (quest.getCurrentObjective(player) != null) {
-                            Translations.OBJECTIVE_COMPLETE.sendList(player, this.getIncrement(player) - 1,
-                                    this.getCompletionAmount(),
-                                    this.getIncrement(player),
-                                    this.getCompletionAmount(),
-                                    quest.getCurrentObjective(player).getType().getName());
+                        QuestObjective currentObjective = quest.getCurrentObjective(player);
+                        if (currentObjective != null) {
+                            Translations.OBJECTIVE_COMPLETE.sendList(player, this.getStoryModeKey() + 1,
+                                    quest.getObjectives().size(),
+                                    this.getStoryModeKey() + 2,
+                                    quest.getObjectives().size(),
+                                    currentObjective.getType().getName());
+                            player.playSound(player.getLocation(), Sound.UI_TOAST_IN, 1f, 1f);
                         }
-                        quest.tryComplete(player);
+                        quest.tryComplete(player); // Attempt completion of quest
                     }
                 }
             });
@@ -122,7 +130,6 @@ public abstract class QuestObjective implements Listener {
     }
 
     public boolean hasCompleted(@NotNull Player player) {
-        player.sendMessage("completed? " + (progress.getOrDefault(player.getUniqueId(), 0) == completionAmount));
         return progress.getOrDefault(player.getUniqueId(), 0) == completionAmount;
     }
 
@@ -135,7 +142,9 @@ public abstract class QuestObjective implements Listener {
         FISH(FishQuestObjective.class, "Fish"),
         ENCHANT(EnchantQuestObjective.class, "Enchant Item"),
         KILL_ENTITY(KillEntityQuestObjective.class, "Kill Entity"),
-        LEVEL(LevelQuestObjective.class, "Level Up");
+        LEVEL(LevelQuestObjective.class, "Level Up"),
+        FILL_BUCKET(BucketFillObjective.class, "Fill Bucket"),
+        INTERACT_ENTITY(InteractEntityObjective.class, "Interact With Entity");
 
         private final Class<? extends QuestObjective> clazz;
         private final String name;

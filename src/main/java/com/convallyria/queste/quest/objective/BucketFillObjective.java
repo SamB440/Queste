@@ -5,26 +5,28 @@ import com.convallyria.queste.quest.Quest;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.player.PlayerBucketFillEvent;
+import org.jetbrains.annotations.Nullable;
 
-public final class PlaceBlockQuestObjective extends QuestObjective {
+public final class BucketFillObjective extends QuestObjective {
 
     private Material blockType;
 
-    public PlaceBlockQuestObjective(Queste plugin, Quest quest) {
-        super(plugin, QuestObjectiveEnum.PLACE_BLOCK, quest);
+    public BucketFillObjective(Queste plugin, Quest quest) {
+        super(plugin, QuestObjectiveEnum.FILL_BUCKET, quest);
     }
 
     @EventHandler
-    public void onPlace(BlockPlaceEvent event) {
+    public void onFill(PlayerBucketFillEvent event) {
         Player player = event.getPlayer();
         if (this.hasCompleted(player)) return;
-        boolean flag = blockType == null || blockType == event.getBlockPlaced().getType();
+        boolean flag = blockType == null || event.getBlockClicked().getType() == blockType;
         if (flag) {
             this.increment(player);
         }
     }
 
+    @Nullable
     public Material getBlockType() {
         return blockType;
     }

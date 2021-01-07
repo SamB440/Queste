@@ -5,7 +5,6 @@ import com.convallyria.queste.quest.objective.QuestObjective;
 import com.convallyria.queste.quest.reward.QuestReward;
 import com.convallyria.queste.translation.Translations;
 import com.google.gson.Gson;
-import org.bukkit.ChatColor;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -156,7 +155,6 @@ public final class Quest  {
      * @return true if objectives are completed and player has completed quest entirely, false otherwise
      */
     public boolean tryComplete(@NotNull Player player) {
-        player.sendMessage("try complete");
         if (isCompleted(player)) {
             forceComplete(player);
             return true;
@@ -173,7 +171,7 @@ public final class Quest  {
     }
 
     private void giveEffectsAndRewards(Player player) {
-        player.sendTitle(ChatColor.GREEN + "Quest Completed", getName(), 40, 60, 40);
+        player.sendTitle(Translations.QUEST_COMPLETED_TITLE.get(player), getName(), 40, 60, 40);
         player.playSound(player.getLocation(),
                 completeSound == null ? Sound.UI_TOAST_CHALLENGE_COMPLETE : completeSound, 1f, 1f);
         player.getWorld().spawnParticle(Particle.TOTEM, player.getLocation(), 1000, 0.25, 0.25, 0.25, 1);
@@ -205,7 +203,7 @@ public final class Quest  {
             }
 
             objectives.forEach(objectives -> objectives.setIncrement(player, 0));
-            player.sendTitle(ChatColor.GREEN + "Quest Started", getName(), 40, 60, 40);
+            player.sendTitle(Translations.QUEST_STARTED.get(player), getName(), 40, 60, 40);
             if (account.getActiveQuests().contains(this)) account.removeActiveQuest(this);
             account.addActiveQuest(this);
             future.complete(true);
@@ -219,7 +217,7 @@ public final class Quest  {
     public void forceStart(@NotNull Player player) {
         getPlugin().getManagers().getStorageManager().getAccount(player.getUniqueId()).thenAccept(account -> {
             objectives.forEach(objectives -> objectives.setIncrement(player, 0));
-            player.sendTitle(ChatColor.GREEN + "Quest Started", getName(), 40, 60, 40);
+            player.sendTitle(Translations.QUEST_STARTED.get(player), getName(), 40, 60, 40);
             account.addActiveQuest(this);
         }).exceptionally(err -> {
             err.printStackTrace();

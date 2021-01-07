@@ -15,7 +15,9 @@ import java.util.List;
 
 public enum Translations {
     OBJECTIVE_COMPLETE(" &e&lObjective Complete! &8(%0/%1)", true),
-    QUEST_COMPLETED("&e&lQuest Completed!", true);
+    QUEST_COMPLETED("&e&lQuest Completed!", true),
+    QUEST_COMPLETED_TITLE("&aQuest Completed"),
+    QUEST_STARTED("&aQuest Started");
 
     private final String defaultValue;
     private final boolean isList;

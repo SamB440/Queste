@@ -52,6 +52,7 @@ public class QuesteAccount {
 				}
 				activeBar.setProgress(0);
 				activeBar.addPlayer(player);
+				update(quest);
 			}
 		}
 	}

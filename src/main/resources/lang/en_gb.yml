@@ -11,3 +11,5 @@ quest_completed:
   - " Well done! You've completed"
   - " the &b%0 &fquest!"
   - " "
+quest_started: "&aQuest Started"
+quest_completed_title: "&aQuest Completed"

@@ -4,6 +4,7 @@ import co.aikar.commands.BaseCommand
 import co.aikar.commands.CommandHelp
 import co.aikar.commands.annotation.*
 import com.convallyria.queste.Queste
+import com.convallyria.queste.colour.ColourScheme
 import com.convallyria.queste.managers.data.account.QuesteAccount
 import com.convallyria.queste.quest.Quest
 import com.convallyria.queste.quest.objective.QuestObjective
@@ -13,6 +14,10 @@ import org.bukkit.ChatColor
 import org.bukkit.Sound
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
+import java.io.File
+import java.io.FileReader
+import java.io.Reader
+import java.lang.Exception
 
 @CommandAlias("quest")
 class QuestCommand(private val plugin: Queste) : BaseCommand(), IQuesteCommand {
@@ -21,6 +26,30 @@ class QuestCommand(private val plugin: Queste) : BaseCommand(), IQuesteCommand {
     @HelpCommand
     fun onDefault(commandHelp : CommandHelp) {
         commandHelp.showHelp()
+    }
+
+    @Subcommand("list")
+    fun onList(sender: CommandSender) {
+        val primaryColour = ColourScheme.getPrimaryColour()
+        val secondaryColour = ColourScheme.getSecondaryColour()
+        val pluginColour = ColourScheme.getExternalPluginColour()
+        sender.sendMessage(translate("" + primaryColour
+                + "List of all available quests (" + secondaryColour + "name" + primaryColour + ", "
+                + pluginColour + "plugin" + primaryColour + "): "))
+        for (quest in plugin.managers.questeCache.quests.values) {
+            sender.sendMessage(translate(" " + secondaryColour + "- " + quest.name))
+        }
+    }
+
+    @Subcommand("reload")
+    @CommandPermission("queste.reload")
+    fun onReload(sender: CommandSender) {
+        sender.sendMessage(ChatColor.GREEN.toString() + "Reloading quest files...")
+        val startTime = System.currentTimeMillis()
+        plugin.managers.questeCache.reload()
+        val endTime = System.currentTimeMillis()
+        val totalTime = endTime - startTime
+        sender.sendMessage(ChatColor.GREEN.toString() + "Done! (" + totalTime + "ms)")
     }
 
     @Subcommand("create")

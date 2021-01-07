@@ -9,6 +9,7 @@ import com.convallyria.queste.command.QuestCommand;
 import com.convallyria.queste.command.QuestObjectiveCommand;
 import com.convallyria.queste.command.QuesteCommand;
 import com.convallyria.queste.command.QuestsCommand;
+import com.convallyria.queste.gson.LocationAdapter;
 import com.convallyria.queste.gson.QuestAdapter;
 import com.convallyria.queste.listener.PlayerQuitListener;
 import com.convallyria.queste.managers.QuesteManagers;
@@ -24,6 +25,7 @@ import net.islandearth.languagy.api.language.LanguagyImplementation;
 import net.islandearth.languagy.api.language.LanguagyPluginHook;
 import net.islandearth.languagy.api.language.Translator;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.PluginDescriptionFile;
@@ -160,7 +162,9 @@ public final class Queste extends JavaPlugin implements QuesteAPI, LanguagyPlugi
             return rewards;
         });
         // Options
-        manager.getCommandCompletions().registerCompletion("options", c -> ImmutableList.of("--force"));
+        manager.getCommandCompletions().registerAsyncCompletion("options", c -> ImmutableList.of("--force"));
+        // Locations
+        manager.getCommandCompletions().registerAsyncCompletion("locations", c -> ImmutableList.of("TARGET", "SELF"));
     }
 
     private void registerListeners() {
@@ -171,6 +175,7 @@ public final class Queste extends JavaPlugin implements QuesteAPI, LanguagyPlugi
     public Gson getGson() {
         return new GsonBuilder()
                 .registerTypeAdapter(Quest.class, new QuestAdapter())
+                .registerTypeHierarchyAdapter(Location.class, new LocationAdapter())
                 .setPrettyPrinting()
                 .serializeNulls()
                 .create();
