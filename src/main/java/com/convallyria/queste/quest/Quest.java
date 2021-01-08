@@ -72,6 +72,17 @@ public final class Quest  {
         return objectives;
     }
 
+    @NotNull
+    public List<QuestObjective> getObjectivesFromType(QuestObjective.QuestObjectiveEnum type) {
+        List<QuestObjective> objectives = new ArrayList<>();
+        for (QuestObjective objective : getObjectives()) {
+            if (objective.getType() == type) {
+                objectives.add(objective);
+            }
+        }
+        return objectives;
+    }
+
     public void addRequiredQuest(Quest quest) {
         requiredQuests.add(quest);
     }

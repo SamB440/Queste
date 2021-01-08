@@ -29,6 +29,7 @@ public abstract class QuestObjective implements Listener {
     private int completionAmount;
     private final Map<UUID, Integer> progress;
     private int storyModeKey;
+    private String displayName;
 
     public QuestObjective(Queste plugin, @NotNull QuestObjectiveEnum type, Quest quest) {
         this.plugin = plugin;
@@ -131,6 +132,15 @@ public abstract class QuestObjective implements Listener {
 
     public boolean hasCompleted(@NotNull Player player) {
         return progress.getOrDefault(player.getUniqueId(), 0) == completionAmount;
+    }
+
+    public String getDisplayName() {
+        if (displayName == null) displayName = type.getName();
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
     }
 
     public enum QuestObjectiveEnum {
