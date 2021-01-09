@@ -13,7 +13,7 @@ import org.bukkit.inventory.ItemStack;
 public final class ShearSheepQuestObjective extends QuestObjective {
 
     public ShearSheepQuestObjective(Queste plugin, Quest quest) {
-        super(plugin, QuestObjectiveEnum.SHEAR_SHEEP, quest);
+        super(plugin, quest);
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -27,5 +27,10 @@ public final class ShearSheepQuestObjective extends QuestObjective {
             if (mainHand.getType() != Material.SHEARS && offHand.getType() != Material.SHEARS) return;
             this.increment(player);
         }
+    }
+
+    @Override
+    public String getName() {
+        return "Shear Sheep";
     }
 }

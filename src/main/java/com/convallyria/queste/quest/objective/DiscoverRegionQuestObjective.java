@@ -9,7 +9,7 @@ import org.bukkit.event.EventHandler;
 public final class DiscoverRegionQuestObjective extends RegionObjective {
 
     public DiscoverRegionQuestObjective(Queste plugin, Quest quest) {
-        super(plugin, QuestObjectiveEnum.DISCOVER_REGION, quest);
+        super(plugin, quest);
     }
 
     @EventHandler
@@ -18,5 +18,10 @@ public final class DiscoverRegionQuestObjective extends RegionObjective {
         if (this.hasCompleted(player)) return;
         if (getRegion() != null && !event.getRegion().equals(getRegion())) return;
         this.increment(player);
+    }
+
+    @Override
+    public String getName() {
+        return "Discover Region";
     }
 }

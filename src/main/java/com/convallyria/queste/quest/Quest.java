@@ -73,10 +73,10 @@ public final class Quest  {
     }
 
     @NotNull
-    public List<QuestObjective> getObjectivesFromType(QuestObjective.QuestObjectiveEnum type) {
+    public List<QuestObjective> getObjectivesFromType(Class<? extends QuestObjective> type) {
         List<QuestObjective> objectives = new ArrayList<>();
         for (QuestObjective objective : getObjectives()) {
-            if (objective.getType() == type) {
+            if (objective.getClass().isInstance(type)) {
                 objectives.add(objective);
             }
         }

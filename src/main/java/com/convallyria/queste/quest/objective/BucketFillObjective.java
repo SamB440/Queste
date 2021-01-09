@@ -13,7 +13,7 @@ public final class BucketFillObjective extends QuestObjective {
     private Material blockType;
 
     public BucketFillObjective(Queste plugin, Quest quest) {
-        super(plugin, QuestObjectiveEnum.FILL_BUCKET, quest);
+        super(plugin, quest);
     }
 
     @EventHandler
@@ -33,5 +33,10 @@ public final class BucketFillObjective extends QuestObjective {
 
     public void setBlockType(Material blockType) {
         this.blockType = blockType;
+    }
+
+    @Override
+    public String getName() {
+        return "Fill Bucket";
     }
 }

@@ -5,6 +5,7 @@ import com.convallyria.queste.managers.data.QuesteCache;
 import com.convallyria.queste.managers.data.StorageManager;
 import com.convallyria.queste.managers.data.StorageType;
 import com.convallyria.queste.quest.Quest;
+import com.convallyria.queste.quest.objective.QuestObjectiveRegistry;
 import org.bukkit.Bukkit;
 
 import java.io.File;
@@ -16,6 +17,7 @@ public class QuesteManagers {
 
     private StorageManager storageManager;
     private final QuesteCache questeCache;
+    private final QuestObjectiveRegistry objectiveRegistry;
 
     public QuesteManagers(Queste plugin) {
         StorageType.valueOf(plugin.getConfig().getString("settings.storage.mode").toUpperCase())
@@ -24,6 +26,7 @@ public class QuesteManagers {
         if (storageManager == null) throw new IllegalStateException("Could not find StorageManager!");
 
         this.questeCache = new QuesteCache(plugin);
+        this.objectiveRegistry = new QuestObjectiveRegistry(plugin);
 
         File accountsFolder = new File(plugin.getDataFolder() + "/accounts/");
         if (!accountsFolder.exists()) accountsFolder.mkdirs();
@@ -49,6 +52,10 @@ public class QuesteManagers {
 
     public QuesteCache getQuesteCache() {
         return questeCache;
+    }
+
+    public QuestObjectiveRegistry getObjectiveRegistry() {
+        return objectiveRegistry;
     }
 
     public StorageManager getStorageManager() {

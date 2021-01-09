@@ -10,7 +10,7 @@ import org.bukkit.event.entity.EntityBreedEvent;
 public final class BreedQuestObjective extends QuestObjective {
 
     public BreedQuestObjective(Queste plugin, Quest quest) {
-        super(plugin, QuestObjectiveEnum.BREED, quest);
+        super(plugin, quest);
     }
 
     @EventHandler
@@ -21,5 +21,10 @@ public final class BreedQuestObjective extends QuestObjective {
             if (this.hasCompleted(player)) return;
             this.increment(player);
         }
+    }
+
+    @Override
+    public String getName() {
+        return "Breed Animals";
     }
 }

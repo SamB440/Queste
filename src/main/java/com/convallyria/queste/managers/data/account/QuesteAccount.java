@@ -47,7 +47,7 @@ public class QuesteAccount {
 				BossBar activeBar = Bukkit.getBossBar(new NamespacedKey(plugin, player.getUniqueId() + quest.getName()));
 				if (activeBar == null) {
 					activeBar = Bukkit.createBossBar(new NamespacedKey(plugin, player.getUniqueId() + quest.getName()),
-							ChatColor.GOLD + currentObjective.getType().getName(),
+							ChatColor.GOLD + currentObjective.getDisplayName(),
 							BarColor.WHITE, BarStyle.SEGMENTED_10);
 				}
 				activeBar.setProgress(0);
@@ -72,7 +72,7 @@ public class QuesteAccount {
 			if (currentObjective != null) {
 				int increment = currentObjective.getIncrement(player);
 				float percent = (increment * 100.0f) / currentObjective.getCompletionAmount();
-				bossBar.setTitle(ChatColor.GOLD + currentObjective.getType().getName());
+				bossBar.setTitle(ChatColor.GOLD + currentObjective.getDisplayName());
 				bossBar.setProgress(percent / 100);
 			} else {
 				bossBar.removeAll();

@@ -41,6 +41,43 @@ class QuestCommand(private val plugin: Queste) : BaseCommand(), IQuesteCommand {
         }
     }
 
+    @Subcommand("info")
+    @CommandCompletion("@quests")
+    fun onInfo(sender: CommandSender, quest: Quest) {
+        val primaryColour = ColourScheme.getPrimaryColour()
+        val secondaryColour = ColourScheme.getSecondaryColour()
+        val pluginColour = ColourScheme.getExternalPluginColour()
+        sender.sendMessage(translate("" + primaryColour + "Info for quest "
+                + secondaryColour + quest.name + primaryColour + "."))
+        sender.sendMessage(translate("" + primaryColour
+                + "List of all objectives (" + secondaryColour + "name" + primaryColour + ", "
+                + pluginColour + "plugin" + primaryColour + "): "))
+        for (objective in quest.objectives) {
+            val pluginRequirement =
+                if (objective.pluginRequirement != null) "" + pluginColour + " (" + objective.pluginRequirement + ")"
+                else ""
+            sender.sendMessage(translate(" " + secondaryColour + "- " + objective.displayName + pluginRequirement))
+        }
+
+        sender.sendMessage(" ")
+        sender.sendMessage(translate("" + primaryColour
+                + "List of all rewards (" + secondaryColour + "name" + primaryColour + "): "))
+        for (reward in quest.rewards) {
+            sender.sendMessage(translate(" " + secondaryColour + "- " + reward.name))
+        }
+
+        sender.sendMessage(" ")
+        sender.sendMessage(translate("" + primaryColour
+                + "List of all required quests (" + secondaryColour + "name" + primaryColour + "): "))
+        for (requiredQuest in quest.requiredQuests) {
+            sender.sendMessage(translate(" " + secondaryColour + "- " + requiredQuest.name))
+        }
+
+        sender.sendMessage(" ")
+        sender.sendMessage("" + secondaryColour + "Is a story? " + quest.isStoryMode)
+        sender.sendMessage("" + secondaryColour + "Complete Sound: " + quest.completeSound)
+    }
+
     @Subcommand("reload")
     @CommandPermission("queste.reload")
     fun onReload(sender: CommandSender) {
@@ -62,10 +99,13 @@ class QuestCommand(private val plugin: Queste) : BaseCommand(), IQuesteCommand {
 
     @Subcommand("addobjective")
     @CommandCompletion("@objectives @quests")
-    fun onAddObjective(sender: CommandSender, objective: QuestObjective.QuestObjectiveEnum, quest: Quest) {
-        quest.addObjective(objective.getNewObjective(plugin, quest))
-        quest.save(plugin)
-        sender.sendMessage(translate("&aAdded new objective " + objective.name + " to " + quest.name + "."))
+    fun onAddObjective(sender: CommandSender, objectiveName: String, quest: Quest) {
+        val objective = plugin.managers.objectiveRegistry.getNewObjective(objectiveName, plugin, quest)
+        if (objective != null) {
+            quest.addObjective(objective)
+            quest.save(plugin)
+            sender.sendMessage(translate("&aAdded new objective " + objective.name + " to " + quest.name + "."))
+        }
     }
 
     @Subcommand("setrestart")

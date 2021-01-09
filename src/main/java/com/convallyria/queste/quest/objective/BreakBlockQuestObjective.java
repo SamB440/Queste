@@ -12,7 +12,7 @@ public final class BreakBlockQuestObjective extends QuestObjective {
     private Material blockType;
 
     public BreakBlockQuestObjective(Queste plugin, Quest quest) {
-        super(plugin, QuestObjectiveEnum.BREAK_BLOCK, quest);
+        super(plugin, quest);
     }
 
     @EventHandler
@@ -31,5 +31,10 @@ public final class BreakBlockQuestObjective extends QuestObjective {
 
     public void setBlockType(Material blockType) {
         this.blockType = blockType;
+    }
+
+    @Override
+    public String getName() {
+        return "Break Block";
     }
 }

@@ -12,7 +12,7 @@ public final class PlaceBlockQuestObjective extends QuestObjective {
     private Material blockType;
 
     public PlaceBlockQuestObjective(Queste plugin, Quest quest) {
-        super(plugin, QuestObjectiveEnum.PLACE_BLOCK, quest);
+        super(plugin, quest);
     }
 
     @EventHandler
@@ -31,5 +31,10 @@ public final class PlaceBlockQuestObjective extends QuestObjective {
 
     public void setBlockType(Material blockType) {
         this.blockType = blockType;
+    }
+
+    @Override
+    public String getName() {
+        return "Place Block";
     }
 }

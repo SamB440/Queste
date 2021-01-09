@@ -14,7 +14,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.lang.reflect.Constructor;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -25,16 +24,14 @@ public abstract class QuestObjective implements Listener {
     private transient Queste plugin;
 
     private final String questName;
-    private final QuestObjectiveEnum type;
     private int completionAmount;
     private final Map<UUID, Integer> progress;
     private int storyModeKey;
     private String displayName;
 
-    public QuestObjective(Queste plugin, @NotNull QuestObjectiveEnum type, Quest quest) {
+    public QuestObjective(Queste plugin,Quest quest) {
         this.plugin = plugin;
         this.questName = quest.getName();
-        this.type = type;
         this.completionAmount = 10;
         this.progress = new ConcurrentHashMap<>();
         this.storyModeKey = 0; // Auto set it as first - maybe change this in the future to set it as last compared to other objectives.
@@ -55,11 +52,6 @@ public abstract class QuestObjective implements Listener {
     @Nullable
     public Quest getQuest() {
         return getPlugin().getManagers().getQuesteCache().getQuest(getQuestName());
-    }
-
-    @NotNull
-    public QuestObjectiveEnum getType() {
-        return type;
     }
 
     public int getCompletionAmount() {
@@ -86,7 +78,7 @@ public abstract class QuestObjective implements Listener {
                                 && quest.isStoryMode()
                                 && this.getStoryModeKey() > otherObjective.getStoryModeKey()) {
                             if (plugin.debug()) {
-                                player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.RED + "You cannot complete the objective " + type.getName() + " yet."));
+                                player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.RED + "You cannot complete the objective " + getName() + " yet."));
                             }
                             future.complete(false);
                             return;
@@ -104,7 +96,7 @@ public abstract class QuestObjective implements Listener {
                                     quest.getObjectives().size(),
                                     this.getStoryModeKey() + 2,
                                     quest.getObjectives().size(),
-                                    currentObjective.getType().getName());
+                                    getName());
                             player.playSound(player.getLocation(), Sound.UI_TOAST_IN, 1f, 1f);
                         }
                         quest.tryComplete(player); // Attempt completion of quest
@@ -135,7 +127,7 @@ public abstract class QuestObjective implements Listener {
     }
 
     public String getDisplayName() {
-        if (displayName == null) displayName = type.getName();
+        if (displayName == null) displayName = getName();
         return displayName;
     }
 
@@ -143,58 +135,9 @@ public abstract class QuestObjective implements Listener {
         this.displayName = displayName;
     }
 
-    public enum QuestObjectiveEnum {
-        PLACE_BLOCK(PlaceBlockQuestObjective.class, "Place Block"),
-        BREAK_BLOCK(BreakBlockQuestObjective.class, "Break Block"),
-        DISCOVER_REGION(DiscoverRegionQuestObjective.class, "Discover Region", "RPGRegions"),
-        BREED(BreedQuestObjective.class, "Breed Animals"),
-        SHEAR_SHEEP(ShearSheepQuestObjective.class, "Shear Sheep"),
-        FISH(FishQuestObjective.class, "Fish"),
-        ENCHANT(EnchantQuestObjective.class, "Enchant Item"),
-        KILL_ENTITY(KillEntityQuestObjective.class, "Kill Entity"),
-        LEVEL(LevelQuestObjective.class, "Level Up"),
-        FILL_BUCKET(BucketFillObjective.class, "Fill Bucket"),
-        INTERACT_ENTITY(InteractEntityObjective.class, "Interact With Entity");
+    public abstract String getName();
 
-        private final Class<? extends QuestObjective> clazz;
-        private final String name;
-        private final String pluginName;
-
-        QuestObjectiveEnum(Class<? extends QuestObjective> clazz, String name) {
-            this.clazz = clazz;
-            this.name = name;
-            this.pluginName = null;
-        }
-
-        QuestObjectiveEnum(Class<? extends QuestObjective> clazz, String name, String pluginName) {
-            this.clazz = clazz;
-            this.name = name;
-            this.pluginName = pluginName;
-        }
-
-        @Nullable
-        public QuestObjective getNewObjective(Queste plugin, Quest quest) {
-            if (getPluginRequirement() != null) {
-                if (Bukkit.getPluginManager().getPlugin(getPluginRequirement()) == null) {
-                    return null;
-                }
-            }
-
-            try {
-                Constructor<?> constructor = clazz.getConstructor(Queste.class, Quest.class);
-                return (QuestObjective) constructor.newInstance(plugin, quest);
-            } catch (ReflectiveOperationException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public String getPluginRequirement() {
-            return pluginName;
-        }
+    public String getPluginRequirement() {
+        return null;
     }
 }

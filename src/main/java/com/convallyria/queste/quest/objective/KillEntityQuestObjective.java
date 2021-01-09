@@ -10,7 +10,7 @@ import org.bukkit.event.entity.EntityDeathEvent;
 public final class KillEntityQuestObjective extends QuestObjective {
 
     public KillEntityQuestObjective(Queste plugin, Quest quest) {
-        super(plugin, QuestObjectiveEnum.KILL_ENTITY, quest);
+        super(plugin, quest);
     }
 
     @EventHandler
@@ -21,5 +21,10 @@ public final class KillEntityQuestObjective extends QuestObjective {
             if (this.hasCompleted(player)) return;
             this.increment(player);
         }
+    }
+
+    @Override
+    public String getName() {
+        return "Kill Entity";
     }
 }

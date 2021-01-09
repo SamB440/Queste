@@ -12,7 +12,7 @@ import org.bukkit.event.player.PlayerFishEvent;
 public final class FishQuestObjective extends QuestObjective {
 
     public FishQuestObjective(Queste plugin, Quest quest) {
-        super(plugin, QuestObjectiveEnum.FISH, quest);
+        super(plugin, quest);
     }
 
     @EventHandler
@@ -21,12 +21,16 @@ public final class FishQuestObjective extends QuestObjective {
         if (this.hasCompleted(player)) return;
         if (event.getCaught() != null && event.getCaught() instanceof Item) {
             this.increment(player).thenAccept(incremented -> {
-                System.out.println("incremented? " + incremented);
                 if (incremented) {
                     FishHook hook = event.getHook();
                     hook.getWorld().playEffect(hook.getLocation(), Effect.VILLAGER_PLANT_GROW, 0);
                 }
             });
         }
+    }
+
+    @Override
+    public String getName() {
+        return "Fish";
     }
 }

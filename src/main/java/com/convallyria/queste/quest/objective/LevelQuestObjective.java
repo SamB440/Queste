@@ -11,7 +11,7 @@ public final class LevelQuestObjective extends QuestObjective {
     private int level;
 
     public LevelQuestObjective(Queste plugin, Quest quest) {
-        super(plugin, QuestObjectiveEnum.LEVEL, quest);
+        super(plugin, quest);
         this.level = 1;
     }
 
@@ -24,11 +24,16 @@ public final class LevelQuestObjective extends QuestObjective {
     }
 
     @EventHandler
-    public void onFish(PlayerLevelChangeEvent event) {
+    public void onLevelChange(PlayerLevelChangeEvent event) {
         Player player = event.getPlayer();
         if (this.hasCompleted(player)) return;
         if (event.getNewLevel() >= level) {
             this.increment(player);
         }
+    }
+
+    @Override
+    public String getName() {
+        return "Level Up";
     }
 }

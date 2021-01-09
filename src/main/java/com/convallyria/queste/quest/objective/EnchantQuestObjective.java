@@ -9,7 +9,7 @@ import org.bukkit.event.enchantment.EnchantItemEvent;
 public final class EnchantQuestObjective extends QuestObjective {
 
     public EnchantQuestObjective(Queste plugin, Quest quest) {
-        super(plugin, QuestObjectiveEnum.ENCHANT, quest);
+        super(plugin, quest);
     }
 
     @EventHandler
@@ -17,5 +17,10 @@ public final class EnchantQuestObjective extends QuestObjective {
         Player player = event.getEnchanter();
         if (this.hasCompleted(player)) return;
         this.increment(player);
+    }
+
+    @Override
+    public String getName() {
+        return "Enchant Item";
     }
 }

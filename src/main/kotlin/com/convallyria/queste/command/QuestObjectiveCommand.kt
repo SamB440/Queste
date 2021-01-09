@@ -15,6 +15,9 @@ import org.bukkit.ChatColor
 import org.bukkit.Location
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
+import org.bukkit.event.HandlerList
+import org.bukkit.event.Listener
+import java.util.*
 
 @CommandAlias("questobjective")
 class QuestObjectiveCommand(private val plugin: Queste) : BaseCommand(), IQuesteCommand {
@@ -33,65 +36,74 @@ class QuestObjectiveCommand(private val plugin: Queste) : BaseCommand(), IQueste
         sender.sendMessage(translate("" + primaryColour
                 + "List of all available objectives (" + secondaryColour + "name" + primaryColour + ", "
                 + pluginColour + "plugin" + primaryColour + "): "))
-        for (objective in QuestObjective.QuestObjectiveEnum.values()) {
-            val pluginRequirement =
-                if (objective.pluginRequirement != null) "" + pluginColour + " (" + objective.pluginRequirement + ")"
-                else ""
-            sender.sendMessage(translate(" " + secondaryColour + "- " + objective.getName() + pluginRequirement))
+        val testQuest = Quest(UUID.randomUUID().toString())
+        for (objectiveName in plugin.managers.objectiveRegistry.objectives.keys) {
+            val objective = plugin.managers.objectiveRegistry.getNewObjective(objectiveName, plugin, testQuest)
+            if (objective != null) {
+                HandlerList.unregisterAll(objective)
+                val pluginRequirement =
+                    if (objective.pluginRequirement != null) "" + pluginColour + " (" + objective.pluginRequirement + ")"
+                    else ""
+                sender.sendMessage(translate(" " + secondaryColour + "- " + objective.name + pluginRequirement))
+            }
         }
     }
 
     @Subcommand("setdisplayname")
     @CommandCompletion("@objectives @quests")
-    fun onSetDisplayName(player: Player, objective: QuestObjective.QuestObjectiveEnum, quest: Quest, displayName: String) {
-        if (testGui(player, quest, objective, true, "setDisplayName", String::class.java, displayName)) {
+    fun onSetDisplayName(player: Player, objectiveName: String, quest: Quest, displayName: String) {
+        if (testGui(player, quest, objectiveName, true, "setDisplayName", String::class.java, displayName)) {
             return
         }
 
         quest.objectives.forEach { questObjective ->
-            if (questObjective.type == objective) {
-                if (questObjective is RegionObjective) {
-                    questObjective.displayName = displayName
-                    quest.save(plugin)
-                    player.sendMessage(translate("&aSet objective " + objective.getName() + " display name to " + questObjective.displayName + "."))
-                }
+            if (questObjective.javaClass.simpleName == objectiveName) {
+                questObjective.displayName = displayName
+                quest.save(plugin)
+                player.sendMessage(translate("&aSet objective " + questObjective.name + " display name to " + questObjective.displayName + "."))
             }
         }
     }
 
     @Subcommand("setregion")
     @CommandCompletion("@objectives @quests @nothing")
-    fun onSetRegion(player: Player, objective: QuestObjective.QuestObjectiveEnum, quest: Quest, region: String) {
+    fun onSetRegion(player: Player, objectiveName: String, quest: Quest, region: String) {
+        val testQuest = Quest(UUID.randomUUID().toString())
+        val objective = plugin.managers.objectiveRegistry.getNewObjective(objectiveName, plugin, testQuest) ?: return
+        HandlerList.unregisterAll(objective)
         if (objective.pluginRequirement != null && objective.pluginRequirement == "RPGRegions") {
-            if (testGui(player, quest, objective, false, "setRegion", String::class.java, region)) {
+            if (testGui(player, quest, objectiveName, false, "setRegion", String::class.java, region)) {
                 return
             }
 
             quest.objectives.forEach { questObjective ->
-                if (questObjective.type == objective) {
+                if (questObjective.javaClass.simpleName == objectiveName) {
                     if (questObjective is RegionObjective) {
                         questObjective.region = region
                         quest.save(plugin)
-                        player.sendMessage(translate("&aSet objective " + objective.getName() + " region to " + questObjective.region + "."))
+                        player.sendMessage(translate("&aSet objective " + objective.name + " region to " + questObjective.region + "."))
                     }
                 }
             }
         } else {
-            player.sendMessage(translate("&cObjective type " + objective.getName() + " does not support RPGRegions."))
+            player.sendMessage(translate("&cObjective type " + objective.name + " does not support RPGRegions."))
         }
     }
 
     @Subcommand("setlocation")
     @CommandCompletion("@objectives @quests")
-    fun onSetLocation(player: Player, objective: QuestObjective.QuestObjectiveEnum, quest: Quest, where: String) {
-        if (objective.pluginRequirement != null && objective.getNewObjective(plugin, quest) is LocationObjective) {
+    fun onSetLocation(player: Player, objectiveName: String, quest: Quest, where: String) {
+        val testQuest = Quest(UUID.randomUUID().toString())
+        val objective = plugin.managers.objectiveRegistry.getNewObjective(objectiveName, plugin, testQuest) ?: return
+        HandlerList.unregisterAll(objective)
+        if (objective.pluginRequirement != null && objective is LocationObjective) {
             val location = if (where == "TARGET") player.getTargetBlockExact(6)?.location else player.location
-            if (testGui(player, quest, objective, false, "setLocation", Location::class.java, location)) {
+            if (testGui(player, quest, objectiveName, false, "setLocation", Location::class.java, location)) {
                 return
             }
 
             quest.objectives.forEach { questObjective ->
-                if (questObjective.type == objective) {
+                if (questObjective.javaClass.simpleName == objectiveName) {
                     if (questObjective is LocationObjective) {
                         questObjective.location = location
                         quest.save(plugin)
@@ -106,51 +118,52 @@ class QuestObjectiveCommand(private val plugin: Queste) : BaseCommand(), IQueste
 
     @Subcommand("setcompletion")
     @CommandCompletion("@objectives @quests @range:20")
-    fun onSetCompletion(player: Player, objective: QuestObjective.QuestObjectiveEnum, quest: Quest, completion: Int) {
-        if (testGui(player, quest, objective, true, "setCompletionAmount", Int::class.java, completion)) {
+    fun onSetCompletion(player: Player, objectiveName: String, quest: Quest, completion: Int) {
+        if (testGui(player, quest, objectiveName, true, "setCompletionAmount", Int::class.java, completion)) {
             return
         }
 
         for (questObjective in quest.objectives) {
-            if (objective == questObjective.type) {
+            if (questObjective.javaClass.simpleName == objectiveName) {
                 questObjective.completionAmount = completion
                 quest.save(plugin)
-                player.sendMessage(translate("&aSet objective &6" + questObjective.type.getName() + "&a completion requirement to &6" + completion + "&a."))
+                player.sendMessage(translate("&aSet objective &6" + questObjective.name + "&a completion requirement to &6" + completion + "&a."))
                 return
             }
         }
-        player.sendMessage(translate("&cThe quest " + quest.name + " does not have the objective &6" + objective.getName() + "."))
+        player.sendMessage(translate("&cThe quest " + quest.name + " does not have the objective &6" + objectiveName + "."))
     }
 
     @Subcommand("setstorykey")
     @CommandCompletion("@objectives @quests @range:20")
-    fun onSetStoryKey(player: Player, objective: QuestObjective.QuestObjectiveEnum, quest: Quest, storyKey: Int) {
+    fun onSetStoryKey(player: Player, objectiveName: String, quest: Quest, storyKey: Int) {
         if (!quest.isStoryMode) {
             player.sendMessage(translate("&cThat quest does not have storyMode set to &6true&c."))
             return
         }
 
-        if (testGui(player, quest, objective, true, "setStoryModeKey", Int::class.java, storyKey)) {
+        if (testGui(player, quest, objectiveName, true, "setStoryModeKey", Int::class.java, storyKey)) {
             return
         }
 
         for (questObjective in quest.objectives) {
-            if (objective == questObjective.type) {
+            if (questObjective.javaClass.simpleName == objectiveName) {
                 questObjective.storyModeKey = storyKey
                 quest.save(plugin)
-                player.sendMessage(translate("&aSet objective &6" + questObjective.type.getName() + "&a story key to &6" + storyKey + "&a."))
+                player.sendMessage(translate("&aSet objective &6" + questObjective.name + "&a story key to &6" + storyKey + "&a."))
                 break
             }
         }
     }
 
-    private fun testGui(player: Player, quest: Quest, objective: QuestObjective.QuestObjectiveEnum,
+    private fun testGui(player: Player, quest: Quest, objectiveName: String,
                         superclass: Boolean, method: String, methodData: Class<*>, vararg data: Any?): Boolean {
-        if (quest.getObjectivesFromType(objective).size > 1) {
-            val clazz = objective.getNewObjective(plugin, quest)
+        val type = plugin.managers.objectiveRegistry.objectives[objectiveName]
+        if (quest.getObjectivesFromType(type).size > 1) {
+            val clazz = plugin.managers.objectiveRegistry.getNewObjective(type, plugin, quest)
             if (clazz != null) {
                 val methodClazz = if (superclass) clazz::class.java.superclass else clazz::class.java
-                val gui = ObjectiveSelectGUI(plugin, player, quest, objective, methodClazz.getDeclaredMethod(method, methodData), *data)
+                val gui = ObjectiveSelectGUI(plugin, player, quest, type, methodClazz.getDeclaredMethod(method, methodData), *data)
                 gui.open()
                 player.sendMessage(translate("&aOpened a GUI for selection because multiple objectives of this type exist."))
                 return true

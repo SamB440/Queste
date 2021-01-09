@@ -23,7 +23,7 @@ public class ObjectiveSelectGUI extends QuesteGUI {
 
     private final ChestGui gui;
 
-    public ObjectiveSelectGUI(Queste plugin, Player player, Quest quest, QuestObjective.QuestObjectiveEnum type, Method method, Object... data) {
+    public ObjectiveSelectGUI(Queste plugin, Player player, Quest quest, Class<? extends QuestObjective> type, Method method, Object... data) {
         super(plugin, player);
         this.gui = new ChestGui(6, quest.getDisplayName());
         gui.setOnGlobalClick(click -> click.setCancelled(true));

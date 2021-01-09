@@ -13,7 +13,7 @@ public final class InteractEntityObjective extends QuestObjective {
     private EntityType entityType;
 
     public InteractEntityObjective(Queste plugin, Quest quest) {
-        super(plugin, QuestObjectiveEnum.INTERACT_ENTITY, quest);
+        super(plugin, quest);
     }
 
     @EventHandler
@@ -33,5 +33,10 @@ public final class InteractEntityObjective extends QuestObjective {
 
     public void setEntityType(EntityType entityType) {
         this.entityType = entityType;
+    }
+
+    @Override
+    public String getName() {
+        return "Interact With Entity";
     }
 }

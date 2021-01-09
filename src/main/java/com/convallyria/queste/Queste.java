@@ -14,7 +14,18 @@ import com.convallyria.queste.gson.QuestAdapter;
 import com.convallyria.queste.listener.PlayerQuitListener;
 import com.convallyria.queste.managers.QuesteManagers;
 import com.convallyria.queste.quest.Quest;
-import com.convallyria.queste.quest.objective.QuestObjective;
+import com.convallyria.queste.quest.objective.BreakBlockQuestObjective;
+import com.convallyria.queste.quest.objective.BreedQuestObjective;
+import com.convallyria.queste.quest.objective.BucketFillObjective;
+import com.convallyria.queste.quest.objective.DiscoverRegionQuestObjective;
+import com.convallyria.queste.quest.objective.EnchantQuestObjective;
+import com.convallyria.queste.quest.objective.FishQuestObjective;
+import com.convallyria.queste.quest.objective.InteractEntityObjective;
+import com.convallyria.queste.quest.objective.KillEntityQuestObjective;
+import com.convallyria.queste.quest.objective.LevelQuestObjective;
+import com.convallyria.queste.quest.objective.PlaceBlockQuestObjective;
+import com.convallyria.queste.quest.objective.QuestObjectiveRegistry;
+import com.convallyria.queste.quest.objective.ShearSheepQuestObjective;
 import com.convallyria.queste.quest.reward.QuestReward;
 import com.convallyria.queste.translation.Translations;
 import com.google.common.collect.ImmutableList;
@@ -66,6 +77,7 @@ public final class Queste extends JavaPlugin implements QuesteAPI, LanguagyPlugi
         this.createConfig();
         this.generateLang();
         this.managers = new QuesteManagers(this);
+        this.registerObjectives();
         try {
             this.hook(this);
             this.registerCommands();
@@ -138,21 +150,9 @@ public final class Queste extends JavaPlugin implements QuesteAPI, LanguagyPlugi
     private void registerCommandCompletions(PaperCommandManager manager) {
         CommandCompletions<BukkitCommandCompletionContext> commandCompletions = manager.getCommandCompletions();
         // Quests
-        commandCompletions.registerAsyncCompletion("quests", context -> new ArrayList<>(managers.getQuesteCache().getQuests().keySet()));
+        commandCompletions.registerAsyncCompletion("quests", context -> managers.getQuesteCache().getQuests().keySet());
         // Objectives
-        commandCompletions.registerAsyncCompletion("objectives", context -> {
-            List<String> objectives = new ArrayList<>();
-            for (QuestObjective.QuestObjectiveEnum objective : QuestObjective.QuestObjectiveEnum.values()) {
-                if (objective.getPluginRequirement() != null) {
-                    if (Bukkit.getPluginManager().getPlugin(objective.getPluginRequirement()) == null) { // Filter out plugin-specific objectives that are not enabled
-                        continue;
-                    }
-                }
-
-                objectives.add(objective.toString());
-            }
-            return objectives;
-        });
+        commandCompletions.registerAsyncCompletion("objectives", context -> managers.getObjectiveRegistry().getObjectives().keySet());
         // Rewards
         commandCompletions.registerAsyncCompletion("rewards", context -> {
             List<String> rewards = new ArrayList<>();
@@ -170,6 +170,21 @@ public final class Queste extends JavaPlugin implements QuesteAPI, LanguagyPlugi
     private void registerListeners() {
         PluginManager pm = Bukkit.getPluginManager();
         pm.registerEvents(new PlayerQuitListener(this), this);
+    }
+
+    private void registerObjectives() {
+        QuestObjectiveRegistry registry = managers.getObjectiveRegistry();
+        registry.registerObjective(ShearSheepQuestObjective.class);
+        registry.registerObjective(BreakBlockQuestObjective.class);
+        registry.registerObjective(BreedQuestObjective.class);
+        registry.registerObjective(BucketFillObjective.class);
+        registry.registerObjective(DiscoverRegionQuestObjective.class);
+        registry.registerObjective(EnchantQuestObjective.class);
+        registry.registerObjective(FishQuestObjective.class);
+        registry.registerObjective(InteractEntityObjective.class);
+        registry.registerObjective(KillEntityQuestObjective.class);
+        registry.registerObjective(LevelQuestObjective.class);
+        registry.registerObjective(PlaceBlockQuestObjective.class);
     }
 
     public Gson getGson() {
