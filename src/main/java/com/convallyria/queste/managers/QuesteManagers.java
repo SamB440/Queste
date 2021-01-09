@@ -38,6 +38,12 @@ public class QuesteManagers {
                 Reader reader = new FileReader(file);
                 Quest quest = plugin.getGson().fromJson(reader, Quest.class);
                 quest.getObjectives().forEach(questObjective -> {
+                    if (Bukkit.getPluginManager().getPlugin(questObjective.getPluginRequirement()) == null) {
+                        plugin.getLogger().warning("Objective " + questObjective.getName() + " requires plugin "
+                                + questObjective.getPluginRequirement()
+                                + " which is not loaded. Objective will be skipped for event registration.");
+                        return;
+                    }
                     Bukkit.getPluginManager().registerEvents(questObjective, plugin);
                 });
                 if (plugin.debug()) {

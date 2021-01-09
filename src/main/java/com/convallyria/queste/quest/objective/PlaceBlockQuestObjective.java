@@ -15,7 +15,7 @@ public final class PlaceBlockQuestObjective extends QuestObjective {
         super(plugin, quest);
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onPlace(BlockPlaceEvent event) {
         Player player = event.getPlayer();
         if (this.hasCompleted(player)) return;

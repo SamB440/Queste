@@ -15,7 +15,7 @@ public final class BreakBlockQuestObjective extends QuestObjective {
         super(plugin, quest);
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onBreak(BlockBreakEvent event) {
         Player player = event.getPlayer();
         if (this.hasCompleted(player)) return;

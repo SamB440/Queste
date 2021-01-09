@@ -1,7 +1,8 @@
-package com.convallyria.queste.quest.objective;
+package com.convallyria.queste.quest.objective.rpgregions;
 
 import com.convallyria.queste.Queste;
 import com.convallyria.queste.quest.Quest;
+import com.convallyria.queste.quest.objective.RegionObjective;
 import net.islandearth.rpgregions.api.events.RegionDiscoverEvent;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

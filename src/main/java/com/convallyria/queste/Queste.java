@@ -17,7 +17,6 @@ import com.convallyria.queste.quest.Quest;
 import com.convallyria.queste.quest.objective.BreakBlockQuestObjective;
 import com.convallyria.queste.quest.objective.BreedQuestObjective;
 import com.convallyria.queste.quest.objective.BucketFillObjective;
-import com.convallyria.queste.quest.objective.DiscoverRegionQuestObjective;
 import com.convallyria.queste.quest.objective.EnchantQuestObjective;
 import com.convallyria.queste.quest.objective.FishQuestObjective;
 import com.convallyria.queste.quest.objective.InteractEntityObjective;
@@ -26,6 +25,11 @@ import com.convallyria.queste.quest.objective.LevelQuestObjective;
 import com.convallyria.queste.quest.objective.PlaceBlockQuestObjective;
 import com.convallyria.queste.quest.objective.QuestObjectiveRegistry;
 import com.convallyria.queste.quest.objective.ShearSheepQuestObjective;
+import com.convallyria.queste.quest.objective.citizens.CitizenInteractQuestObjective;
+import com.convallyria.queste.quest.objective.dungeonsxl.FinishDungeonFloorQuestObjective;
+import com.convallyria.queste.quest.objective.dungeonsxl.FinishDungeonQuestObjective;
+import com.convallyria.queste.quest.objective.dungeonsxl.KillDungeonMobQuestObjective;
+import com.convallyria.queste.quest.objective.rpgregions.DiscoverRegionQuestObjective;
 import com.convallyria.queste.quest.reward.QuestReward;
 import com.convallyria.queste.translation.Translations;
 import com.google.common.collect.ImmutableList;
@@ -35,6 +39,7 @@ import net.islandearth.languagy.api.language.Language;
 import net.islandearth.languagy.api.language.LanguagyImplementation;
 import net.islandearth.languagy.api.language.LanguagyPluginHook;
 import net.islandearth.languagy.api.language.Translator;
+import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -82,6 +87,7 @@ public final class Queste extends JavaPlugin implements QuesteAPI, LanguagyPlugi
             this.hook(this);
             this.registerCommands();
             this.registerListeners();
+            new Metrics(this, 9954);
         } catch (Exception e) { // MockBukkit support. Throws an exception stating commands are unsupported.
             plugin.getLogger().log(Level.WARNING, "Unable to initialise listeners/commands", e);
         }
@@ -185,6 +191,10 @@ public final class Queste extends JavaPlugin implements QuesteAPI, LanguagyPlugi
         registry.registerObjective(KillEntityQuestObjective.class);
         registry.registerObjective(LevelQuestObjective.class);
         registry.registerObjective(PlaceBlockQuestObjective.class);
+        registry.registerObjective(CitizenInteractQuestObjective.class);
+        registry.registerObjective(FinishDungeonFloorQuestObjective.class);
+        registry.registerObjective(FinishDungeonQuestObjective.class);
+        registry.registerObjective(KillDungeonMobQuestObjective.class);
     }
 
     public Gson getGson() {

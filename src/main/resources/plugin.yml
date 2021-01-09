@@ -2,7 +2,7 @@ name: Queste
 version: @version@
 main: com.convallyria.queste.Queste
 api-version: 1.16
-softdepend: [Languagy, RPGRegions]
+softdepend: [Languagy, RPGRegions, Citizens]
 authors: [SamB440]
 description: A river of adventure in a land of quests
 website: https://fortitude.islandearth.net

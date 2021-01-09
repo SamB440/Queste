@@ -12,6 +12,7 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
+import org.bukkit.Sound;
 
 import java.lang.reflect.Type;
 
@@ -38,6 +39,7 @@ public class QuestAdapter implements JsonSerializer<Quest>, JsonDeserializer<Que
         });
         result.add("rewards", rewards);
         result.add("storyMode", new JsonPrimitive(quest.isStoryMode()));
+        result.add("completeSound", new JsonPrimitive(quest.getCompleteSound().toString()));
         return result;
     }
 
@@ -67,6 +69,11 @@ public class QuestAdapter implements JsonSerializer<Quest>, JsonDeserializer<Que
         if (jsonObject.get("storyMode") != null) {
             boolean storyMode = jsonObject.get("storyMode").getAsBoolean();
             quest.setStoryMode(storyMode);
+        }
+
+        if (jsonObject.get("completeSound") != null) {
+            Sound sound = Sound.valueOf(jsonObject.get("completeSound").getAsString());
+            quest.setCompleteSound(sound);
         }
         return quest;
     }

@@ -41,6 +41,7 @@ repositories {
         url = 'http://repo.extendedclip.com/content/repositories/placeholderapi/'
     }
 
+    maven { url 'http://erethon.de/repo' }
     maven { url 'https://dl.bintray.com/kotlin/kotlin-eap' }
     maven { url 'https://repo.citizensnpcs.co/' }
     flatDir { dir 'libraries' }
@@ -55,9 +56,8 @@ dependencies {
     implementation 'co.aikar:acf-paper:0.5.0-SNAPSHOT' // commands
     implementation 'co.aikar:idb-core:1.0.0-SNAPSHOT' // database
     implementation 'com.zaxxer:HikariCP:2.4.1' // database
-    implementation 'org.apache.commons:commons-lang3:3.6' // apache commons (included as it has changed in versions)
     implementation 'com.github.stefvanschie.inventoryframework:IF:0.9.1' // inventory framework
-    implementation 'org.bstats:bstats-bukkit:1.7' // plugin stats
+    implementation 'org.bstats:bstats-bukkit:1.8' // plugin stats
     implementation 'io.papermc:paperlib:1.0.4' // paperlib - async teleport on Paper
     implementation 'com.github.WesJD.AnvilGUI:anvilgui:master-SNAPSHOT' // anvilgui
     implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
@@ -67,6 +67,7 @@ dependencies {
     compileOnly 'me.clip:placeholderapi:2.10.4' // PAPI
     compileOnly 'com.github.MilkBowl:VaultAPI:1.7' // vault
     compileOnly 'net.citizensnpcs:citizens:2.0.27-SNAPSHOT'
+    compileOnly 'de.erethon.dungeonsxl:dungeonsxl-api:0.18-SNAPSHOT'
     compileOnly name: 'RPGRegions-api-1.2.8'
 }
 
