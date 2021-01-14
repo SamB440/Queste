@@ -8,7 +8,7 @@ public abstract class QuesteGUI {
     private final Queste plugin;
     private final Player player;
 
-    public QuesteGUI(Queste plugin, Player player) {
+    protected QuesteGUI(Queste plugin, Player player) {
         this.plugin = plugin;
         this.player = player;
     }

@@ -29,13 +29,14 @@ public abstract class QuestObjective implements Listener {
     private int storyModeKey;
     private String displayName;
 
-    public QuestObjective(Queste plugin, Quest quest) {
+    protected QuestObjective(Queste plugin, Quest quest) {
         this.plugin = plugin;
         this.questName = quest.getName();
         this.completionAmount = 10;
         this.progress = new ConcurrentHashMap<>();
         this.storyModeKey = 0; // Auto set it as first - maybe change this in the future to set it as last compared to other objectives.
-        if (Bukkit.getPluginManager().getPlugin(getPluginRequirement()) == null) {
+        if (getPluginRequirement() != null
+                && Bukkit.getPluginManager().getPlugin(getPluginRequirement()) == null) {
             plugin.getLogger().warning("Objective " + getName() + " requires plugin "
                     + getPluginRequirement()
                     + " which is not loaded. Objective will be skipped for event registration.");
@@ -110,6 +111,7 @@ public abstract class QuestObjective implements Listener {
                     }
                 }
             });
+
         }).exceptionally(err -> {
             err.printStackTrace();
             return null;
@@ -144,6 +146,7 @@ public abstract class QuestObjective implements Listener {
 
     public abstract String getName();
 
+    @Nullable
     public String getPluginRequirement() {
         return null;
     }

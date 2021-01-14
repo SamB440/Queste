@@ -1,5 +1,6 @@
 package com.convallyria.queste.quest.reward;
 
+import com.convallyria.queste.Queste;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -9,7 +10,13 @@ public final class MoneyReward extends QuestReward {
 
     private final int amount;
 
-    public MoneyReward(int amount) {
+    public MoneyReward(Queste plugin) {
+        super(plugin);
+        this.amount = 1;
+    }
+
+    public MoneyReward(Queste plugin, int amount) {
+        super(plugin);
         this.amount = amount;
     }
 

@@ -7,7 +7,7 @@ public abstract class RegionObjective extends QuestObjective {
 
     private String region;
 
-    public RegionObjective(Queste plugin, Quest quest) {
+    protected RegionObjective(Queste plugin, Quest quest) {
         super(plugin, quest);
     }
 

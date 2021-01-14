@@ -8,7 +8,7 @@ public abstract class LocationObjective extends QuestObjective {
 
     private Location location;
 
-    public LocationObjective(Queste plugin, Quest quest) {
+    protected LocationObjective(Queste plugin, Quest quest) {
         super(plugin, quest);
     }
 

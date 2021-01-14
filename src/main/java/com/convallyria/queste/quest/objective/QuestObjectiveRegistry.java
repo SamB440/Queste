@@ -40,10 +40,9 @@ public final class QuestObjectiveRegistry {
         try {
             Constructor<?> constructor = clazz.getConstructor(Queste.class, Quest.class);
             QuestObjective objective = (QuestObjective) constructor.newInstance(plugin, quest);
-            if (objective.getPluginRequirement() != null) {
-                if (Bukkit.getPluginManager().getPlugin(objective.getPluginRequirement()) == null) {
-                    return null;
-                }
+            if (objective.getPluginRequirement() != null
+            && Bukkit.getPluginManager().getPlugin(objective.getPluginRequirement()) == null) {
+                return null;
             }
             return objective;
         } catch (ReflectiveOperationException e) {

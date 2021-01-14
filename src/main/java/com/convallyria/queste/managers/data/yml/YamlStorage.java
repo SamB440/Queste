@@ -9,6 +9,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -70,7 +71,13 @@ public class YamlStorage implements StorageManager {
     @Override
     public void deleteAccount(UUID uuid) {
         File file = new File(plugin.getDataFolder() + "/accounts/" + uuid.toString() + ".yml");
-        file.delete();
+        try {
+            if (!Files.deleteIfExists(file.toPath())) {
+                plugin.getLogger().warning("Could not delete file " + file.toPath().toString() + ".");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         cachedAccounts.remove(uuid);
     }
 

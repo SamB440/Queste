@@ -5,7 +5,6 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import com.google.gson.reflect.TypeToken;
@@ -23,7 +22,7 @@ public class LocationAdapter implements JsonSerializer<Location>, JsonDeserializ
     }
 
     @Override
-    public Location deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext context) throws JsonParseException {
+    public Location deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext context) {
         return Location.deserialize(gson.fromJson(jsonElement, new TypeToken<Map<String, Object>>(){}.getType()));
     }
 

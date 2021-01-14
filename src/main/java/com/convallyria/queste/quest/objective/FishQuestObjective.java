@@ -19,7 +19,7 @@ public final class FishQuestObjective extends QuestObjective {
     public void onFish(PlayerFishEvent event) {
         Player player = event.getPlayer();
         if (this.hasCompleted(player)) return;
-        if (event.getCaught() != null && event.getCaught() instanceof Item) {
+        if (event.getCaught() instanceof Item) {
             this.increment(player).thenAccept(incremented -> {
                 if (incremented) {
                     FishHook hook = event.getHook();

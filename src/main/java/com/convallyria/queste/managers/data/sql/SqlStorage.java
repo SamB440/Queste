@@ -15,55 +15,55 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 public class SqlStorage implements StorageManager {
-	
-	private static final String CREATE_TABLE = "CREATE TABLE IF NOT EXISTS queste_quests (uuid varchar(32) NOT NULL, region varchar(32) NOT NULL, time varchar(64) NOT NULL, PRIMARY KEY(uuid, region))";
-	
-	private ConcurrentMap<UUID, QuesteAccount> cachedAccounts = new ConcurrentHashMap<>();
 
-	private final Queste plugin;
+    private static final String CREATE_TABLE = "CREATE TABLE IF NOT EXISTS queste_quests (uuid varchar(32) NOT NULL, region varchar(32) NOT NULL, time varchar(64) NOT NULL, PRIMARY KEY(uuid, region))";
 
-	public SqlStorage(Queste plugin) {
-		this.plugin = plugin;
+    private ConcurrentMap<UUID, QuesteAccount> cachedAccounts = new ConcurrentHashMap<>();
 
-		DatabaseOptions options = DatabaseOptions.builder().mysql(plugin.getConfig().getString("settings.sql.user"),
-				plugin.getConfig().getString("settings.sql.pass"),
-				plugin.getConfig().getString("settings.sql.db"),
-				plugin.getConfig().getString("settings.sql.host") + ":" + plugin.getConfig().getString("settings.sql.port")).build();
-		Database db = PooledDatabaseOptions.builder().options(options).createHikariDatabase();
-		DB.setGlobalDatabase(db);
-		try {
-			db.executeUpdate(CREATE_TABLE);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-	}
+    private final Queste plugin;
 
-	@Override
-	public CompletableFuture<QuesteAccount> getAccount(UUID uuid) {
-		// Add a check to ensure accounts aren't taking a long time
-		long startTime = System.currentTimeMillis();
-		CompletableFuture<QuesteAccount> future = new CompletableFuture<>();
-		if (cachedAccounts.containsKey(uuid)) {
-			future.complete(cachedAccounts.get(uuid));
-		} else {
+    public SqlStorage(Queste plugin) {
+        this.plugin = plugin;
 
-		}
-		return future;
-	}
+        DatabaseOptions options = DatabaseOptions.builder().mysql(plugin.getConfig().getString("settings.sql.user"),
+                plugin.getConfig().getString("settings.sql.pass"),
+                plugin.getConfig().getString("settings.sql.db"),
+                plugin.getConfig().getString("settings.sql.host") + ":" + plugin.getConfig().getString("settings.sql.port")).build();
+        Database db = PooledDatabaseOptions.builder().options(options).createHikariDatabase();
+        DB.setGlobalDatabase(db);
+        try {
+            db.executeUpdate(CREATE_TABLE);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
-	@Override
-	public ConcurrentMap<UUID, QuesteAccount> getCachedAccounts() {
-		return cachedAccounts;
-	}
-	
-	@Override
-	public void deleteAccount(UUID uuid) {
-		cachedAccounts.remove(uuid);
-	}
-	
-	@Override
-	public void removeCachedAccount(UUID uuid) {
-		QuesteAccount account = cachedAccounts.get(uuid);
+    @Override
+    public CompletableFuture<QuesteAccount> getAccount(UUID uuid) {
+        // Add a check to ensure accounts aren't taking a long time
+        long startTime = System.currentTimeMillis();
+        CompletableFuture<QuesteAccount> future = new CompletableFuture<>();
+        if (cachedAccounts.containsKey(uuid)) {
+            future.complete(cachedAccounts.get(uuid));
+        } else {
 
-	}
+        }
+        return future;
+    }
+
+    @Override
+    public ConcurrentMap<UUID, QuesteAccount> getCachedAccounts() {
+        return cachedAccounts;
+    }
+
+    @Override
+    public void deleteAccount(UUID uuid) {
+        cachedAccounts.remove(uuid);
+    }
+
+    @Override
+    public void removeCachedAccount(UUID uuid) {
+        QuesteAccount account = cachedAccounts.get(uuid);
+
+    }
 }

@@ -4,6 +4,8 @@ import net.md_5.bungee.api.ChatColor;
 
 public final class ColourScheme {
 
+    private ColourScheme() {}
+
     public static ChatColor getPrimaryColour() {
         return ChatColor.of("#009DFF");
     }

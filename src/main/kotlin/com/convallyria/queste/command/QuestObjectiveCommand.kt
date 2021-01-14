@@ -77,12 +77,11 @@ class QuestObjectiveCommand(private val plugin: Queste) : BaseCommand(), IQueste
             }
 
             quest.objectives.forEach { questObjective ->
-                if (questObjective.javaClass.simpleName == objectiveName) {
-                    if (questObjective is RegionObjective) {
-                        questObjective.region = region
-                        quest.save(plugin)
-                        player.sendMessage(translate("&aSet objective " + objective.name + " region to " + questObjective.region + "."))
-                    }
+                if (questObjective.javaClass.simpleName == objectiveName
+                    && questObjective is RegionObjective) {
+                    questObjective.region = region
+                    quest.save(plugin)
+                    player.sendMessage(translate("&aSet objective " + objective.name + " region to " + questObjective.region + "."))
                 }
             }
         } else {
@@ -103,12 +102,11 @@ class QuestObjectiveCommand(private val plugin: Queste) : BaseCommand(), IQueste
             }
 
             quest.objectives.forEach { questObjective ->
-                if (questObjective.javaClass.simpleName == objectiveName) {
-                    if (questObjective is LocationObjective) {
-                        questObjective.location = location
-                        quest.save(plugin)
-                        player.sendMessage(translate("&aSet objective " + objective.getName() + " location to " + questObjective.location.toString() + "."))
-                    }
+                if (questObjective.javaClass.simpleName == objectiveName
+                    && questObjective is LocationObjective) {
+                    questObjective.location = location
+                    quest.save(plugin)
+                    player.sendMessage(translate("&aSet objective " + objective.getName() + " location to " + questObjective.location.toString() + "."))
                 }
             }
         } else {

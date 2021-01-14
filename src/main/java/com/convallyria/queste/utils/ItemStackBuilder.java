@@ -113,12 +113,12 @@ public class ItemStackBuilder {
         }
     }
 
-	/*public ItemStackBuilder withModel(int model) {
+	public ItemStackBuilder withModel(int model) {
         final ItemMeta meta = ITEM_STACK.getItemMeta();
         meta.setCustomModelData(model);
         ITEM_STACK.setItemMeta(meta);
 		return this;
-	}*/
+	}
 
     public ItemStackBuilder withEnchantment(Enchantment enchantment, final int level) {
         ITEM_STACK.addUnsafeEnchantment(enchantment, level);
@@ -137,7 +137,7 @@ public class ItemStackBuilder {
 
     public ItemStackBuilder clearLore() {
         final ItemMeta meta = ITEM_STACK.getItemMeta();
-        meta.setLore(new ArrayList<String>());
+        meta.setLore(new ArrayList<>());
         ITEM_STACK.setItemMeta(meta);
         return this;
     }

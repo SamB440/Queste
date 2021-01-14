@@ -9,27 +9,27 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Optional;
 
 public enum StorageType {
-	FILE(YamlStorage.class),
-	SQL(SqlStorage.class);
+    FILE(YamlStorage.class),
+    SQL(SqlStorage.class);
 
-	private final Class<? extends StorageManager> clazz;
+    private final Class<? extends StorageManager> clazz;
 
-	StorageType(Class<? extends StorageManager> clazz) {
-		this.clazz = clazz;
-	}
+    StorageType(Class<? extends StorageManager> clazz) {
+        this.clazz = clazz;
+    }
 
-	public Optional<StorageManager> get(Queste plugin) {
-		plugin.getLogger().info("Loading StorageManager implementation...");
-		StorageManager generatedClazz = null;
-		try {
-			generatedClazz = clazz.getConstructor(Queste.class).newInstance(plugin);
-			plugin.getLogger().info("Loaded StorageManager implementation " + clazz.getName() + ".");
-		} catch (InstantiationException | InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
-			plugin.getLogger().severe("Unable to load StorageManager (" + clazz.getName() + ")! Plugin will disable.");
-			e.printStackTrace();
-			Bukkit.getPluginManager().disablePlugin(plugin);
-		}
+    public Optional<StorageManager> get(Queste plugin) {
+        plugin.getLogger().info("Loading StorageManager implementation...");
+        StorageManager generatedClazz = null;
+        try {
+            generatedClazz = clazz.getConstructor(Queste.class).newInstance(plugin);
+            plugin.getLogger().info("Loaded StorageManager implementation " + clazz.getName() + ".");
+        } catch (InstantiationException | InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
+            plugin.getLogger().severe("Unable to load StorageManager (" + clazz.getName() + ")! Plugin will disable.");
+            e.printStackTrace();
+            Bukkit.getPluginManager().disablePlugin(plugin);
+        }
 
-		return Optional.ofNullable(generatedClazz);
-	}
+        return Optional.ofNullable(generatedClazz);
+    }
 }

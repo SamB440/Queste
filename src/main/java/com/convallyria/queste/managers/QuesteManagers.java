@@ -6,6 +6,7 @@ import com.convallyria.queste.managers.data.StorageManager;
 import com.convallyria.queste.managers.data.StorageType;
 import com.convallyria.queste.quest.Quest;
 import com.convallyria.queste.quest.objective.QuestObjectiveRegistry;
+import com.convallyria.queste.quest.reward.QuestRewardRegistry;
 import org.bukkit.Bukkit;
 
 import java.io.File;
@@ -18,6 +19,7 @@ public class QuesteManagers {
     private StorageManager storageManager;
     private final QuesteCache questeCache;
     private final QuestObjectiveRegistry objectiveRegistry;
+    private final QuestRewardRegistry rewardRegistry;
 
     public QuesteManagers(Queste plugin) {
         StorageType.valueOf(plugin.getConfig().getString("settings.storage.mode").toUpperCase())
@@ -27,6 +29,7 @@ public class QuesteManagers {
 
         this.questeCache = new QuesteCache(plugin);
         this.objectiveRegistry = new QuestObjectiveRegistry(plugin);
+        this.rewardRegistry = new QuestRewardRegistry(plugin);
 
         File accountsFolder = new File(plugin.getDataFolder() + "/accounts/");
         if (!accountsFolder.exists()) accountsFolder.mkdirs();
@@ -56,6 +59,10 @@ public class QuesteManagers {
         }
     }
 
+    public StorageManager getStorageManager() {
+        return storageManager;
+    }
+
     public QuesteCache getQuesteCache() {
         return questeCache;
     }
@@ -64,7 +71,7 @@ public class QuesteManagers {
         return objectiveRegistry;
     }
 
-    public StorageManager getStorageManager() {
-        return storageManager;
+    public QuestRewardRegistry getRewardRegistry() {
+        return rewardRegistry;
     }
 }

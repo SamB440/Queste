@@ -8,7 +8,7 @@ public abstract class CitizensQuestObjective extends QuestObjective {
 
     private int npcId;
 
-    public CitizensQuestObjective(Queste plugin, Quest quest) {
+    protected CitizensQuestObjective(Queste plugin, Quest quest) {
         super(plugin, quest);
     }
 

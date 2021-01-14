@@ -8,7 +8,6 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
@@ -44,7 +43,7 @@ public class QuestAdapter implements JsonSerializer<Quest>, JsonDeserializer<Que
     }
 
     @Override
-    public Quest deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+    public Quest deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) {
         JsonObject jsonObject = json.getAsJsonObject();
         Quest quest = new Quest(jsonObject.get("name").getAsString());
         quest.setDisplayName(jsonObject.get("displayName").getAsString());

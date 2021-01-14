@@ -30,7 +30,13 @@ import com.convallyria.queste.quest.objective.dungeonsxl.FinishDungeonFloorQuest
 import com.convallyria.queste.quest.objective.dungeonsxl.FinishDungeonQuestObjective;
 import com.convallyria.queste.quest.objective.dungeonsxl.KillDungeonMobQuestObjective;
 import com.convallyria.queste.quest.objective.rpgregions.DiscoverRegionQuestObjective;
-import com.convallyria.queste.quest.reward.QuestReward;
+import com.convallyria.queste.quest.reward.ConsoleCommandReward;
+import com.convallyria.queste.quest.reward.ExperienceReward;
+import com.convallyria.queste.quest.reward.ItemReward;
+import com.convallyria.queste.quest.reward.MessageReward;
+import com.convallyria.queste.quest.reward.MoneyReward;
+import com.convallyria.queste.quest.reward.PlayerCommandReward;
+import com.convallyria.queste.quest.reward.QuestRewardRegistry;
 import com.convallyria.queste.translation.Translations;
 import com.google.common.collect.ImmutableList;
 import com.google.gson.Gson;
@@ -50,8 +56,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.java.JavaPluginLoader;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Level;
 
 public final class Queste extends JavaPlugin implements QuesteAPI, LanguagyPluginHook {
@@ -83,6 +87,7 @@ public final class Queste extends JavaPlugin implements QuesteAPI, LanguagyPlugi
         this.generateLang();
         this.managers = new QuesteManagers(this);
         this.registerObjectives();
+        this.registerRewards();
         try {
             this.hook(this);
             this.registerCommands();
@@ -142,15 +147,6 @@ public final class Queste extends JavaPlugin implements QuesteAPI, LanguagyPlugi
             if (quest != null) return quest;
             throw new InvalidCommandArgument("Could not find a quest with that name.");
         });
-        // QuestReward.class
-        manager.getCommandContexts().registerContext(QuestReward.class, context -> {
-            String name = context.popFirstArg();
-            QuestReward reward = QuestReward.QuestRewardEnum.valueOf(name).getReward();
-            if (reward != null) {
-                return reward;
-            }
-            throw new InvalidCommandArgument("Could not find a reward with that name.");
-        });
     }
 
     private void registerCommandCompletions(PaperCommandManager manager) {
@@ -160,13 +156,7 @@ public final class Queste extends JavaPlugin implements QuesteAPI, LanguagyPlugi
         // Objectives
         commandCompletions.registerAsyncCompletion("objectives", context -> managers.getObjectiveRegistry().getObjectives().keySet());
         // Rewards
-        commandCompletions.registerAsyncCompletion("rewards", context -> {
-            List<String> rewards = new ArrayList<>();
-            for (QuestReward.QuestRewardEnum reward : QuestReward.QuestRewardEnum.values()) {
-                rewards.add(reward.toString());
-            }
-            return rewards;
-        });
+        commandCompletions.registerAsyncCompletion("rewards", context -> managers.getRewardRegistry().getRewards().keySet());
         // Options
         manager.getCommandCompletions().registerAsyncCompletion("options", c -> ImmutableList.of("--force"));
         // Locations
@@ -195,6 +185,16 @@ public final class Queste extends JavaPlugin implements QuesteAPI, LanguagyPlugi
         registry.registerObjective(FinishDungeonFloorQuestObjective.class);
         registry.registerObjective(FinishDungeonQuestObjective.class);
         registry.registerObjective(KillDungeonMobQuestObjective.class);
+    }
+
+    private void registerRewards() {
+        QuestRewardRegistry registry = managers.getRewardRegistry();
+        registry.registerReward(ConsoleCommandReward.class);
+        registry.registerReward(ExperienceReward.class);
+        registry.registerReward(ItemReward.class);
+        registry.registerReward(MessageReward.class);
+        registry.registerReward(MoneyReward.class);
+        registry.registerReward(PlayerCommandReward.class);
     }
 
     public Gson getGson() {

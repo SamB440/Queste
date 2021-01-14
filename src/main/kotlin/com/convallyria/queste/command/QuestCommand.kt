@@ -126,10 +126,13 @@ class QuestCommand(private val plugin: Queste) : BaseCommand(), IQuesteCommand {
 
     @Subcommand("addreward")
     @CommandCompletion("@quests @rewards")
-    fun onAddReward(sender: CommandSender, quest: Quest, reward: QuestReward) {
-        quest.addReward(reward)
-        quest.save(plugin)
-        sender.sendMessage(translate("&aAdded reward &6" + reward.name + "&a to quest &6" + quest.name + "&a."))
+    fun onAddReward(sender: CommandSender, quest: Quest, rewardName: String) {
+        val reward = plugin.managers.rewardRegistry.getNewReward(rewardName, plugin)
+        if (reward != null) {
+            quest.addReward(reward)
+            quest.save(plugin)
+            sender.sendMessage(translate("&aAdded reward &6" + reward.name + "&a to quest &6" + quest.name + "&a."))
+        }
     }
 
     @Subcommand("setdisplayname")

@@ -30,7 +30,7 @@ public class AbstractAdapter<T> implements JsonSerializer<T>, JsonDeserializer<T
     }
 
     @Override
-    public T deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+    public T deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) {
         JsonObject jsonObject = json.getAsJsonObject();
         String type = jsonObject.get("type").getAsString();
         JsonElement element = jsonObject.get("properties");

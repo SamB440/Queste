@@ -1,12 +1,19 @@
 package com.convallyria.queste.quest.reward;
 
+import com.convallyria.queste.Queste;
 import org.bukkit.entity.Player;
 
 public final class PlayerCommandReward extends QuestReward {
 
 	private final String command;
 
-	public PlayerCommandReward(String command) {
+	public PlayerCommandReward(Queste plugin) {
+		super(plugin);
+		this.command = "me executed this command";
+	}
+
+	public PlayerCommandReward(Queste plugin, String command) {
+		super(plugin);
 		this.command = command;
 	}
 
