@@ -3,6 +3,7 @@ package com.convallyria.queste.gson;
 import com.convallyria.queste.quest.Quest;
 import com.convallyria.queste.quest.objective.QuestObjective;
 import com.convallyria.queste.quest.reward.QuestReward;
+import com.convallyria.queste.quest.start.QuestRequirement;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
@@ -37,6 +38,14 @@ public class QuestAdapter implements JsonSerializer<Quest>, JsonDeserializer<Que
             rewards.add(rewardAdapter.serialize(questReward, typeOfSrc, context));
         });
         result.add("rewards", rewards);
+
+        AbstractAdapter<QuestRequirement> requirementAdapter = new AbstractAdapter<>(null);
+        JsonArray requirements = new JsonArray();
+        quest.getRequirements().forEach(questRequirement -> {
+            requirements.add(requirementAdapter.serialize(questRequirement, typeOfSrc, context));
+        });
+        result.add("requirements", requirements);
+
         result.add("storyMode", new JsonPrimitive(quest.isStoryMode()));
         result.add("completeSound", new JsonPrimitive(quest.getCompleteSound().toString()));
         return result;
@@ -62,6 +71,14 @@ public class QuestAdapter implements JsonSerializer<Quest>, JsonDeserializer<Que
         if (rewards != null) {
             rewards.forEach(jsonElement -> {
                 quest.addReward(rewardAdapter.deserialize(jsonElement, typeOfT, context));
+            });
+        }
+
+        AbstractAdapter<QuestRequirement> requirementAdapter = new AbstractAdapter<>(null);
+        JsonArray requirements = jsonObject.getAsJsonArray("requirements");
+        if (requirements != null) {
+            requirements.forEach(jsonElement -> {
+                quest.addRequirement(requirementAdapter.deserialize(jsonElement, typeOfT, context));
             });
         }
 
