@@ -20,6 +20,7 @@ import org.bukkit.event.Listener
 import java.util.*
 
 @CommandAlias("questobjective")
+@CommandPermission("queste.objective|queste.admin")
 class QuestObjectiveCommand(private val plugin: Queste) : BaseCommand(), IQuesteCommand {
 
     @Default

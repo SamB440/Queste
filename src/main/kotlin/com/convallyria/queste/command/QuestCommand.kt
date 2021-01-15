@@ -20,6 +20,7 @@ import java.io.Reader
 import java.lang.Exception
 
 @CommandAlias("quest")
+@CommandPermission("queste.quest|queste.admin")
 class QuestCommand(private val plugin: Queste) : BaseCommand(), IQuesteCommand {
 
     @Default

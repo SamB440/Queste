@@ -2,10 +2,7 @@ package com.convallyria.queste.command
 
 import co.aikar.commands.BaseCommand
 import co.aikar.commands.CommandHelp
-import co.aikar.commands.annotation.CommandAlias
-import co.aikar.commands.annotation.Default
-import co.aikar.commands.annotation.HelpCommand
-import co.aikar.commands.annotation.Subcommand
+import co.aikar.commands.annotation.*
 import com.convallyria.queste.Queste
 import com.convallyria.queste.colour.ColourScheme
 import org.bukkit.ChatColor
@@ -49,6 +46,7 @@ class QuesteCommand(private val plugin: Queste) : BaseCommand(), IQuesteCommand 
     }
 
     @Subcommand("reload")
+    @CommandPermission("queste.reload|queste.admin")
     fun onReload(commandSender: CommandSender) {
         plugin.reloadConfig()
         commandSender.sendMessage(translate("&aReloaded the configuration file."))

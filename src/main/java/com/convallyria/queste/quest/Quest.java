@@ -213,7 +213,7 @@ public final class Quest  {
                 }
             }
 
-            objectives.forEach(objectives -> objectives.setIncrement(player, 0));
+            objectives.forEach(objective -> objective.setIncrement(player, 0));
             player.sendTitle(Translations.QUEST_STARTED.get(player), getName(), 40, 60, 40);
             if (account.getActiveQuests().contains(this)) account.removeActiveQuest(this);
             account.addActiveQuest(this);
@@ -227,7 +227,7 @@ public final class Quest  {
 
     public void forceStart(@NotNull Player player) {
         getPlugin().getManagers().getStorageManager().getAccount(player.getUniqueId()).thenAccept(account -> {
-            objectives.forEach(objectives -> objectives.setIncrement(player, 0));
+            objectives.forEach(objective -> objective.setIncrement(player, 0));
             player.sendTitle(Translations.QUEST_STARTED.get(player), getName(), 40, 60, 40);
             account.addActiveQuest(this);
         }).exceptionally(err -> {
