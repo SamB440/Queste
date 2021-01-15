@@ -5,7 +5,7 @@ import org.bukkit.entity.Player;
 
 public abstract class QuestReward {
 
-    private final Queste plugin;
+    private transient final Queste plugin;
 
     protected QuestReward(Queste plugin) {
         this.plugin = plugin;

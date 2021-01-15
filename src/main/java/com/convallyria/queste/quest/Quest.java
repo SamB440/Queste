@@ -29,7 +29,7 @@ public final class Quest {
     private String displayName;
     private boolean canRestart;
     private final List<QuestObjective> objectives;
-    private final List<Quest> requiredQuests;
+    private final List<Quest> requiredQuests; // TODO serialise
     private final List<QuestReward> rewards;
     private final List<QuestRequirement> requirements;
     private boolean storyMode;
@@ -49,6 +49,7 @@ public final class Quest {
     }
 
     public String getDisplayName() {
+        if (displayName == null) this.displayName = name;
         return displayName;
     }
 

@@ -144,9 +144,9 @@ class QuestCommand(private val plugin: Queste) : BaseCommand(), IQuesteCommand {
         sender.sendMessage(translate("&aQuest " + quest.name + " has had 'canRestart' set to: " + quest.canRestart() + "."))
     }
 
-    @Subcommand("addrequirement")
+    @Subcommand("addquestrequirement")
     @CommandCompletion("@quests @quests")
-    fun onAddRequirement(sender: CommandSender, quest: Quest, requirement: Quest) {
+    fun onAddQuestRequirement(sender: CommandSender, quest: Quest, requirement: Quest) {
         quest.addRequiredQuest(requirement)
         quest.save(plugin)
         sender.sendMessage(translate("&aAdded required quest " + requirement.name + " to quest " + quest.name + "."))
