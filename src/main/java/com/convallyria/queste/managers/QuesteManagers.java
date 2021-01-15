@@ -4,22 +4,26 @@ import com.convallyria.queste.Queste;
 import com.convallyria.queste.managers.data.QuesteCache;
 import com.convallyria.queste.managers.data.StorageManager;
 import com.convallyria.queste.managers.data.StorageType;
+import com.convallyria.queste.managers.registry.QuestRegistry;
 import com.convallyria.queste.quest.Quest;
 import com.convallyria.queste.quest.objective.QuestObjectiveRegistry;
 import com.convallyria.queste.quest.reward.QuestRewardRegistry;
+import com.convallyria.queste.quest.start.QuestRequirementRegistry;
 import org.bukkit.Bukkit;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.Reader;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class QuesteManagers {
 
     private StorageManager storageManager;
     private final QuesteCache questeCache;
-    private final QuestObjectiveRegistry objectiveRegistry;
-    private final QuestRewardRegistry rewardRegistry;
+    private final Map<Class<? extends QuestRegistry<?>>, QuestRegistry<?>> registry;
 
     public QuesteManagers(Queste plugin) {
         StorageType.valueOf(plugin.getConfig().getString("settings.storage.mode").toUpperCase())
@@ -28,8 +32,10 @@ public class QuesteManagers {
         if (storageManager == null) throw new IllegalStateException("Could not find StorageManager!");
 
         this.questeCache = new QuesteCache(plugin);
-        this.objectiveRegistry = new QuestObjectiveRegistry(plugin);
-        this.rewardRegistry = new QuestRewardRegistry(plugin);
+        this.registry = new ConcurrentHashMap<>();
+        registry.put(QuestObjectiveRegistry.class, new QuestObjectiveRegistry());
+        registry.put(QuestRewardRegistry.class, new QuestRewardRegistry());
+        registry.put(QuestRequirementRegistry.class, new QuestRequirementRegistry());
 
         File accountsFolder = new File(plugin.getDataFolder() + "/accounts/");
         if (!accountsFolder.exists()) accountsFolder.mkdirs();
@@ -41,7 +47,8 @@ public class QuesteManagers {
                 Reader reader = new FileReader(file);
                 Quest quest = plugin.getGson().fromJson(reader, Quest.class);
                 quest.getObjectives().forEach(questObjective -> {
-                    if (Bukkit.getPluginManager().getPlugin(questObjective.getPluginRequirement()) == null) {
+                    if (questObjective.getPluginRequirement() != null
+                        && Bukkit.getPluginManager().getPlugin(questObjective.getPluginRequirement()) == null) {
                         plugin.getLogger().warning("Objective " + questObjective.getName() + " requires plugin "
                                 + questObjective.getPluginRequirement()
                                 + " which is not loaded. Objective will be skipped for event registration.");
@@ -67,11 +74,8 @@ public class QuesteManagers {
         return questeCache;
     }
 
-    public QuestObjectiveRegistry getObjectiveRegistry() {
-        return objectiveRegistry;
-    }
-
-    public QuestRewardRegistry getRewardRegistry() {
-        return rewardRegistry;
+    @Nullable
+    public QuestRegistry<?> getQuestRegistry(Class<? extends QuestRegistry<?>> clazz) {
+        return registry.get(clazz);
     }
 }

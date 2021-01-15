@@ -8,7 +8,10 @@ import com.convallyria.queste.colour.ColourScheme
 import com.convallyria.queste.managers.data.account.QuesteAccount
 import com.convallyria.queste.quest.Quest
 import com.convallyria.queste.quest.objective.QuestObjective
+import com.convallyria.queste.quest.objective.QuestObjectiveRegistry
 import com.convallyria.queste.quest.reward.QuestReward
+import com.convallyria.queste.quest.reward.QuestRewardRegistry
+import com.convallyria.queste.quest.start.QuestRequirementRegistry
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.Sound
@@ -75,6 +78,13 @@ class QuestCommand(private val plugin: Queste) : BaseCommand(), IQuesteCommand {
         }
 
         sender.sendMessage(" ")
+        sender.sendMessage(translate("" + primaryColour
+                + "List of all requirements (" + secondaryColour + "name" + primaryColour + "): "))
+        for (requirement in quest.requirements) {
+            sender.sendMessage(translate(" " + secondaryColour + "- " + requirement.name))
+        }
+
+        sender.sendMessage(" ")
         sender.sendMessage("" + secondaryColour + "Is a story? " + quest.isStoryMode)
         sender.sendMessage("" + secondaryColour + "Complete Sound: " + quest.completeSound)
     }
@@ -98,14 +108,31 @@ class QuestCommand(private val plugin: Queste) : BaseCommand(), IQuesteCommand {
         sender.sendMessage(translate("&aThe quest &6$name&a has been created."))
     }
 
+    @Subcommand("addrequirement")
+    @CommandCompletion("@requirements @quests")
+    fun onAddRequirement(sender: CommandSender, requirementName: String, quest: Quest) {
+        val registry = plugin.managers.getQuestRegistry(QuestRequirementRegistry::class.java)
+        if (registry is QuestRequirementRegistry) {
+            val requirement = registry.getNew(requirementName, plugin)
+            if (requirement != null) {
+                quest.addRequirement(requirement)
+                quest.save(plugin)
+                sender.sendMessage(translate("&aAdded new requirement " + requirement.name + " to " + quest.name + "."))
+            }
+        }
+    }
+
     @Subcommand("addobjective")
     @CommandCompletion("@objectives @quests")
     fun onAddObjective(sender: CommandSender, objectiveName: String, quest: Quest) {
-        val objective = plugin.managers.objectiveRegistry.getNewObjective(objectiveName, plugin, quest)
-        if (objective != null) {
-            quest.addObjective(objective)
-            quest.save(plugin)
-            sender.sendMessage(translate("&aAdded new objective " + objective.name + " to " + quest.name + "."))
+        val registry = plugin.managers.getQuestRegistry(QuestObjectiveRegistry::class.java)
+        if (registry is QuestObjectiveRegistry) {
+            val objective = registry.getNewObjective(objectiveName, plugin, quest)
+            if (objective != null) {
+                quest.addObjective(objective)
+                quest.save(plugin)
+                sender.sendMessage(translate("&aAdded new objective " + objective.name + " to " + quest.name + "."))
+            }
         }
     }
 
@@ -128,9 +155,10 @@ class QuestCommand(private val plugin: Queste) : BaseCommand(), IQuesteCommand {
     @Subcommand("addreward")
     @CommandCompletion("@quests @rewards")
     fun onAddReward(sender: CommandSender, quest: Quest, rewardName: String) {
-        val reward = plugin.managers.rewardRegistry.getNewReward(rewardName, plugin)
+        val registry = plugin.managers.getQuestRegistry(QuestRewardRegistry::class.java) ?: return
+        val reward = registry.getNew(rewardName, plugin)
         if (reward != null) {
-            quest.addReward(reward)
+            quest.addReward(reward as QuestReward)
             quest.save(plugin)
             sender.sendMessage(translate("&aAdded reward &6" + reward.name + "&a to quest &6" + quest.name + "&a."))
         }

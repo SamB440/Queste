@@ -13,6 +13,7 @@ import com.convallyria.queste.gson.LocationAdapter;
 import com.convallyria.queste.gson.QuestAdapter;
 import com.convallyria.queste.listener.PlayerQuitListener;
 import com.convallyria.queste.managers.QuesteManagers;
+import com.convallyria.queste.managers.registry.QuestRegistry;
 import com.convallyria.queste.quest.Quest;
 import com.convallyria.queste.quest.objective.BreakBlockQuestObjective;
 import com.convallyria.queste.quest.objective.BreedQuestObjective;
@@ -23,6 +24,7 @@ import com.convallyria.queste.quest.objective.InteractEntityObjective;
 import com.convallyria.queste.quest.objective.KillEntityQuestObjective;
 import com.convallyria.queste.quest.objective.LevelQuestObjective;
 import com.convallyria.queste.quest.objective.PlaceBlockQuestObjective;
+import com.convallyria.queste.quest.objective.QuestObjective;
 import com.convallyria.queste.quest.objective.QuestObjectiveRegistry;
 import com.convallyria.queste.quest.objective.ShearSheepQuestObjective;
 import com.convallyria.queste.quest.objective.citizens.CitizenInteractQuestObjective;
@@ -36,7 +38,11 @@ import com.convallyria.queste.quest.reward.ItemReward;
 import com.convallyria.queste.quest.reward.MessageReward;
 import com.convallyria.queste.quest.reward.MoneyReward;
 import com.convallyria.queste.quest.reward.PlayerCommandReward;
+import com.convallyria.queste.quest.reward.QuestReward;
 import com.convallyria.queste.quest.reward.QuestRewardRegistry;
+import com.convallyria.queste.quest.start.LevelRequirement;
+import com.convallyria.queste.quest.start.QuestRequirement;
+import com.convallyria.queste.quest.start.QuestRequirementRegistry;
 import com.convallyria.queste.translation.Translations;
 import com.google.common.collect.ImmutableList;
 import com.google.gson.Gson;
@@ -88,6 +94,7 @@ public final class Queste extends JavaPlugin implements QuesteAPI, LanguagyPlugi
         this.managers = new QuesteManagers(this);
         this.registerObjectives();
         this.registerRewards();
+        this.registerRequirements();
         try {
             this.hook(this);
             this.registerCommands();
@@ -154,9 +161,9 @@ public final class Queste extends JavaPlugin implements QuesteAPI, LanguagyPlugi
         // Quests
         commandCompletions.registerAsyncCompletion("quests", context -> managers.getQuesteCache().getQuests().keySet());
         // Objectives
-        commandCompletions.registerAsyncCompletion("objectives", context -> managers.getObjectiveRegistry().getObjectives().keySet());
+        commandCompletions.registerAsyncCompletion("objectives", context -> managers.getQuestRegistry(QuestObjectiveRegistry.class).get().keySet());
         // Rewards
-        commandCompletions.registerAsyncCompletion("rewards", context -> managers.getRewardRegistry().getRewards().keySet());
+        commandCompletions.registerAsyncCompletion("rewards", context -> managers.getQuestRegistry(QuestRewardRegistry.class).get().keySet());
         // Options
         manager.getCommandCompletions().registerAsyncCompletion("options", c -> ImmutableList.of("--force"));
         // Locations
@@ -169,32 +176,49 @@ public final class Queste extends JavaPlugin implements QuesteAPI, LanguagyPlugi
     }
 
     private void registerObjectives() {
-        QuestObjectiveRegistry registry = managers.getObjectiveRegistry();
-        registry.registerObjective(ShearSheepQuestObjective.class);
-        registry.registerObjective(BreakBlockQuestObjective.class);
-        registry.registerObjective(BreedQuestObjective.class);
-        registry.registerObjective(BucketFillObjective.class);
-        registry.registerObjective(DiscoverRegionQuestObjective.class);
-        registry.registerObjective(EnchantQuestObjective.class);
-        registry.registerObjective(FishQuestObjective.class);
-        registry.registerObjective(InteractEntityObjective.class);
-        registry.registerObjective(KillEntityQuestObjective.class);
-        registry.registerObjective(LevelQuestObjective.class);
-        registry.registerObjective(PlaceBlockQuestObjective.class);
-        registry.registerObjective(CitizenInteractQuestObjective.class);
-        registry.registerObjective(FinishDungeonFloorQuestObjective.class);
-        registry.registerObjective(FinishDungeonQuestObjective.class);
-        registry.registerObjective(KillDungeonMobQuestObjective.class);
+        QuestRegistry<QuestObjective> registry = (QuestObjectiveRegistry) managers.getQuestRegistry(QuestObjectiveRegistry.class);
+        if (registry == null) {
+            plugin.getLogger().warning("Unable to register objectives");
+            return;
+        }
+        registry.register(ShearSheepQuestObjective.class);
+        registry.register(BreakBlockQuestObjective.class);
+        registry.register(BreedQuestObjective.class);
+        registry.register(BucketFillObjective.class);
+        registry.register(DiscoverRegionQuestObjective.class);
+        registry.register(EnchantQuestObjective.class);
+        registry.register(FishQuestObjective.class);
+        registry.register(InteractEntityObjective.class);
+        registry.register(KillEntityQuestObjective.class);
+        registry.register(LevelQuestObjective.class);
+        registry.register(PlaceBlockQuestObjective.class);
+        registry.register(CitizenInteractQuestObjective.class);
+        registry.register(FinishDungeonFloorQuestObjective.class);
+        registry.register(FinishDungeonQuestObjective.class);
+        registry.register(KillDungeonMobQuestObjective.class);
     }
 
     private void registerRewards() {
-        QuestRewardRegistry registry = managers.getRewardRegistry();
-        registry.registerReward(ConsoleCommandReward.class);
-        registry.registerReward(ExperienceReward.class);
-        registry.registerReward(ItemReward.class);
-        registry.registerReward(MessageReward.class);
-        registry.registerReward(MoneyReward.class);
-        registry.registerReward(PlayerCommandReward.class);
+        QuestRegistry<QuestReward> registry = (QuestRewardRegistry) managers.getQuestRegistry(QuestRewardRegistry.class);
+        if (registry == null) {
+            plugin.getLogger().warning("Unable to register rewards");
+            return;
+        }
+        registry.register(ConsoleCommandReward.class);
+        registry.register(ExperienceReward.class);
+        registry.register(ItemReward.class);
+        registry.register(MessageReward.class);
+        registry.register(MoneyReward.class);
+        registry.register(PlayerCommandReward.class);
+    }
+
+    private void registerRequirements() {
+        QuestRegistry<QuestRequirement> registry = (QuestRequirementRegistry) managers.getQuestRegistry(QuestRequirementRegistry.class);
+        if (registry == null) {
+            plugin.getLogger().warning("Unable to register requirements");
+            return;
+        }
+        registry.register(LevelRequirement.class);
     }
 
     public Gson getGson() {

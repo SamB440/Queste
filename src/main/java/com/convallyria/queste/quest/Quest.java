@@ -1,8 +1,10 @@
 package com.convallyria.queste.quest;
 
 import com.convallyria.queste.Queste;
+import com.convallyria.queste.managers.data.account.QuesteAccount;
 import com.convallyria.queste.quest.objective.QuestObjective;
 import com.convallyria.queste.quest.reward.QuestReward;
+import com.convallyria.queste.quest.start.QuestRequirement;
 import com.convallyria.queste.translation.Translations;
 import com.google.gson.Gson;
 import org.bukkit.Particle;
@@ -20,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-public final class Quest  {
+public final class Quest {
 
     private transient Queste plugin;
     private final String name;
@@ -29,14 +31,16 @@ public final class Quest  {
     private final List<QuestObjective> objectives;
     private final List<Quest> requiredQuests;
     private final List<QuestReward> rewards;
+    private final List<QuestRequirement> requirements;
     private boolean storyMode;
     private Sound completeSound;
 
-    public Quest(String name) {
+    public Quest(@NotNull String name) {
         this.name = name;
         this.objectives = new ArrayList<>();
         this.requiredQuests = new ArrayList<>();
         this.rewards = new ArrayList<>();
+        this.requirements = new ArrayList<>();
         this.completeSound = Sound.UI_TOAST_CHALLENGE_COMPLETE;
     }
 
@@ -74,20 +78,20 @@ public final class Quest  {
 
     @NotNull
     public List<QuestObjective> getObjectivesFromType(Class<? extends QuestObjective> type) {
-        List<QuestObjective> objectives = new ArrayList<>();
+        List<QuestObjective> objectivesByType = new ArrayList<>();
         for (QuestObjective objective : getObjectives()) {
             if (objective.getClass().isInstance(type)) {
-                objectives.add(objective);
+                objectivesByType.add(objective);
             }
         }
-        return objectives;
+        return objectivesByType;
     }
 
-    public void addRequiredQuest(Quest quest) {
+    public void addRequiredQuest(@NotNull Quest quest) {
         requiredQuests.add(quest);
     }
 
-    public void removeRequiredQuest(Quest quest) {
+    public void removeRequiredQuest(@NotNull Quest quest) {
         requiredQuests.remove(quest);
     }
 
@@ -95,16 +99,28 @@ public final class Quest  {
         return requiredQuests;
     }
 
-    public void addReward(QuestReward reward) {
+    public void addReward(@NotNull QuestReward reward) {
         rewards.add(reward);
     }
 
-    public void removeReward(QuestReward reward) {
+    public void removeReward(@NotNull QuestReward reward) {
         rewards.remove(reward);
     }
 
     public List<QuestReward> getRewards() {
         return rewards;
+    }
+
+    public void addRequirement(@NotNull QuestRequirement requirement) {
+        requirements.add(requirement);
+    }
+
+    public void removeRequirement(@NotNull QuestRequirement requirement) {
+        requirements.remove(requirement);
+    }
+
+    public List<QuestRequirement> getRequirements() {
+        return requirements;
     }
 
     public boolean isStoryMode() {
@@ -204,13 +220,9 @@ public final class Quest  {
                 return;
             }
 
-            if (!getRequiredQuests().isEmpty()) {
-                for (Quest requiredQuest : requiredQuests) {
-                    if (!account.getCompletedQuests().contains(requiredQuest)) {
-                        future.complete(false);
-                        return;
-                    }
-                }
+            if (!testRequirements(player, account)) {
+                future.complete(false);
+                return;
             }
 
             objectives.forEach(objective -> objective.setIncrement(player, 0));
@@ -223,6 +235,25 @@ public final class Quest  {
             return null;
         });
         return future;
+    }
+
+    protected boolean testRequirements(@NotNull Player player, @NotNull QuesteAccount account) {
+        if (!getRequiredQuests().isEmpty()) {
+            for (Quest requiredQuest : requiredQuests) {
+                if (!account.getCompletedQuests().contains(requiredQuest)) {
+                    return false;
+                }
+            }
+        }
+
+        if (!getRequirements().isEmpty()) {
+            for (QuestRequirement requirement : requirements) {
+                if (!requirement.meetsRequirements(player)) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     public void forceStart(@NotNull Player player) {

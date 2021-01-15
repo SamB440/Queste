@@ -8,15 +8,12 @@ import com.convallyria.queste.colour.ColourScheme
 import com.convallyria.queste.gui.ObjectiveSelectGUI
 import com.convallyria.queste.quest.Quest
 import com.convallyria.queste.quest.objective.LocationObjective
-import com.convallyria.queste.quest.objective.QuestObjective
+import com.convallyria.queste.quest.objective.QuestObjectiveRegistry
 import com.convallyria.queste.quest.objective.RegionObjective
-import org.bukkit.Bukkit
-import org.bukkit.ChatColor
 import org.bukkit.Location
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.bukkit.event.HandlerList
-import org.bukkit.event.Listener
 import java.util.*
 
 @CommandAlias("questobjective")
@@ -38,14 +35,17 @@ class QuestObjectiveCommand(private val plugin: Queste) : BaseCommand(), IQueste
                 + "List of all available objectives (" + secondaryColour + "name" + primaryColour + ", "
                 + pluginColour + "plugin" + primaryColour + "): "))
         val testQuest = Quest(UUID.randomUUID().toString())
-        for (objectiveName in plugin.managers.objectiveRegistry.objectives.keys) {
-            val objective = plugin.managers.objectiveRegistry.getNewObjective(objectiveName, plugin, testQuest)
-            if (objective != null) {
-                HandlerList.unregisterAll(objective)
-                val pluginRequirement =
-                    if (objective.pluginRequirement != null) "" + pluginColour + " (" + objective.pluginRequirement + ")"
-                    else ""
-                sender.sendMessage(translate(" " + secondaryColour + "- " + objective.name + pluginRequirement))
+        val registry = plugin.managers.getQuestRegistry(QuestObjectiveRegistry::class.java)
+        if (registry is QuestObjectiveRegistry) {
+            for (objectiveName in registry.get().keys) {
+                val objective = registry.getNewObjective(objectiveName, plugin, testQuest)
+                if (objective != null) {
+                    HandlerList.unregisterAll(objective)
+                    val pluginRequirement =
+                        if (objective.pluginRequirement != null) "" + pluginColour + " (" + objective.pluginRequirement + ")"
+                        else ""
+                    sender.sendMessage(translate(" " + secondaryColour + "- " + objective.name + pluginRequirement))
+                }
             }
         }
     }
@@ -70,23 +70,26 @@ class QuestObjectiveCommand(private val plugin: Queste) : BaseCommand(), IQueste
     @CommandCompletion("@objectives @quests @nothing")
     fun onSetRegion(player: Player, objectiveName: String, quest: Quest, region: String) {
         val testQuest = Quest(UUID.randomUUID().toString())
-        val objective = plugin.managers.objectiveRegistry.getNewObjective(objectiveName, plugin, testQuest) ?: return
-        HandlerList.unregisterAll(objective)
-        if (objective.pluginRequirement != null && objective.pluginRequirement == "RPGRegions") {
-            if (testGui(player, quest, objectiveName, false, "setRegion", String::class.java, region)) {
-                return
-            }
-
-            quest.objectives.forEach { questObjective ->
-                if (questObjective.javaClass.simpleName == objectiveName
-                    && questObjective is RegionObjective) {
-                    questObjective.region = region
-                    quest.save(plugin)
-                    player.sendMessage(translate("&aSet objective " + objective.name + " region to " + questObjective.region + "."))
+        val registry = plugin.managers.getQuestRegistry(QuestObjectiveRegistry::class.java)
+        if (registry is QuestObjectiveRegistry) {
+            val objective = registry.getNewObjective(objectiveName, plugin, testQuest) ?: return
+            HandlerList.unregisterAll(objective)
+            if (objective.pluginRequirement != null && objective.pluginRequirement == "RPGRegions") {
+                if (testGui(player, quest, objectiveName, false, "setRegion", String::class.java, region)) {
+                    return
                 }
+
+                quest.objectives.forEach { questObjective ->
+                    if (questObjective.javaClass.simpleName == objectiveName
+                        && questObjective is RegionObjective) {
+                        questObjective.region = region
+                        quest.save(plugin)
+                        player.sendMessage(translate("&aSet objective " + objective.name + " region to " + questObjective.region + "."))
+                    }
+                }
+            } else {
+                player.sendMessage(translate("&cObjective type " + objective.name + " does not support RPGRegions."))
             }
-        } else {
-            player.sendMessage(translate("&cObjective type " + objective.name + " does not support RPGRegions."))
         }
     }
 
@@ -94,24 +97,27 @@ class QuestObjectiveCommand(private val plugin: Queste) : BaseCommand(), IQueste
     @CommandCompletion("@objectives @quests")
     fun onSetLocation(player: Player, objectiveName: String, quest: Quest, where: String) {
         val testQuest = Quest(UUID.randomUUID().toString())
-        val objective = plugin.managers.objectiveRegistry.getNewObjective(objectiveName, plugin, testQuest) ?: return
-        HandlerList.unregisterAll(objective)
-        if (objective.pluginRequirement != null && objective is LocationObjective) {
-            val location = if (where == "TARGET") player.getTargetBlockExact(6)?.location else player.location
-            if (testGui(player, quest, objectiveName, false, "setLocation", Location::class.java, location)) {
-                return
-            }
-
-            quest.objectives.forEach { questObjective ->
-                if (questObjective.javaClass.simpleName == objectiveName
-                    && questObjective is LocationObjective) {
-                    questObjective.location = location
-                    quest.save(plugin)
-                    player.sendMessage(translate("&aSet objective " + objective.getName() + " location to " + questObjective.location.toString() + "."))
+        val registry = plugin.managers.getQuestRegistry(QuestObjectiveRegistry::class.java)
+        if (registry is QuestObjectiveRegistry) {
+            val objective = registry.getNewObjective(objectiveName, plugin, testQuest) ?: return
+            HandlerList.unregisterAll(objective)
+            if (objective.pluginRequirement != null && objective is LocationObjective) {
+                val location = if (where == "TARGET") player.getTargetBlockExact(6)?.location else player.location
+                if (testGui(player, quest, objectiveName, false, "setLocation", Location::class.java, location)) {
+                    return
                 }
+
+                quest.objectives.forEach { questObjective ->
+                    if (questObjective.javaClass.simpleName == objectiveName
+                        && questObjective is LocationObjective) {
+                        questObjective.location = location
+                        quest.save(plugin)
+                        player.sendMessage(translate("&aSet objective " + objective.name + " location to " + questObjective.location.toString() + "."))
+                    }
+                }
+            } else {
+                player.sendMessage(translate("&cObjective type " + objective.name + " does not support locations."))
             }
-        } else {
-            player.sendMessage(translate("&cObjective type " + objective.getName() + " does not support locations."))
         }
     }
 
@@ -157,17 +163,21 @@ class QuestObjectiveCommand(private val plugin: Queste) : BaseCommand(), IQueste
 
     private fun testGui(player: Player, quest: Quest, objectiveName: String,
                         superclass: Boolean, method: String, methodData: Class<*>, vararg data: Any?): Boolean {
-        val type = plugin.managers.objectiveRegistry.objectives[objectiveName]
-        if (quest.getObjectivesFromType(type).size > 1) {
-            val clazz = plugin.managers.objectiveRegistry.getNewObjective(type, plugin, quest)
-            if (clazz != null) {
-                val methodClazz = if (superclass) clazz::class.java.superclass else clazz::class.java
-                val gui = ObjectiveSelectGUI(plugin, player, quest, type, methodClazz.getDeclaredMethod(method, methodData), *data)
-                gui.open()
-                player.sendMessage(translate("&aOpened a GUI for selection because multiple objectives of this type exist."))
-                return true
+        val registry = plugin.managers.getQuestRegistry(QuestObjectiveRegistry::class.java)
+        if (registry is QuestObjectiveRegistry) {
+            val type = registry.get()[objectiveName]
+            if (quest.getObjectivesFromType(type).size > 1) {
+                val clazz = registry.getNewObjective(type, plugin, quest)
+                if (clazz != null) {
+                    val methodClazz = if (superclass) clazz::class.java.superclass else clazz::class.java
+                    val gui = ObjectiveSelectGUI(plugin, player, quest, type, methodClazz.getDeclaredMethod(method, methodData), *data)
+                    gui.open()
+                    player.sendMessage(translate("&aOpened a GUI for selection because multiple objectives of this type exist."))
+                    return true
+                }
             }
         }
+
         return false
     }
 }
