@@ -164,6 +164,8 @@ public final class Queste extends JavaPlugin implements QuesteAPI, LanguagyPlugi
         commandCompletions.registerAsyncCompletion("objectives", context -> managers.getQuestRegistry(QuestObjectiveRegistry.class).get().keySet());
         // Rewards
         commandCompletions.registerAsyncCompletion("rewards", context -> managers.getQuestRegistry(QuestRewardRegistry.class).get().keySet());
+        // Requirements
+        commandCompletions.registerAsyncCompletion("requirements", context -> managers.getQuestRegistry(QuestRequirementRegistry.class).get().keySet());
         // Options
         manager.getCommandCompletions().registerAsyncCompletion("options", c -> ImmutableList.of("--force"));
         // Locations

@@ -12,6 +12,10 @@ public final class LevelRequirement extends QuestRequirement {
         this.level = 1;
     }
 
+    public int getLevel() {
+        return level;
+    }
+
     @Override
     public boolean meetsRequirements(Player player) {
         return player.getLevel() >= 1;

@@ -101,7 +101,7 @@ class QuestObjectiveCommand(private val plugin: Queste) : BaseCommand(), IQueste
         if (registry is QuestObjectiveRegistry) {
             val objective = registry.getNewObjective(objectiveName, plugin, testQuest) ?: return
             HandlerList.unregisterAll(objective)
-            if (objective.pluginRequirement != null && objective is LocationObjective) {
+            if (objective is LocationObjective) {
                 val location = if (where == "TARGET") player.getTargetBlockExact(6)?.location else player.location
                 if (testGui(player, quest, objectiveName, false, "setLocation", Location::class.java, location)) {
                     return

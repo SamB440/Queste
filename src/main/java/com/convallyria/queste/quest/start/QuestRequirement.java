@@ -7,7 +7,7 @@ public abstract class QuestRequirement {
 
     private final Queste plugin;
 
-    public QuestRequirement(Queste plugin) {
+    protected QuestRequirement(Queste plugin) {
         this.plugin = plugin;
     }
 
