@@ -191,6 +191,14 @@ class QuestCommand(private val plugin: Queste) : BaseCommand(), IQuesteCommand {
         sender.sendMessage(translate("&aSet complete sound from &6$currentSound &ato &6$sound&a."))
     }
 
+    @Subcommand("settime")
+    @CommandCompletion("@quests @range:20")
+    fun onSetTime(sender: CommandSender, quest: Quest, time: Int) {
+        val currentTime = quest.time
+        quest.time = time
+        sender.sendMessage(translate("&aSet time from &6$currentTime &ato &6$time&a."))
+    }
+
     @Subcommand("complete")
     @CommandCompletion("@players @quests @options")
     fun onComplete(sender: CommandSender, playerName: String, quest: Quest, arguments: Array<String>) {
@@ -225,11 +233,11 @@ class QuestCommand(private val plugin: Queste) : BaseCommand(), IQuesteCommand {
                 return
             }
 
-            quest.tryStart(player).thenAccept { started ->
-                if (started) {
+            quest.tryStart(player).thenAccept { denyReason ->
+                if (denyReason == Quest.DenyReason.NONE) {
                     sender.sendMessage(translate("&aPlayer " + playerName + " now has the quest " + quest.name + "."))
                 } else {
-                    sender.sendMessage(translate("&cCould not start the quest for this player. Did they already complete it and 'restartable' is false? Have they completed all required quests?"))
+                    sender.sendMessage(translate("&cCould not start the quest for this player. Reason: $denyReason"))
                     sender.sendMessage(translate("&aTIP: &fTry running with &6--force &fto force a quest start."))
                 }
             }

@@ -17,7 +17,9 @@ public enum Translations {
     OBJECTIVE_COMPLETE(" &e&lObjective Complete! &8(%0/%1)", true),
     QUEST_COMPLETED("&e&lQuest Completed!", true),
     QUEST_COMPLETED_TITLE("&aQuest Completed"),
-    QUEST_STARTED("&aQuest Started");
+    QUEST_FAILED_TITLE("&cQuest Failed"),
+    QUEST_STARTED("&aQuest Started"),
+    OBJECTIVE_PROGRESS("&6%0 &7(%1/%2)");
 
     private final String defaultValue;
     private final boolean isList;

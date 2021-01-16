@@ -48,6 +48,7 @@ public class QuestAdapter implements JsonSerializer<Quest>, JsonDeserializer<Que
 
         result.add("storyMode", new JsonPrimitive(quest.isStoryMode()));
         result.add("completeSound", new JsonPrimitive(quest.getCompleteSound().toString()));
+        result.add("time", new JsonPrimitive(quest.getTime()));
         return result;
     }
 
@@ -90,6 +91,10 @@ public class QuestAdapter implements JsonSerializer<Quest>, JsonDeserializer<Que
         if (jsonObject.get("completeSound") != null) {
             Sound sound = Sound.valueOf(jsonObject.get("completeSound").getAsString());
             quest.setCompleteSound(sound);
+        }
+
+        if (jsonObject.get("time") != null) {
+            quest.setTime(jsonObject.get("time").getAsInt());
         }
         return quest;
     }

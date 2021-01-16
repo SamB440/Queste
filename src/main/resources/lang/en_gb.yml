@@ -13,3 +13,5 @@ quest_completed:
   - " "
 quest_started: "&aQuest Started"
 quest_completed_title: "&aQuest Completed"
+quest_failed_title: "&cQuest Failed"
+objective_progress: "&6%0 &7(%1/%2)"

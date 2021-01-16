@@ -32,6 +32,7 @@ public final class Quest {
     private final List<QuestRequirement> requirements;
     private boolean storyMode;
     private Sound completeSound;
+    private int time;
 
     public Quest(@NotNull String name) {
         this.name = name;
@@ -125,6 +126,14 @@ public final class Quest {
         this.completeSound = completeSound;
     }
 
+    public int getTime() {
+        return time;
+    }
+
+    public void setTime(int time) {
+        this.time = time;
+    }
+
     @Nullable
     public QuestObjective getCurrentObjective(@NotNull Player player) {
         if (isStoryMode()) {
@@ -198,16 +207,16 @@ public final class Quest {
      * @return true if quest was started, false if player has already completed and cannot restart
      *         or does not meet required quests beforehand
      */
-    public CompletableFuture<Boolean> tryStart(@NotNull Player player) {
-        CompletableFuture<Boolean> future = new CompletableFuture<>();
+    public CompletableFuture<DenyReason> tryStart(@NotNull Player player) {
+        CompletableFuture<DenyReason> future = new CompletableFuture<>();
         getPlugin().getManagers().getStorageManager().getAccount(player.getUniqueId()).thenAccept(account -> {
             if (isCompleted(player) && !canRestart) {
-                future.complete(false);
+                future.complete(DenyReason.CANNOT_RESTART);
                 return;
             }
 
             if (!testRequirements(player)) {
-                future.complete(false);
+                future.complete(DenyReason.REQUIREMENTS_NOT_MET);
                 return;
             }
 
@@ -215,7 +224,7 @@ public final class Quest {
             player.sendTitle(Translations.QUEST_STARTED.get(player), getName(), 40, 60, 40);
             if (account.getActiveQuests().contains(this)) account.removeActiveQuest(this);
             account.addActiveQuest(this);
-            future.complete(true);
+            future.complete(DenyReason.NONE);
         }).exceptionally(err -> {
             err.printStackTrace();
             return null;
@@ -264,5 +273,11 @@ public final class Quest {
             e.printStackTrace();
             return false;
         }
+    }
+
+    public enum DenyReason {
+        REQUIREMENTS_NOT_MET,
+        CANNOT_RESTART,
+        NONE
     }
 }
