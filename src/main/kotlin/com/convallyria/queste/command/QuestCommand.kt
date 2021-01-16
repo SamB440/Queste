@@ -11,6 +11,8 @@ import com.convallyria.queste.quest.objective.QuestObjective
 import com.convallyria.queste.quest.objective.QuestObjectiveRegistry
 import com.convallyria.queste.quest.reward.QuestReward
 import com.convallyria.queste.quest.reward.QuestRewardRegistry
+import com.convallyria.queste.quest.start.QuestQuestRequirement
+import com.convallyria.queste.quest.start.QuestRequirement
 import com.convallyria.queste.quest.start.QuestRequirementRegistry
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
@@ -72,13 +74,6 @@ class QuestCommand(private val plugin: Queste) : BaseCommand(), IQuesteCommand {
 
         sender.sendMessage(" ")
         sender.sendMessage(translate("" + primaryColour
-                + "List of all required quests (" + secondaryColour + "name" + primaryColour + "): "))
-        for (requiredQuest in quest.requiredQuests) {
-            sender.sendMessage(translate(" " + secondaryColour + "- " + requiredQuest.name))
-        }
-
-        sender.sendMessage(" ")
-        sender.sendMessage(translate("" + primaryColour
                 + "List of all requirements (" + secondaryColour + "name" + primaryColour + "): "))
         for (requirement in quest.requirements) {
             sender.sendMessage(translate(" " + secondaryColour + "- " + requirement.name))
@@ -102,6 +97,10 @@ class QuestCommand(private val plugin: Queste) : BaseCommand(), IQuesteCommand {
 
     @Subcommand("create")
     fun onCreate(sender: CommandSender, name: String) {
+        if (plugin.managers.questeCache.getQuest(name) != null) {
+            sender.sendMessage(translate("&cQuest by that name already exists. Please choose another name."))
+            return
+        }
         val quest = Quest(name)
         plugin.managers.questeCache.addQuest(quest)
         quest.save(plugin)
@@ -147,7 +146,10 @@ class QuestCommand(private val plugin: Queste) : BaseCommand(), IQuesteCommand {
     @Subcommand("addquestrequirement")
     @CommandCompletion("@quests @quests")
     fun onAddQuestRequirement(sender: CommandSender, quest: Quest, requirement: Quest) {
-        quest.addRequiredQuest(requirement)
+        val registry = plugin.managers.getQuestRegistry(QuestRequirementRegistry::class.java) ?: return
+        val questRequirement: QuestQuestRequirement = registry.getNew("QuestQuestRequirement", plugin) as QuestQuestRequirement
+        questRequirement.questName = requirement.name
+        quest.addRequirement(questRequirement)
         quest.save(plugin)
         sender.sendMessage(translate("&aAdded required quest " + requirement.name + " to quest " + quest.name + "."))
     }

@@ -1,12 +1,12 @@
 package com.convallyria.queste.quest.reward;
 
 import com.convallyria.queste.Queste;
-import com.convallyria.queste.managers.registry.QuestRegistry;
+import com.convallyria.queste.managers.registry.QuesteRegistry;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Constructor;
 
-public final class QuestRewardRegistry extends QuestRegistry<QuestReward> {
+public final class QuestRewardRegistry extends QuesteRegistry<QuestReward> {
 
     @Nullable
     public QuestReward getNew(Class<? extends QuestReward> clazz, Queste plugin) {
@@ -17,5 +17,10 @@ public final class QuestRewardRegistry extends QuestRegistry<QuestReward> {
             e.printStackTrace();
         }
         return null;
+    }
+
+    @Override
+    public String getRegistryName() {
+        return "rewards";
     }
 }

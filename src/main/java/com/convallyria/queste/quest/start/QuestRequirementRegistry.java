@@ -1,12 +1,12 @@
 package com.convallyria.queste.quest.start;
 
 import com.convallyria.queste.Queste;
-import com.convallyria.queste.managers.registry.QuestRegistry;
+import com.convallyria.queste.managers.registry.QuesteRegistry;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Constructor;
 
-public final class QuestRequirementRegistry extends QuestRegistry<QuestRequirement> {
+public final class QuestRequirementRegistry extends QuesteRegistry<QuestRequirement> {
 
     @Override
     public @Nullable QuestRequirement getNew(Class<? extends QuestRequirement> clazz, Queste plugin) {
@@ -17,5 +17,10 @@ public final class QuestRequirementRegistry extends QuestRegistry<QuestRequireme
             e.printStackTrace();
         }
         return null;
+    }
+
+    @Override
+    public String getRegistryName() {
+        return "requirements";
     }
 }

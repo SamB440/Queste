@@ -1,7 +1,6 @@
 package com.convallyria.queste.quest;
 
 import com.convallyria.queste.Queste;
-import com.convallyria.queste.managers.data.account.QuesteAccount;
 import com.convallyria.queste.quest.objective.QuestObjective;
 import com.convallyria.queste.quest.reward.QuestReward;
 import com.convallyria.queste.quest.start.QuestRequirement;
@@ -29,7 +28,6 @@ public final class Quest {
     private String displayName;
     private boolean canRestart;
     private final List<QuestObjective> objectives;
-    private final List<Quest> requiredQuests; // TODO serialise
     private final List<QuestReward> rewards;
     private final List<QuestRequirement> requirements;
     private boolean storyMode;
@@ -38,7 +36,6 @@ public final class Quest {
     public Quest(@NotNull String name) {
         this.name = name;
         this.objectives = new ArrayList<>();
-        this.requiredQuests = new ArrayList<>();
         this.rewards = new ArrayList<>();
         this.requirements = new ArrayList<>();
         this.completeSound = Sound.UI_TOAST_CHALLENGE_COMPLETE;
@@ -86,18 +83,6 @@ public final class Quest {
             }
         }
         return objectivesByType;
-    }
-
-    public void addRequiredQuest(@NotNull Quest quest) {
-        requiredQuests.add(quest);
-    }
-
-    public void removeRequiredQuest(@NotNull Quest quest) {
-        requiredQuests.remove(quest);
-    }
-
-    public List<Quest> getRequiredQuests() {
-        return requiredQuests;
     }
 
     public void addReward(@NotNull QuestReward reward) {
@@ -221,7 +206,7 @@ public final class Quest {
                 return;
             }
 
-            if (!testRequirements(player, account)) {
+            if (!testRequirements(player)) {
                 future.complete(false);
                 return;
             }
@@ -238,15 +223,7 @@ public final class Quest {
         return future;
     }
 
-    protected boolean testRequirements(@NotNull Player player, @NotNull QuesteAccount account) {
-        if (!getRequiredQuests().isEmpty()) {
-            for (Quest requiredQuest : requiredQuests) {
-                if (!account.getCompletedQuests().contains(requiredQuest)) {
-                    return false;
-                }
-            }
-        }
-
+    public boolean testRequirements(@NotNull Player player) {
         if (!getRequirements().isEmpty()) {
             for (QuestRequirement requirement : requirements) {
                 if (!requirement.meetsRequirements(player)) {

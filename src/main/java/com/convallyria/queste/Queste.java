@@ -13,7 +13,7 @@ import com.convallyria.queste.gson.LocationAdapter;
 import com.convallyria.queste.gson.QuestAdapter;
 import com.convallyria.queste.listener.PlayerQuitListener;
 import com.convallyria.queste.managers.QuesteManagers;
-import com.convallyria.queste.managers.registry.QuestRegistry;
+import com.convallyria.queste.managers.registry.QuesteRegistry;
 import com.convallyria.queste.quest.Quest;
 import com.convallyria.queste.quest.objective.BreakBlockQuestObjective;
 import com.convallyria.queste.quest.objective.BreedQuestObjective;
@@ -160,12 +160,10 @@ public final class Queste extends JavaPlugin implements QuesteAPI, LanguagyPlugi
         CommandCompletions<BukkitCommandCompletionContext> commandCompletions = manager.getCommandCompletions();
         // Quests
         commandCompletions.registerAsyncCompletion("quests", context -> managers.getQuesteCache().getQuests().keySet());
-        // Objectives
-        commandCompletions.registerAsyncCompletion("objectives", context -> managers.getQuestRegistry(QuestObjectiveRegistry.class).get().keySet());
-        // Rewards
-        commandCompletions.registerAsyncCompletion("rewards", context -> managers.getQuestRegistry(QuestRewardRegistry.class).get().keySet());
-        // Requirements
-        commandCompletions.registerAsyncCompletion("requirements", context -> managers.getQuestRegistry(QuestRequirementRegistry.class).get().keySet());
+        // Objectives, Rewards, Requirements, etc - all registries
+        for (QuesteRegistry<?> questeRegistry : managers.getQuestRegistry().values()) {
+            commandCompletions.registerAsyncCompletion(questeRegistry.getRegistryName(), context -> questeRegistry.get().keySet());
+        }
         // Options
         manager.getCommandCompletions().registerAsyncCompletion("options", c -> ImmutableList.of("--force"));
         // Locations
@@ -178,7 +176,7 @@ public final class Queste extends JavaPlugin implements QuesteAPI, LanguagyPlugi
     }
 
     private void registerObjectives() {
-        QuestRegistry<QuestObjective> registry = (QuestObjectiveRegistry) managers.getQuestRegistry(QuestObjectiveRegistry.class);
+        QuesteRegistry<QuestObjective> registry = (QuestObjectiveRegistry) managers.getQuestRegistry(QuestObjectiveRegistry.class);
         if (registry == null) {
             plugin.getLogger().warning("Unable to register objectives");
             return;
@@ -201,7 +199,7 @@ public final class Queste extends JavaPlugin implements QuesteAPI, LanguagyPlugi
     }
 
     private void registerRewards() {
-        QuestRegistry<QuestReward> registry = (QuestRewardRegistry) managers.getQuestRegistry(QuestRewardRegistry.class);
+        QuesteRegistry<QuestReward> registry = (QuestRewardRegistry) managers.getQuestRegistry(QuestRewardRegistry.class);
         if (registry == null) {
             plugin.getLogger().warning("Unable to register rewards");
             return;
@@ -215,7 +213,7 @@ public final class Queste extends JavaPlugin implements QuesteAPI, LanguagyPlugi
     }
 
     private void registerRequirements() {
-        QuestRegistry<QuestRequirement> registry = (QuestRequirementRegistry) managers.getQuestRegistry(QuestRequirementRegistry.class);
+        QuesteRegistry<QuestRequirement> registry = (QuestRequirementRegistry) managers.getQuestRegistry(QuestRequirementRegistry.class);
         if (registry == null) {
             plugin.getLogger().warning("Unable to register requirements");
             return;

@@ -1,14 +1,14 @@
 package com.convallyria.queste.quest.objective;
 
 import com.convallyria.queste.Queste;
-import com.convallyria.queste.managers.registry.QuestRegistry;
+import com.convallyria.queste.managers.registry.QuesteRegistry;
 import com.convallyria.queste.quest.Quest;
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Constructor;
 
-public final class QuestObjectiveRegistry extends QuestRegistry<QuestObjective> {
+public final class QuestObjectiveRegistry extends QuesteRegistry<QuestObjective> {
 
     @Nullable
     public QuestObjective getNewObjective(String name, Queste plugin, Quest quest) {
@@ -39,5 +39,10 @@ public final class QuestObjectiveRegistry extends QuestRegistry<QuestObjective> 
     @Override
     public @Nullable QuestObjective getNew(Class<? extends QuestObjective> clazz, Queste plugin) {
         throw new IllegalStateException("Use getNewObjective instead");
+    }
+
+    @Override
+    public String getRegistryName() {
+        return "objectives";
     }
 }

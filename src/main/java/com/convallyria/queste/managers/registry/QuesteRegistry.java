@@ -8,11 +8,11 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public abstract class QuestRegistry<T> {
+public abstract class QuesteRegistry<T> {
 
     private final Map<String, Class<? extends T>> registeredClasses;
 
-    protected QuestRegistry() {
+    protected QuesteRegistry() {
         this.registeredClasses = new ConcurrentHashMap<>();
     }
 
@@ -26,9 +26,14 @@ public abstract class QuestRegistry<T> {
         return ImmutableMap.copyOf(registeredClasses);
     }
 
+    /**
+     * Attempts to register a class.
+     * @param clazz class to register
+     * @throws IllegalArgumentException if class is already registered
+     */
     public void register(Class<? extends T> clazz) {
         if (registeredClasses.containsKey(clazz.getSimpleName()))
-            throw new IllegalStateException(clazz.getSimpleName() + " is already registered!");
+            throw new IllegalArgumentException(clazz.getSimpleName() + " is already registered!");
         registeredClasses.put(clazz.getSimpleName(), clazz);
     }
 
@@ -39,5 +44,7 @@ public abstract class QuestRegistry<T> {
 
     @Nullable
     public abstract T getNew(Class<? extends T> clazz, Queste plugin);
+
+    public abstract String getRegistryName();
 
 }

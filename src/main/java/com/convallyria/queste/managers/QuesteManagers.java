@@ -4,7 +4,7 @@ import com.convallyria.queste.Queste;
 import com.convallyria.queste.managers.data.QuesteCache;
 import com.convallyria.queste.managers.data.StorageManager;
 import com.convallyria.queste.managers.data.StorageType;
-import com.convallyria.queste.managers.registry.QuestRegistry;
+import com.convallyria.queste.managers.registry.QuesteRegistry;
 import com.convallyria.queste.quest.Quest;
 import com.convallyria.queste.quest.objective.QuestObjectiveRegistry;
 import com.convallyria.queste.quest.reward.QuestRewardRegistry;
@@ -23,7 +23,7 @@ public class QuesteManagers {
 
     private StorageManager storageManager;
     private final QuesteCache questeCache;
-    private final Map<Class<? extends QuestRegistry<?>>, QuestRegistry<?>> registry;
+    private final Map<Class<? extends QuesteRegistry<?>>, QuesteRegistry<?>> registry;
 
     public QuesteManagers(Queste plugin) {
         StorageType.valueOf(plugin.getConfig().getString("settings.storage.mode").toUpperCase())
@@ -74,8 +74,12 @@ public class QuesteManagers {
         return questeCache;
     }
 
+    public Map<Class<? extends QuesteRegistry<?>>, QuesteRegistry<?>> getQuestRegistry() {
+        return registry;
+    }
+
     @Nullable
-    public QuestRegistry<?> getQuestRegistry(Class<? extends QuestRegistry<?>> clazz) {
+    public QuesteRegistry<?> getQuestRegistry(Class<? extends QuesteRegistry<?>> clazz) {
         return registry.get(clazz);
     }
 }
