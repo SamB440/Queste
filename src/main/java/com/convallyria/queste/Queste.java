@@ -127,6 +127,11 @@ public final class Queste extends JavaPlugin implements QuesteAPI, LanguagyPlugi
         config.options().header(header);
         config.addDefault("settings.dev.debug", false);
         config.addDefault("settings.storage.mode", "file");
+        config.addDefault("settings.sql.host", "localhost");
+        config.addDefault("settings.sql.port", 3306);
+        config.addDefault("settings.sql.db", "Queste");
+        config.addDefault("settings.sql.user", "user");
+        config.addDefault("settings.sql.pass", "pass");
         config.options().copyDefaults(true);
         saveConfig();
     }
