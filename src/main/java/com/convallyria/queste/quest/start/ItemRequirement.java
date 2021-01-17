@@ -1,24 +1,25 @@
-package com.convallyria.queste.quest.reward;
+package com.convallyria.queste.quest.start;
 
 import com.convallyria.queste.Queste;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-public final class ItemReward extends QuestReward {
-	
+public final class ItemRequirement extends QuestRequirement {
+
 	private ItemStack item;
 
-	public ItemReward(Queste plugin) {
+	public ItemRequirement(Queste plugin) {
 		super(plugin);
 		this.item = new ItemStack(Material.IRON_AXE);
 	}
 
 	@Override
-	public void award(Player player) {
-		player.getInventory().addItem(item).forEach((pos, item) -> {
-			player.getLocation().getWorld().dropItemNaturally(player.getLocation(), item);
-		});
+	public boolean meetsRequirements(Player player) {
+		for (ItemStack itemStack : player.getInventory()) {
+			if (itemStack.isSimilar(item)) return true;
+		}
+		return false;
 	}
 
 	public ItemStack getItem() {

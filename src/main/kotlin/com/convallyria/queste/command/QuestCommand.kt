@@ -9,8 +9,10 @@ import com.convallyria.queste.managers.data.account.QuesteAccount
 import com.convallyria.queste.quest.Quest
 import com.convallyria.queste.quest.objective.QuestObjective
 import com.convallyria.queste.quest.objective.QuestObjectiveRegistry
+import com.convallyria.queste.quest.reward.ItemReward
 import com.convallyria.queste.quest.reward.QuestReward
 import com.convallyria.queste.quest.reward.QuestRewardRegistry
+import com.convallyria.queste.quest.start.ItemRequirement
 import com.convallyria.queste.quest.start.QuestQuestRequirement
 import com.convallyria.queste.quest.start.QuestRequirement
 import com.convallyria.queste.quest.start.QuestRequirementRegistry
@@ -109,14 +111,17 @@ class QuestCommand(private val plugin: Queste) : BaseCommand(), IQuesteCommand {
 
     @Subcommand("addrequirement")
     @CommandCompletion("@requirements @quests")
-    fun onAddRequirement(sender: CommandSender, requirementName: String, quest: Quest) {
+    fun onAddRequirement(player: Player, requirementName: String, quest: Quest) {
         val registry = plugin.managers.getQuestRegistry(QuestRequirementRegistry::class.java)
         if (registry is QuestRequirementRegistry) {
             val requirement = registry.getNew(requirementName, plugin)
             if (requirement != null) {
+                if (requirement is ItemRequirement) {
+                    requirement.item = player.inventory.itemInMainHand
+                }
                 quest.addRequirement(requirement)
                 quest.save(plugin)
-                sender.sendMessage(translate("&aAdded new requirement " + requirement.name + " to " + quest.name + "."))
+                player.sendMessage(translate("&aAdded new requirement " + requirement.name + " to " + quest.name + "."))
             }
         }
     }
@@ -156,13 +161,16 @@ class QuestCommand(private val plugin: Queste) : BaseCommand(), IQuesteCommand {
 
     @Subcommand("addreward")
     @CommandCompletion("@quests @rewards")
-    fun onAddReward(sender: CommandSender, quest: Quest, rewardName: String) {
+    fun onAddReward(player: Player, quest: Quest, rewardName: String) {
         val registry = plugin.managers.getQuestRegistry(QuestRewardRegistry::class.java) ?: return
         val reward = registry.getNew(rewardName, plugin)
         if (reward != null) {
+            if (reward is ItemReward) {
+                reward.item = player.inventory.itemInMainHand
+            }
             quest.addReward(reward as QuestReward)
             quest.save(plugin)
-            sender.sendMessage(translate("&aAdded reward &6" + reward.name + "&a to quest &6" + quest.name + "&a."))
+            player.sendMessage(translate("&aAdded reward &6" + reward.name + "&a to quest &6" + quest.name + "&a."))
         }
     }
 
