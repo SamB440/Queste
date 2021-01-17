@@ -92,6 +92,10 @@ public class QuesteAccount {
         update(quest);
     }
 
+    public void removeCompletedQuest(Quest quest) {
+        completedQuests.remove(quest);
+    }
+
     public void update(Quest quest) {
         Queste plugin = JavaPlugin.getPlugin(Queste.class);
         Player player = Bukkit.getPlayer(uuid);

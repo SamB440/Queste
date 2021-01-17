@@ -13,8 +13,8 @@ import org.bukkit.Bukkit;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 import java.io.Reader;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -60,7 +60,8 @@ public class QuesteManagers {
                     plugin.getLogger().info("Loaded quest " + quest.getName() + ".");
                 }
                 questeCache.addQuest(quest);
-            } catch (FileNotFoundException e) {
+                reader.close();
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }

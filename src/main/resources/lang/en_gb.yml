@@ -1,3 +1,12 @@
+next_page: "&aNext Page"
+next_page_lore:
+  - "&7Go to the next page."
+previous_page: "&cPrevious Page"
+previous_page_lore:
+  - "&7Go to the previous page."
+exit: "&cExit"
+exit_lore:
+  - "&7Exit the GUI."
 objective_complete:
   - " "
   - " &e&lObjective Complete! &8(%0/%1)"

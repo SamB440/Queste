@@ -2,7 +2,6 @@ package com.convallyria.queste.managers.data;
 
 import com.convallyria.queste.Queste;
 import com.convallyria.queste.quest.Quest;
-import com.google.common.collect.ImmutableMap;
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.Nullable;
 
@@ -23,8 +22,8 @@ public class QuesteCache {
         this.quests = new ConcurrentHashMap<>();
     }
 
-    public ImmutableMap<String, Quest> getQuests() {
-        return ImmutableMap.copyOf(quests);
+    public Map<String, Quest> getQuests() {
+        return quests;
     }
 
     public void reload() {

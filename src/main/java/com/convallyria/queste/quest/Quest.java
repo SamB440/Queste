@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -273,6 +274,11 @@ public final class Quest {
             e.printStackTrace();
             return false;
         }
+    }
+
+    public boolean delete() throws IOException {
+        File file = new File(getPlugin().getDataFolder() + "/quests/" + this.getName() + ".json");
+        return Files.deleteIfExists(file.toPath());
     }
 
     public enum DenyReason {

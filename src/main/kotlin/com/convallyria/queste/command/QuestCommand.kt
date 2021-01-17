@@ -5,26 +5,19 @@ import co.aikar.commands.CommandHelp
 import co.aikar.commands.annotation.*
 import com.convallyria.queste.Queste
 import com.convallyria.queste.colour.ColourScheme
-import com.convallyria.queste.managers.data.account.QuesteAccount
 import com.convallyria.queste.quest.Quest
-import com.convallyria.queste.quest.objective.QuestObjective
 import com.convallyria.queste.quest.objective.QuestObjectiveRegistry
 import com.convallyria.queste.quest.reward.ItemReward
 import com.convallyria.queste.quest.reward.QuestReward
 import com.convallyria.queste.quest.reward.QuestRewardRegistry
 import com.convallyria.queste.quest.start.ItemRequirement
 import com.convallyria.queste.quest.start.QuestQuestRequirement
-import com.convallyria.queste.quest.start.QuestRequirement
 import com.convallyria.queste.quest.start.QuestRequirementRegistry
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.Sound
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
-import java.io.File
-import java.io.FileReader
-import java.io.Reader
-import java.lang.Exception
 
 @CommandAlias("quest")
 @CommandPermission("queste.quest|queste.admin")
@@ -109,6 +102,36 @@ class QuestCommand(private val plugin: Queste) : BaseCommand(), IQuesteCommand {
         sender.sendMessage(translate("&aThe quest &6$name&a has been created."))
     }
 
+    @Subcommand("delete|remove")
+    @CommandCompletion("@quests")
+    fun onDelete(sender: CommandSender, quest: Quest) {
+        plugin.managers.storageManager.cachedAccounts.forEach { (_, account) ->
+            account.removeActiveQuest(quest)
+            account.removeCompletedQuest(quest)
+        }
+
+        plugin.managers.questeCache.quests.forEach { (_, theQuest) ->
+            var removeRequirement: QuestQuestRequirement? = null
+            for (requirement in theQuest.requirements) {
+                if (requirement is QuestQuestRequirement
+                    && requirement.questName == quest.name) {
+                    removeRequirement = requirement
+                    break
+                }
+            }
+
+            if (removeRequirement != null) {
+                theQuest.removeRequirement(removeRequirement)
+            }
+        }
+
+        plugin.managers.questeCache.removeQuest(quest)
+        if (quest.delete()) {
+            sender.sendMessage(translate("&aThe quest &6" + quest.name + "&a has been deleted."))
+        } else {
+            sender.sendMessage(translate("&cCould not delete the quest. Does the file exist still?"))
+        }
+    }
     @Subcommand("addrequirement")
     @CommandCompletion("@requirements @quests")
     fun onAddRequirement(player: Player, requirementName: String, quest: Quest) {

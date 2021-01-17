@@ -14,6 +14,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public enum Translations {
+    NEXT_PAGE("&aNext Page"),
+    NEXT_PAGE_LORE("&fGo to the next page", true),
+    PREVIOUS_PAGE("&cPrevious Page"),
+    PREVIOUS_PAGE_LORE("&fGo to the previous page", true),
+    EXIT("&cExit"),
+    EXIT_LORE("&fExit the GUI", true),
     OBJECTIVE_COMPLETE(" &e&lObjective Complete! &8(%0/%1)", true),
     QUEST_COMPLETED("&e&lQuest Completed!", true),
     QUEST_COMPLETED_TITLE("&aQuest Completed"),

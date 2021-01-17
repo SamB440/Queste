@@ -1,21 +1,190 @@
 package com.convallyria.queste.gui;
 
 import com.convallyria.queste.Queste;
+import com.convallyria.queste.translation.Translations;
+import com.convallyria.queste.utils.ItemStackBuilder;
+import com.github.stefvanschie.inventoryframework.gui.GuiItem;
+import com.github.stefvanschie.inventoryframework.gui.type.ChestGui;
+import com.github.stefvanschie.inventoryframework.pane.OutlinePane;
+import com.github.stefvanschie.inventoryframework.pane.PaginatedPane;
+import com.github.stefvanschie.inventoryframework.pane.Pane;
+import com.github.stefvanschie.inventoryframework.pane.StaticPane;
+import com.github.stefvanschie.inventoryframework.pane.util.Mask;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemFlag;
+import org.bukkit.inventory.ItemStack;
+
+import java.util.List;
 
 public abstract class QuesteGUI {
 
     private final Queste plugin;
     private final Player player;
+    private final int backX;
+    private final int backY;
+    private final int backL;
+    private final int backH;
+    private final int forwardX;
+    private final int forwardY;
+    private final int forwardL;
+    private final int forwardH;
+    private final int exitX;
+    private final int exitY;
+    private final int exitL;
+    private final int exitH;
+    private final int paneX;
+    private final int paneY;
+    private final int paneL;
+    private final int paneH;
+    private final int oPaneX;
+    private final int oPaneY;
+    private final int oPaneL;
+    private final int oPaneH;
+    private final int iPaneX;
+    private final int iPaneY;
+    private final int iPaneL;
+    private final int iPaneH;
 
     protected QuesteGUI(Queste plugin, Player player) {
         this.plugin = plugin;
         this.player = player;
+        // I wish there was a cleaner way to do this :(
+        this.backX = plugin.getConfig().getInt("settings.server.gui.back.posX");
+        this.backY = plugin.getConfig().getInt("settings.server.gui.back.posY");
+        this.backL = plugin.getConfig().getInt("settings.server.gui.back.length");
+        this.backH = plugin.getConfig().getInt("settings.server.gui.back.height");
+        this.forwardX = plugin.getConfig().getInt("settings.server.gui.forward.posX");
+        this.forwardY = plugin.getConfig().getInt("settings.server.gui.forward.posY");
+        this.forwardL = plugin.getConfig().getInt("settings.server.gui.forward.length");
+        this.forwardH = plugin.getConfig().getInt("settings.server.gui.forward.height");
+        this.exitX = plugin.getConfig().getInt("settings.server.gui.exit.posX");
+        this.exitY = plugin.getConfig().getInt("settings.server.gui.exit.posY");
+        this.exitL = plugin.getConfig().getInt("settings.server.gui.exit.length");
+        this.exitH = plugin.getConfig().getInt("settings.server.gui.exit.height");
+        this.paneX = plugin.getConfig().getInt("settings.server.gui.pane.posX");
+        this.paneY = plugin.getConfig().getInt("settings.server.gui.pane.posY");
+        this.paneL = plugin.getConfig().getInt("settings.server.gui.pane.length");
+        this.paneH = plugin.getConfig().getInt("settings.server.gui.pane.height");
+        this.oPaneX = plugin.getConfig().getInt("settings.server.gui.outlinePane.posX");
+        this.oPaneY = plugin.getConfig().getInt("settings.server.gui.outlinePane.posY");
+        this.oPaneL = plugin.getConfig().getInt("settings.server.gui.outlinePane.length");
+        this.oPaneH = plugin.getConfig().getInt("settings.server.gui.outlinePane.height");
+        this.iPaneX = plugin.getConfig().getInt("settings.server.gui.innerPane.posX");
+        this.iPaneY = plugin.getConfig().getInt("settings.server.gui.innerPane.posY");
+        this.iPaneL = plugin.getConfig().getInt("settings.server.gui.innerPane.length");
+        this.iPaneH = plugin.getConfig().getInt("settings.server.gui.innerPane.height");
     }
 
     public Player getPlayer() {
         return player;
     }
+
+    public PaginatedPane render() {
+        ChestGui gui = getGui();
+
+        gui.setOnGlobalClick(click -> click.setCancelled(true));
+
+        PaginatedPane pane = new PaginatedPane(paneX, paneY, paneL, paneH);
+        OutlinePane oPane = new OutlinePane(oPaneX, oPaneY, oPaneL, oPaneH);
+        OutlinePane innerPane = new OutlinePane(iPaneX, iPaneY, iPaneL, iPaneH);
+        StaticPane back = new StaticPane(backX, backY, backL, backH);
+        StaticPane forward = new StaticPane(forwardX, forwardY, forwardL, forwardH);
+        StaticPane exit = new StaticPane(exitX, exitY, exitL, exitH);
+
+        pane.setPriority(Pane.Priority.HIGHEST);
+        back.setPriority(Pane.Priority.HIGH);
+        forward.setPriority(Pane.Priority.HIGH);
+        exit.setPriority(Pane.Priority.HIGH);
+
+        // Inner pane
+        if (plugin.getConfig().getBoolean("settings.server.gui.innerPane.show")) {
+            innerPane.setRepeat(true);
+            List<String> mask = plugin.getConfig().getStringList("settings.server.gui.innerPane.mask");
+            innerPane.applyMask(new Mask(mask.toArray(new String[]{})));
+            innerPane.setOnClick(inventoryClickEvent -> inventoryClickEvent.setCancelled(true));
+
+            innerPane.addItem(new GuiItem(new ItemStackBuilder(Material.valueOf(
+                    plugin.getConfig().getString("settings.server.gui.innerPane.innerPane")))
+                    .withName(" ")
+                    .addFlags(ItemFlag.HIDE_ATTRIBUTES)
+                    .build()));
+            gui.addPane(innerPane);
+        }
+
+        // Outline pane
+        if (plugin.getConfig().getBoolean("settings.server.gui.outlinePane.show")) {
+            oPane.setRepeat(true);
+            List<String> mask = plugin.getConfig().getStringList("settings.server.gui.outlinePane.mask");
+            oPane.applyMask(new Mask(mask.toArray(new String[]{})));
+            oPane.setOnClick(inventoryClickEvent -> inventoryClickEvent.setCancelled(true));
+
+            oPane.addItem(new GuiItem(new ItemStackBuilder(Material.valueOf(
+                    plugin.getConfig().getString("settings.server.gui.outlinePane.outlinePane")))
+                    .withName(" ")
+                    .addFlags(ItemFlag.HIDE_ATTRIBUTES)
+                    .build()));
+
+            gui.addPane(oPane);
+        }
+
+        // Back item
+        Material bm = Material.valueOf(plugin.getConfig().getString("settings.server.gui.back.back"));
+        ItemStack backItem = new ItemStackBuilder(bm)
+                .withName(Translations.PREVIOUS_PAGE.get(player))
+                .withLore(Translations.PREVIOUS_PAGE_LORE.getList(player))
+                .addFlags(ItemFlag.HIDE_ATTRIBUTES)
+                .build();
+
+        back.addItem(new GuiItem(backItem, event -> {
+            event.setCancelled(true);
+            if (pane.getPages() == 0 || pane.getPages() == 1) return;
+
+            pane.setPage(pane.getPage() - 1);
+
+            forward.setVisible(true);
+            gui.update();
+        }), 0, 0);
+
+        // Forward item
+        Material fm = Material.valueOf(plugin.getConfig().getString("settings.server.gui.forward.forward"));
+        ItemStack forwardItem = new ItemStackBuilder(fm)
+                .withName(Translations.NEXT_PAGE.get(player))
+                .withLore(Translations.NEXT_PAGE_LORE.getList(player))
+                .addFlags(ItemFlag.HIDE_ATTRIBUTES)
+                .build();
+
+        forward.addItem(new GuiItem(forwardItem, event -> {
+            event.setCancelled(true);
+            if (pane.getPages() == 0 || pane.getPages() == 1) return;
+
+            pane.setPage(pane.getPage() + 1);
+
+            back.setVisible(true);
+            gui.update();
+        }), 0, 0);
+
+        // Exit item
+        Material em = Material.valueOf(plugin.getConfig().getString("settings.server.gui.exit.exit"));
+        ItemStack item = new ItemStackBuilder(em)
+                .withName(Translations.EXIT.get(player))
+                .withLore(Translations.EXIT_LORE.getList(player))
+                .addFlags(ItemFlag.HIDE_ATTRIBUTES)
+                .build();
+        exit.addItem(new GuiItem(item, event -> {
+            gui.update();
+            player.closeInventory();
+        }), 0, 0);
+
+        gui.addPane(exit);
+        gui.addPane(back);
+        gui.addPane(forward);
+        gui.addPane(pane);
+
+        return pane;
+    }
+
+    public abstract ChestGui getGui();
 
     public abstract void open();
 }
