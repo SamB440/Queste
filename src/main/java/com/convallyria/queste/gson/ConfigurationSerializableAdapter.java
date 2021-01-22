@@ -1,7 +1,5 @@
 package com.convallyria.queste.gson;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
@@ -16,12 +14,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ConfigurationSerializableAdapter implements JsonSerializer<ConfigurationSerializable>, JsonDeserializer<ConfigurationSerializable> {
-
-    private final Gson gson;
-
-    public ConfigurationSerializableAdapter() {
-        this.gson = new GsonBuilder().create();
-    }
 
     @Override
     public ConfigurationSerializable deserialize(JsonElement jsonElement, Type type,

@@ -33,6 +33,7 @@ class QuestTest {
         player = server.addPlayer()
         quest = Quest("Test")
         quest.addObjective(PlaceBlockQuestObjective(plugin, quest))
+        plugin.managers.questeCache.addQuest(quest)
     }
 
     @After

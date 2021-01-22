@@ -9,6 +9,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
+import org.bukkit.advancement.Advancement;
+import org.bukkit.advancement.AdvancementProgress;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
@@ -50,7 +52,7 @@ public class QuesteAccount {
             QuestObjective currentObjective = quest.getCurrentObjective(player);
             if (currentObjective != null) {
                 Queste plugin = JavaPlugin.getPlugin(Queste.class);
-                BossBar activeBar = getOrDefaultBossBar(quest, player);
+                BossBar activeBar = getOrDefaultBossBar(quest, player, true);
                 activeBar.setProgress(0);
                 activeBar.addPlayer(player);
                 update(quest);
@@ -60,7 +62,7 @@ public class QuesteAccount {
                     tasks.put(quest.getName(), Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
                         int timeLeft = time.get(quest.getName());
                         time.replace(quest.getName(), timeLeft - 1);
-                        BossBar bossBar = getOrDefaultBossBar(quest, player);
+                        BossBar bossBar = getOrDefaultBossBar(quest, player, false);
                         QuestObjective activeObjective = quest.getCurrentObjective(player);
                         if (bossBar == null || activeObjective == null) return;
                         bossBar.setTitle(Translations.OBJECTIVE_PROGRESS.get(player, activeObjective.getDisplayName(),
@@ -91,13 +93,17 @@ public class QuesteAccount {
         completedQuests.remove(quest);
     }
 
+    public void addCompletedQuest(Quest quest) {
+        completedQuests.add(quest);
+    }
+
     public void update(Quest quest) {
         Player player = Bukkit.getPlayer(uuid);
         if (player != null) {
-            BossBar bossBar = getOrDefaultBossBar(quest, player);
+            BossBar bossBar = getOrDefaultBossBar(quest, player, false);
             if (bossBar == null) return;
             QuestObjective currentObjective = quest.getCurrentObjective(player);
-            if (currentObjective != null) {
+            if (currentObjective != null && !quest.isCompleted(player)) {
                 int increment = currentObjective.getIncrement(player);
                 float percent = (increment * 100.0f) / currentObjective.getCompletionAmount();
                 if (quest.getTime() == 0)
@@ -105,20 +111,19 @@ public class QuesteAccount {
                 bossBar.setProgress(percent / 100);
             } else {
                 bossBar.removeAll();
+                Advancement advancement = Bukkit.getAdvancement(quest.getKey());
+                AdvancementProgress progress = player.getAdvancementProgress(advancement);
+                progress.revokeCriteria("impossible");
             }
         }
     }
 
-    public void addCompletedQuest(Quest quest) {
-        completedQuests.add(quest);
-    }
-
-    public BossBar getOrDefaultBossBar(Quest quest, Player player) {
+    public BossBar getOrDefaultBossBar(Quest quest, Player player, boolean create) {
         Queste plugin = JavaPlugin.getPlugin(Queste.class);
         QuestObjective currentObjective = quest.getCurrentObjective(player);
-        if (currentObjective == null) return null;
         BossBar activeBar = Bukkit.getBossBar(new NamespacedKey(plugin, player.getUniqueId() + quest.getName()));
-        if (activeBar == null) {
+        if (activeBar == null && create) {
+            if (currentObjective == null) return null;
             activeBar = Bukkit.createBossBar(new NamespacedKey(plugin, player.getUniqueId() + quest.getName()),
                     Translations.OBJECTIVE_PROGRESS.get(player, currentObjective.getDisplayName(),
                             currentObjective.getIncrement(player), currentObjective.getCompletionAmount()),

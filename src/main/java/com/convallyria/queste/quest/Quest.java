@@ -6,8 +6,13 @@ import com.convallyria.queste.quest.reward.QuestReward;
 import com.convallyria.queste.quest.start.QuestRequirement;
 import com.convallyria.queste.translation.Translations;
 import com.google.gson.Gson;
+import org.bukkit.Bukkit;
+import org.bukkit.Keyed;
+import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
+import org.bukkit.advancement.Advancement;
+import org.bukkit.advancement.AdvancementProgress;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
@@ -22,7 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-public final class Quest {
+public final class Quest implements Keyed {
 
     private transient Queste plugin;
     private final String name;
@@ -43,8 +48,18 @@ public final class Quest {
         this.completeSound = Sound.UI_TOAST_CHALLENGE_COMPLETE;
     }
 
+    @Override
+    @NotNull
+    public NamespacedKey getKey() {
+        return new NamespacedKey(getPlugin(), getSafeName() + "/root");
+    }
+
     public String getName() {
         return name;
+    }
+
+    public String getSafeName() {
+        return getName().replace(" ", "_");
     }
 
     public String getDisplayName() {
@@ -190,6 +205,9 @@ public final class Quest {
         getPlugin().getManagers().getStorageManager().getAccount(player.getUniqueId()).thenAccept(account -> {
             account.addCompletedQuest(this);
             account.removeActiveQuest(this);
+            Advancement advancement = Bukkit.getAdvancement(getKey());
+            AdvancementProgress progress = player.getAdvancementProgress(advancement);
+            progress.awardCriteria("impossible");
         });
     }
 
@@ -225,6 +243,9 @@ public final class Quest {
             player.sendTitle(Translations.QUEST_STARTED.get(player), getName(), 40, 60, 40);
             if (account.getActiveQuests().contains(this)) account.removeActiveQuest(this);
             account.addActiveQuest(this);
+            Advancement advancement = Bukkit.getAdvancement(getKey());
+            AdvancementProgress progress = player.getAdvancementProgress(advancement);
+            progress.awardCriteria("impossible");
             future.complete(DenyReason.NONE);
         }).exceptionally(err -> {
             err.printStackTrace();

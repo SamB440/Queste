@@ -51,6 +51,7 @@ import com.convallyria.queste.translation.Translations;
 import com.google.common.collect.ImmutableList;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import hu.trigary.advancementcreator.AdvancementFactory;
 import net.islandearth.languagy.api.language.Language;
 import net.islandearth.languagy.api.language.LanguagyImplementation;
 import net.islandearth.languagy.api.language.LanguagyPluginHook;
@@ -90,6 +91,11 @@ public final class Queste extends JavaPlugin implements QuesteAPI, LanguagyPlugi
 
     private static Queste plugin;
     private QuesteManagers managers;
+    private AdvancementFactory advancementFactory;
+
+    public AdvancementFactory getAdvancementFactory() {
+        return advancementFactory;
+    }
 
     @Override
     public void onEnable() {
@@ -105,6 +111,7 @@ public final class Queste extends JavaPlugin implements QuesteAPI, LanguagyPlugi
             this.registerCommands();
             this.registerListeners();
             new Metrics(this, 9954);
+            this.advancementFactory = new AdvancementFactory(this, true, false);
         } catch (Exception e) { // MockBukkit support. Throws an exception stating commands are unsupported.
             plugin.getLogger().log(Level.WARNING, "Unable to initialise listeners/commands", e);
         }
@@ -121,6 +128,7 @@ public final class Queste extends JavaPlugin implements QuesteAPI, LanguagyPlugi
             }
             getManagers().getStorageManager().removeCachedAccount(uuid);
         });
+        getManagers().getQuesteCache().getQuests().clear();
     }
 
     private void createConfig() {

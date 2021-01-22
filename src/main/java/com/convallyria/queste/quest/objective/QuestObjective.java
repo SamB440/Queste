@@ -7,7 +7,11 @@ import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Keyed;
+import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
+import org.bukkit.advancement.Advancement;
+import org.bukkit.advancement.AdvancementProgress;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -19,7 +23,7 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
-public abstract class QuestObjective implements Listener {
+public abstract class QuestObjective implements Listener, Keyed {
 
     private transient Queste plugin;
 
@@ -43,6 +47,12 @@ public abstract class QuestObjective implements Listener {
             return;
         }
         Bukkit.getPluginManager().registerEvents(this, plugin);
+    }
+
+    @Override
+    @NotNull
+    public NamespacedKey getKey() {
+        return new NamespacedKey(getPlugin(), getQuestName() + "/" + getSafeName());
     }
 
     @NotNull
@@ -76,48 +86,58 @@ public abstract class QuestObjective implements Listener {
     public CompletableFuture<Boolean> increment(@NotNull Player player) {
         CompletableFuture<Boolean> future = new CompletableFuture<>();
         getPlugin().getManagers().getStorageManager().getAccount(player.getUniqueId()).thenAccept(account -> {
-            account.getActiveQuests().forEach(quest -> {
-                if (quest.getName().equals(this.getQuestName())) {
-                    for (QuestObjective otherObjective : quest.getObjectives()) {
-                        // If the player has not completed another objective, story mode is enabled, and our story
-                        // is later on, do not continue.
-                        if (!otherObjective.hasCompleted(player)
-                                && quest.isStoryMode()
-                                && this.getStoryModeKey() > otherObjective.getStoryModeKey()) {
-                            if (plugin.debug()) {
-                                player.spigot().sendMessage(ChatMessageType.ACTION_BAR,
-                                        new TextComponent(ChatColor.RED + "You cannot complete the objective " + getName() + " yet."));
-                            }
-                            future.complete(false);
-                            return;
-                        }
-                    }
+            Quest quest = getQuest();
+            if (quest == null) {
+                future.complete(false);
+                return;
+            }
 
-                    // Increase progress, update bossbar, if this objective is completed play effects
-                    progress.put(player.getUniqueId(), progress.getOrDefault(player.getUniqueId(), 0) + 1);
-                    account.update(quest);
-                    future.complete(true);
-                    if (progress.get(player.getUniqueId()) >= completionAmount) {
-                        QuestObjective currentObjective = quest.getCurrentObjective(player);
-                        if (currentObjective != null) {
-                            Translations.OBJECTIVE_COMPLETE.sendList(player, this.getStoryModeKey() + 1,
-                                    quest.getObjectives().size(),
-                                    this.getStoryModeKey() + 2,
-                                    quest.getObjectives().size(),
-                                    currentObjective.getName());
-                            player.playSound(player.getLocation(), Sound.UI_TOAST_IN, 1f, 1f);
-                            account.update(quest);
-                        }
-                        quest.tryComplete(player); // Attempt completion of quest
-                    }
+            if (!checkIfCanIncrement(quest, player)) {
+                future.complete(false);
+                return;
+            }
+
+            // Increase progress, update bossbar, if this objective is completed play effects
+            progress.put(player.getUniqueId(), progress.getOrDefault(player.getUniqueId(), 0) + 1);
+            future.complete(true);
+            if (progress.get(player.getUniqueId()) >= completionAmount) {
+                QuestObjective currentObjective = quest.getCurrentObjective(player);
+                if (currentObjective != null) {
+                    Translations.OBJECTIVE_COMPLETE.sendList(player, this.getStoryModeKey() + 1,
+                            quest.getObjectives().size(),
+                            this.getStoryModeKey() + 2,
+                            quest.getObjectives().size(),
+                            currentObjective.getName());
+                    player.playSound(player.getLocation(), Sound.UI_TOAST_IN, 1f, 1f);
+                    Advancement advancement = Bukkit.getAdvancement(getKey());
+                    AdvancementProgress progress = player.getAdvancementProgress(advancement);
+                    progress.awardCriteria("impossible");
                 }
-            });
-
+                quest.tryComplete(player); // Attempt completion of quest
+            }
+            account.update(quest);
         }).exceptionally(err -> {
             err.printStackTrace();
             return null;
         });
         return future;
+    }
+
+    public boolean checkIfCanIncrement(Quest quest, Player player) {
+        for (QuestObjective otherObjective : quest.getObjectives()) {
+            // If the player has not completed another objective, story mode is enabled, and our story
+            // is later on, do not continue.
+            if (!otherObjective.hasCompleted(player)
+                    && quest.isStoryMode()
+                    && this.getStoryModeKey() > otherObjective.getStoryModeKey()) {
+                if (plugin.debug()) {
+                    player.spigot().sendMessage(ChatMessageType.ACTION_BAR,
+                            new TextComponent(ChatColor.RED + "You cannot complete the objective " + getName() + " yet."));
+                }
+                return false;
+            }
+        }
+        return true;
     }
 
     public void setIncrement(@NotNull Player player, int increment) {
@@ -146,6 +166,10 @@ public abstract class QuestObjective implements Listener {
     }
 
     public abstract String getName();
+
+    public String getSafeName() {
+        return getName().replace(" ", "_");
+    }
 
     @Nullable
     public String getPluginRequirement() {

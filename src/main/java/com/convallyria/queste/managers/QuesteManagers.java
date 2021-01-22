@@ -6,10 +6,16 @@ import com.convallyria.queste.managers.data.StorageManager;
 import com.convallyria.queste.managers.data.StorageType;
 import com.convallyria.queste.managers.registry.QuesteRegistry;
 import com.convallyria.queste.quest.Quest;
+import com.convallyria.queste.quest.objective.QuestObjective;
 import com.convallyria.queste.quest.objective.QuestObjectiveRegistry;
 import com.convallyria.queste.quest.reward.QuestRewardRegistry;
 import com.convallyria.queste.quest.start.QuestRequirementRegistry;
+import hu.trigary.advancementcreator.Advancement;
+import hu.trigary.advancementcreator.shared.ItemObject;
+import hu.trigary.advancementcreator.trigger.ImpossibleTrigger;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
@@ -64,6 +70,24 @@ public class QuesteManagers {
                     plugin.getLogger().info("Loaded quest " + quest.getName() + ".");
                 }
                 questeCache.addQuest(quest);
+                new Advancement(quest.getKey(), new ItemObject().setItem(Material.TOTEM_OF_UNDYING),
+                        new TextComponent(quest.getDisplayName()), new TextComponent(""))
+                        .addTrigger("impossible", new ImpossibleTrigger())
+                        .setAnnounce(false)
+                        .setToast(true)
+                        .makeRoot("block/dirt", false)
+                        .setFrame(Advancement.Frame.CHALLENGE)
+                        .activate(true);
+                for (QuestObjective objective : quest.getObjectives()) {
+                    new Advancement(objective.getKey(), new ItemObject().setItem(Material.TOTEM_OF_UNDYING),
+                            new TextComponent(objective.getDisplayName()), new TextComponent(""))
+                            .addTrigger("impossible", new ImpossibleTrigger())
+                            .setAnnounce(false)
+                            .setToast(true)
+                            .makeChild(quest.getKey())
+                            .setFrame(Advancement.Frame.GOAL)
+                            .activate(true);
+                }
                 reader.close();
             } catch (IOException e) {
                 e.printStackTrace();
