@@ -46,6 +46,10 @@ public class QuesteManagers {
             try {
                 Reader reader = new FileReader(file);
                 Quest quest = plugin.getGson().fromJson(reader, Quest.class);
+                if (quest == null) {
+                    plugin.getLogger().severe("Unable to load quest " + file.getName() + ". Json invalid.");
+                    continue;
+                }
                 quest.getObjectives().forEach(questObjective -> {
                     if (questObjective.getPluginRequirement() != null
                         && Bukkit.getPluginManager().getPlugin(questObjective.getPluginRequirement()) == null) {

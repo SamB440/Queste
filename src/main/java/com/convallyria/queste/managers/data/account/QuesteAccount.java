@@ -50,13 +50,7 @@ public class QuesteAccount {
             QuestObjective currentObjective = quest.getCurrentObjective(player);
             if (currentObjective != null) {
                 Queste plugin = JavaPlugin.getPlugin(Queste.class);
-                BossBar activeBar = Bukkit.getBossBar(new NamespacedKey(plugin, player.getUniqueId() + quest.getName()));
-                if (activeBar == null) {
-                    activeBar = Bukkit.createBossBar(new NamespacedKey(plugin, player.getUniqueId() + quest.getName()),
-                            Translations.OBJECTIVE_PROGRESS.get(player, currentObjective.getDisplayName(),
-                                    currentObjective.getIncrement(player), currentObjective.getCompletionAmount()),
-                            BarColor.WHITE, BarStyle.SEGMENTED_10);
-                }
+                BossBar activeBar = getOrDefaultBossBar(quest, player);
                 activeBar.setProgress(0);
                 activeBar.addPlayer(player);
                 update(quest);
@@ -66,10 +60,11 @@ public class QuesteAccount {
                     tasks.put(quest.getName(), Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
                         int timeLeft = time.get(quest.getName());
                         time.replace(quest.getName(), timeLeft - 1);
-                        BossBar bossBar = Bukkit.getBossBar(new NamespacedKey(plugin, player.getUniqueId() + quest.getName()));
-                        if (bossBar == null) return;
-                        bossBar.setTitle(Translations.OBJECTIVE_PROGRESS.get(player, currentObjective.getDisplayName(),
-                                currentObjective.getIncrement(player), currentObjective.getCompletionAmount()) + ChatColor.GRAY + " (" + timeLeft + "s)");
+                        BossBar bossBar = getOrDefaultBossBar(quest, player);
+                        QuestObjective activeObjective = quest.getCurrentObjective(player);
+                        if (bossBar == null || activeObjective == null) return;
+                        bossBar.setTitle(Translations.OBJECTIVE_PROGRESS.get(player, activeObjective.getDisplayName(),
+                                activeObjective.getIncrement(player), activeObjective.getCompletionAmount()) + ChatColor.GRAY + " (" + timeLeft + "s)");
                         if (timeLeft <= 0) {
                             Bukkit.getScheduler().cancelTask(tasks.get(quest.getName()));
                             time.remove(quest.getName());
@@ -97,10 +92,9 @@ public class QuesteAccount {
     }
 
     public void update(Quest quest) {
-        Queste plugin = JavaPlugin.getPlugin(Queste.class);
         Player player = Bukkit.getPlayer(uuid);
         if (player != null) {
-            BossBar bossBar = Bukkit.getBossBar(new NamespacedKey(plugin, player.getUniqueId() + quest.getName()));
+            BossBar bossBar = getOrDefaultBossBar(quest, player);
             if (bossBar == null) return;
             QuestObjective currentObjective = quest.getCurrentObjective(player);
             if (currentObjective != null) {
@@ -117,5 +111,19 @@ public class QuesteAccount {
 
     public void addCompletedQuest(Quest quest) {
         completedQuests.add(quest);
+    }
+
+    public BossBar getOrDefaultBossBar(Quest quest, Player player) {
+        Queste plugin = JavaPlugin.getPlugin(Queste.class);
+        QuestObjective currentObjective = quest.getCurrentObjective(player);
+        if (currentObjective == null) return null;
+        BossBar activeBar = Bukkit.getBossBar(new NamespacedKey(plugin, player.getUniqueId() + quest.getName()));
+        if (activeBar == null) {
+            activeBar = Bukkit.createBossBar(new NamespacedKey(plugin, player.getUniqueId() + quest.getName()),
+                    Translations.OBJECTIVE_PROGRESS.get(player, currentObjective.getDisplayName(),
+                            currentObjective.getIncrement(player), currentObjective.getCompletionAmount()),
+                    BarColor.WHITE, BarStyle.SEGMENTED_10);
+        }
+        return activeBar;
     }
 }

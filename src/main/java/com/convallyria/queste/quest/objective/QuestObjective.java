@@ -104,8 +104,9 @@ public abstract class QuestObjective implements Listener {
                                     quest.getObjectives().size(),
                                     this.getStoryModeKey() + 2,
                                     quest.getObjectives().size(),
-                                    getName());
+                                    currentObjective.getName());
                             player.playSound(player.getLocation(), Sound.UI_TOAST_IN, 1f, 1f);
+                            account.update(quest);
                         }
                         quest.tryComplete(player); // Attempt completion of quest
                     }

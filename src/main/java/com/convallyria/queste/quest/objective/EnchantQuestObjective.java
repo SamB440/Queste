@@ -13,7 +13,7 @@ public final class EnchantQuestObjective extends QuestObjective {
     }
 
     @EventHandler
-    public void onFish(EnchantItemEvent event) {
+    public void onEnchant(EnchantItemEvent event) {
         Player player = event.getEnchanter();
         if (this.hasCompleted(player)) return;
         this.increment(player);

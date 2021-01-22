@@ -17,7 +17,7 @@ public final class ItemRequirement extends QuestRequirement {
 	@Override
 	public boolean meetsRequirements(Player player) {
 		for (ItemStack itemStack : player.getInventory()) {
-			if (itemStack.isSimilar(item)) return true;
+			if (itemStack != null && itemStack.isSimilar(item)) return true;
 		}
 		return false;
 	}

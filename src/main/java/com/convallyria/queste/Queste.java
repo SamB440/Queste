@@ -9,7 +9,7 @@ import com.convallyria.queste.command.QuestCommand;
 import com.convallyria.queste.command.QuestObjectiveCommand;
 import com.convallyria.queste.command.QuesteCommand;
 import com.convallyria.queste.command.QuestsCommand;
-import com.convallyria.queste.gson.LocationAdapter;
+import com.convallyria.queste.gson.ConfigurationSerializableAdapter;
 import com.convallyria.queste.gson.QuestAdapter;
 import com.convallyria.queste.listener.PlayerQuitListener;
 import com.convallyria.queste.managers.QuesteManagers;
@@ -26,6 +26,7 @@ import com.convallyria.queste.quest.objective.LevelQuestObjective;
 import com.convallyria.queste.quest.objective.PlaceBlockQuestObjective;
 import com.convallyria.queste.quest.objective.QuestObjective;
 import com.convallyria.queste.quest.objective.QuestObjectiveRegistry;
+import com.convallyria.queste.quest.objective.ReachLocationObjective;
 import com.convallyria.queste.quest.objective.ShearSheepQuestObjective;
 import com.convallyria.queste.quest.objective.citizens.CitizenInteractQuestObjective;
 import com.convallyria.queste.quest.objective.dungeonsxl.FinishDungeonFloorQuestObjective;
@@ -40,7 +41,10 @@ import com.convallyria.queste.quest.reward.MoneyReward;
 import com.convallyria.queste.quest.reward.PlayerCommandReward;
 import com.convallyria.queste.quest.reward.QuestReward;
 import com.convallyria.queste.quest.reward.QuestRewardRegistry;
+import com.convallyria.queste.quest.start.ItemRequirement;
 import com.convallyria.queste.quest.start.LevelRequirement;
+import com.convallyria.queste.quest.start.MoneyRequirement;
+import com.convallyria.queste.quest.start.QuestQuestRequirement;
 import com.convallyria.queste.quest.start.QuestRequirement;
 import com.convallyria.queste.quest.start.QuestRequirementRegistry;
 import com.convallyria.queste.translation.Translations;
@@ -53,9 +57,9 @@ import net.islandearth.languagy.api.language.LanguagyPluginHook;
 import net.islandearth.languagy.api.language.Translator;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -110,6 +114,11 @@ public final class Queste extends JavaPlugin implements QuesteAPI, LanguagyPlugi
     public void onDisable() {
         getManagers().getQuesteCache().getQuests().values().forEach(quest -> quest.save(this));
         getManagers().getStorageManager().getCachedAccounts().forEach((uuid, account) -> {
+            for (Quest activeQuest : account.getActiveQuests()) {
+                if (activeQuest.getTime() != 0) {
+                    account.removeActiveQuest(activeQuest);
+                }
+            }
             getManagers().getStorageManager().removeCachedAccount(uuid);
         });
     }
@@ -248,6 +257,7 @@ public final class Queste extends JavaPlugin implements QuesteAPI, LanguagyPlugi
         registry.register(FinishDungeonFloorQuestObjective.class);
         registry.register(FinishDungeonQuestObjective.class);
         registry.register(KillDungeonMobQuestObjective.class);
+        registry.register(ReachLocationObjective.class);
     }
 
     private void registerRewards() {
@@ -271,12 +281,15 @@ public final class Queste extends JavaPlugin implements QuesteAPI, LanguagyPlugi
             return;
         }
         registry.register(LevelRequirement.class);
+        registry.register(ItemRequirement.class);
+        registry.register(MoneyRequirement.class);
+        registry.register(QuestQuestRequirement.class);
     }
 
     public Gson getGson() {
         return new GsonBuilder()
                 .registerTypeAdapter(Quest.class, new QuestAdapter())
-                .registerTypeHierarchyAdapter(Location.class, new LocationAdapter())
+                .registerTypeHierarchyAdapter(ConfigurationSerializable.class, new ConfigurationSerializableAdapter())
                 .setPrettyPrinting()
                 .serializeNulls()
                 .create();

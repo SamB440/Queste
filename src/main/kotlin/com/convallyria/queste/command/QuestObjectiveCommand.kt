@@ -94,7 +94,7 @@ class QuestObjectiveCommand(private val plugin: Queste) : BaseCommand(), IQueste
     }
 
     @Subcommand("setlocation")
-    @CommandCompletion("@objectives @quests")
+    @CommandCompletion("@objectives @quests @locations")
     fun onSetLocation(player: Player, objectiveName: String, quest: Quest, where: String) {
         val testQuest = Quest(UUID.randomUUID().toString())
         val registry = plugin.managers.getQuestRegistry(QuestObjectiveRegistry::class.java)
