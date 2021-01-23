@@ -119,16 +119,20 @@ public final class Queste extends JavaPlugin implements IQuesteAPI, LanguagyPlug
 
     @Override
     public void onDisable() {
-        getManagers().getQuesteCache().getQuests().values().forEach(quest -> quest.save(this));
-        getManagers().getStorageManager().getCachedAccounts().forEach((uuid, account) -> {
-            for (Quest activeQuest : account.getActiveQuests()) {
-                if (activeQuest.getTime() != 0) {
-                    account.removeActiveQuest(activeQuest);
+        if (getManagers() != null) {
+            getManagers().getQuesteCache().getQuests().values().forEach(quest -> quest.save(this));
+            getManagers().getStorageManager().getCachedAccounts().forEach((uuid, account) -> {
+                for (Quest activeQuest : account.getActiveQuests()) {
+                    if (activeQuest.getTime() != 0) {
+                        account.removeActiveQuest(activeQuest);
+                    }
                 }
-            }
-            getManagers().getStorageManager().removeCachedAccount(uuid);
-        });
-        getManagers().getQuesteCache().getQuests().clear();
+                getManagers().getStorageManager().removeCachedAccount(uuid);
+            });
+            getManagers().getQuesteCache().getQuests().clear();
+        } else {
+            getLogger().warning("Unable to save data because managers were null.");
+        }
         QuesteAPI.setAPI(null);
     }
 
