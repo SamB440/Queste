@@ -4,8 +4,10 @@ import com.convallyria.queste.Queste;
 import com.convallyria.queste.managers.data.IStorageManager;
 import com.convallyria.queste.managers.data.account.QuesteAccount;
 import com.convallyria.queste.quest.Quest;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,21 +36,32 @@ public class YamlStorage implements IStorageManager {
         if (cachedAccounts.containsKey(uuid)) {
             future.complete(cachedAccounts.get(uuid));
         } else {
+            Player player = Bukkit.getPlayer(uuid);
             File file = new File(plugin.getDataFolder() + "/accounts/" + uuid.toString() + ".yml");
             FileConfiguration config = YamlConfiguration.loadConfiguration(file);
             List<Quest> activeQuests = new ArrayList<>();
-            for (String results : config.getStringList("Quests")) {
-                if (plugin.getManagers().getQuesteCache().getQuests().containsKey(results)) {
-                    activeQuests.add(plugin.getManagers().getQuesteCache().getQuests().get(results));
+            for (String activeQuest : config.getStringList("Quests")) {
+                if (plugin.getManagers().getQuesteCache().getQuests().containsKey(activeQuest)) {
+                    Quest quest = plugin.getManagers().getQuesteCache().getQuests().get(activeQuest);
+                    quest.getObjectives().forEach(objective -> {
+                        int progress = config.getInt(quest.getName() + "." + objective.getSafeName() + "." + uuid.toString());
+                        objective.setIncrement(player, progress);
+                    });
+                    activeQuests.add(quest);
                 } else {
-                    plugin.getLogger().warning(results + " quest not found.");
+                    plugin.getLogger().warning(activeQuest + " quest not found.");
                 }
             }
 
             List<Quest> completedQuests = new ArrayList<>();
             for (String completedQuest : config.getStringList("CompletedQuests")) {
                 if (plugin.getManagers().getQuesteCache().getQuests().containsKey(completedQuest)) {
-                    completedQuests.add(plugin.getManagers().getQuesteCache().getQuests().get(completedQuest));
+                    Quest quest = plugin.getManagers().getQuesteCache().getQuests().get(completedQuest);
+                    quest.getObjectives().forEach(objective -> {
+                        int progress = config.getInt(quest.getName() + "." + objective.getSafeName() + "." + uuid.toString());
+                        objective.setIncrement(player, progress);
+                    });
+                    completedQuests.add(quest);
                 } else {
                     plugin.getLogger().warning(completedQuest + " quest not found.");
                 }
@@ -87,14 +100,24 @@ public class YamlStorage implements IStorageManager {
         File file = new File(plugin.getDataFolder() + "/accounts/" + uuid.toString() + ".yml");
         FileConfiguration config = YamlConfiguration.loadConfiguration(file);
 
-        List<String> newData = new ArrayList<>();
-        account.getActiveQuests().forEach(quest -> newData.add(quest.getName()));
+        List<String> activeQuests = new ArrayList<>();
+        account.getActiveQuests().forEach(quest -> activeQuests.add(quest.getName()));
 
         List<String> completedQuests = new ArrayList<>();
         account.getCompletedQuests().forEach(completedQuest -> completedQuests.add(completedQuest.getName()));
 
-        config.set("Quests", newData);
+        config.set("Quests", activeQuests);
         config.set("CompletedQuests", completedQuests);
+
+        account.getAllQuests().forEach(quest -> {
+            quest.getObjectives().forEach(objective -> {
+                Player player = Bukkit.getPlayer(uuid);
+                int progress = objective.getIncrement(player);
+                config.set(quest.getName() + "." + objective.getSafeName() + "." + uuid.toString(), progress);
+                objective.untrack(uuid);
+            });
+        });
+
         try {
             config.save(file);
         } catch (IOException e) {

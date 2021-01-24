@@ -16,6 +16,7 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 
 import java.lang.reflect.Type;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class QuestAdapter implements JsonSerializer<Quest>, JsonDeserializer<Quest> {
 
@@ -107,6 +108,10 @@ public class QuestAdapter implements JsonSerializer<Quest>, JsonDeserializer<Que
         if (jsonObject.get("description") != null) {
             quest.setDescription(jsonObject.get("description").getAsString());
         }
+
+        quest.getObjectives().forEach(questObjective -> {
+            questObjective.setProgress(new ConcurrentHashMap<>());
+        });
         return quest;
     }
 

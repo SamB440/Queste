@@ -254,6 +254,8 @@ public final class Quest implements Keyed {
             if (isCompleted(player) && !canRestart) {
                 future.complete(DenyReason.CANNOT_RESTART);
                 return;
+            } else {
+                account.removeCompletedQuest(this);
             }
 
             if (!testRequirements(player)) {
@@ -261,10 +263,10 @@ public final class Quest implements Keyed {
                 return;
             }
 
-            objectives.forEach(objective -> objective.setIncrement(player, 0));
             player.sendTitle(Translations.QUEST_STARTED.get(player), getName(), 40, 60, 40);
             if (account.getActiveQuests().contains(this)) account.removeActiveQuest(this);
             account.addActiveQuest(this);
+            objectives.forEach(objective -> objective.setIncrement(player, 0));
             if (plugin.getConfig().getBoolean("settings.server.advancements.generate")) {
                 Advancement advancement = Bukkit.getAdvancement(getKey());
                 AdvancementProgress progress = player.getAdvancementProgress(advancement);

@@ -1,4 +1,4 @@
-package com.convallyria.queste.managers.data.sql;
+package com.convallyria.queste.managers.data.sqlite;
 
 import co.aikar.idb.DB;
 import co.aikar.idb.Database;
@@ -9,19 +9,16 @@ import com.convallyria.queste.managers.data.SQLCommonStorage;
 
 import java.sql.SQLException;
 
-public class SqlStorage extends SQLCommonStorage {
+public class SqliteStorage extends SQLCommonStorage {
 
-    public SqlStorage(Queste plugin) {
+    public SqliteStorage(Queste plugin) {
         super(plugin);
-
-        DatabaseOptions options = DatabaseOptions.builder().mysql(plugin.getConfig().getString("settings.sql.user"),
-                plugin.getConfig().getString("settings.sql.pass"),
-                plugin.getConfig().getString("settings.sql.db"),
-                plugin.getConfig().getString("settings.sql.host") + ":" + plugin.getConfig().getString("settings.sql.port")).build();
+        DatabaseOptions options = DatabaseOptions.builder().sqlite(plugin.getDataFolder() + "/users.sqlite").build();
         Database db = PooledDatabaseOptions.builder().options(options).createHikariDatabase();
         DB.setGlobalDatabase(db);
         try {
             db.executeUpdate(CREATE_TABLE);
+            db.executeUpdate(CREATE_OBJECTIVE_TABLE);
         } catch (SQLException e) {
             e.printStackTrace();
         }

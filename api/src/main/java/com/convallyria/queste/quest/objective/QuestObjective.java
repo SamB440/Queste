@@ -16,7 +16,6 @@ import org.bukkit.advancement.AdvancementProgress;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -31,7 +30,7 @@ public abstract class QuestObjective implements Listener, Keyed {
 
     private final String questName;
     private int completionAmount;
-    private final Map<UUID, Integer> progress;
+    private transient Map<UUID, Integer> progress;
     private int storyModeKey;
     private String displayName;
 
@@ -49,6 +48,11 @@ public abstract class QuestObjective implements Listener, Keyed {
             return;
         }
         Bukkit.getPluginManager().registerEvents(this, (Plugin) plugin);
+    }
+
+    @Deprecated
+    public void setProgress(Map<UUID, Integer> progress) {
+        this.progress = progress;
     }
 
     @Override
@@ -146,6 +150,10 @@ public abstract class QuestObjective implements Listener, Keyed {
 
     public void setIncrement(@NotNull Player player, int increment) {
         progress.put(player.getUniqueId(), increment);
+    }
+
+    public void untrack(UUID uuid) {
+        progress.remove(uuid);
     }
 
     public int getStoryModeKey() {

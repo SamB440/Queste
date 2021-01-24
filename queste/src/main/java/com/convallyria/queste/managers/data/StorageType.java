@@ -2,6 +2,7 @@ package com.convallyria.queste.managers.data;
 
 import com.convallyria.queste.Queste;
 import com.convallyria.queste.managers.data.sql.SqlStorage;
+import com.convallyria.queste.managers.data.sqlite.SqliteStorage;
 import com.convallyria.queste.managers.data.yml.YamlStorage;
 import org.bukkit.Bukkit;
 
@@ -10,7 +11,8 @@ import java.util.Optional;
 
 public enum StorageType {
     FILE(YamlStorage.class),
-    SQL(SqlStorage.class);
+    SQL(SqlStorage.class),
+    SQLITE(SqliteStorage.class);
 
     private final Class<? extends IStorageManager> clazz;
 

@@ -22,6 +22,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class QuesteAccount {
 
@@ -45,6 +47,12 @@ public class QuesteAccount {
         return ImmutableList.copyOf(completedQuests);
     }
 
+    public ImmutableList<Quest> getAllQuests() {
+        List<Quest> questList = Stream.concat(activeQuests.stream(), completedQuests.stream())
+                .collect(Collectors.toList());
+        return ImmutableList.copyOf(questList);
+    }
+
     public void addActiveQuest(Quest quest) {
         activeQuests.add(quest);
         Player player = Bukkit.getPlayer(uuid);
@@ -60,6 +68,12 @@ public class QuesteAccount {
                 if (quest.getTime() > 0) {
                     time.put(quest.getName(), quest.getTime());
                     tasks.put(quest.getName(), Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
+                        if (quest.isCompleted(player)) {
+                            Bukkit.getScheduler().cancelTask(tasks.get(quest.getName()));
+                            time.remove(quest.getName());
+                            tasks.remove(quest.getName());
+                            return;
+                        }
                         int timeLeft = time.get(quest.getName());
                         time.replace(quest.getName(), timeLeft - 1);
                         BossBar bossBar = getOrDefaultBossBar(quest, player, false);

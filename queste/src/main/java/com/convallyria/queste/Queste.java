@@ -4,6 +4,7 @@ import co.aikar.commands.BukkitCommandCompletionContext;
 import co.aikar.commands.CommandCompletions;
 import co.aikar.commands.InvalidCommandArgument;
 import co.aikar.commands.PaperCommandManager;
+import co.aikar.idb.DB;
 import com.convallyria.queste.api.IQuesteAPI;
 import com.convallyria.queste.api.QuesteAPI;
 import com.convallyria.queste.command.QuestCommand;
@@ -134,6 +135,7 @@ public final class Queste extends JavaPlugin implements IQuesteAPI, LanguagyPlug
             getLogger().warning("Unable to save data because managers were null.");
         }
         QuesteAPI.setAPI(null);
+        DB.close();
     }
 
     private void createConfig() {
