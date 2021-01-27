@@ -23,4 +23,9 @@ public final class QuestRequirementRegistry extends QuesteRegistry<QuestRequirem
     public String getRegistryName() {
         return "requirements";
     }
+
+    @Override
+    public Class<QuestRequirement> getImplementation() {
+        return QuestRequirement.class;
+    }
 }

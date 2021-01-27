@@ -151,6 +151,9 @@ public final class Queste extends JavaPlugin implements IQuesteAPI, LanguagyPlug
         header += "Need help? Join our discord at https://discord.gg/fh62mxU" + eol;
         config.options().header(header);
         config.addDefault("settings.server.advancements.generate", true);
+        config.addDefault("settings.server.player.journal.enabled", true);
+        config.addDefault("settings.server.player.journal.slot", 8);
+        config.addDefault("settings.server.player.journal.removable", false);
         config.addDefault("settings.dev.debug", false);
         config.addDefault("settings.storage.mode", "file");
         config.addDefault("settings.sql.host", "localhost");
@@ -240,6 +243,7 @@ public final class Queste extends JavaPlugin implements IQuesteAPI, LanguagyPlug
         // Objectives, Rewards, Requirements, etc - all registries
         for (QuesteRegistry<?> questeRegistry : managers.getQuestRegistry().values()) {
             commandCompletions.registerAsyncCompletion(questeRegistry.getRegistryName(), context -> questeRegistry.get().keySet());
+            commandCompletions.registerAsyncCompletion(questeRegistry.getRegistryName() + "-presets", context -> questeRegistry.loadAllPresets());
         }
         // Options
         manager.getCommandCompletions().registerAsyncCompletion("options", c -> ImmutableList.of("--force"));

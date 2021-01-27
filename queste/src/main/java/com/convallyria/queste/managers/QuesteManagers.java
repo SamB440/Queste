@@ -30,15 +30,26 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class QuesteManagers implements IQuesteManagers {
 
-    private IStorageManager IStorageManager;
+    private final Queste plugin;
+
+    private IStorageManager storageManager;
     private final QuesteCache questeCache;
     private final Map<Class<? extends QuesteRegistry<?>>, QuesteRegistry<?>> registry;
 
+    public File getPresetFolder() {
+        return new File(plugin.getDataFolder() + File.separator + "presets");
+    }
+
+    public File getPresetFolder(QuesteRegistry<?> questeRegistry) {
+        return new File(plugin.getDataFolder() + File.separator + "presets" + File.separator + questeRegistry.getRegistryName());
+    }
+
     public QuesteManagers(Queste plugin) {
+        this.plugin = plugin;
         StorageType.valueOf(plugin.getConfig().getString("settings.storage.mode").toUpperCase())
             .get(plugin)
-            .ifPresent(storageManager1 -> IStorageManager = storageManager1);
-        if (IStorageManager == null) throw new IllegalStateException("Could not find StorageManager!");
+            .ifPresent(generatedManager -> storageManager = generatedManager);
+        if (storageManager == null) throw new IllegalStateException("Could not find StorageManager!");
 
         this.questeCache = new QuesteCache(plugin);
         this.registry = new ConcurrentHashMap<>();
@@ -48,6 +59,11 @@ public class QuesteManagers implements IQuesteManagers {
 
         File accountsFolder = new File(plugin.getDataFolder() + "/accounts/");
         if (!accountsFolder.exists()) accountsFolder.mkdirs();
+
+        registry.values().forEach(register -> {
+            File presetRegistryFolder = getPresetFolder(register);
+            if (!presetRegistryFolder.exists()) presetRegistryFolder.mkdirs();
+        });
         
         File folder = new File(plugin.getDataFolder() + "/quests/");
         if (!folder.exists()) folder.mkdirs();
@@ -128,7 +144,7 @@ public class QuesteManagers implements IQuesteManagers {
 
     @Override
     public IStorageManager getStorageManager() {
-        return IStorageManager;
+        return storageManager;
     }
 
     @Override

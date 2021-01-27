@@ -23,4 +23,9 @@ public final class QuestRewardRegistry extends QuesteRegistry<QuestReward> {
     public String getRegistryName() {
         return "rewards";
     }
+
+    @Override
+    public Class<QuestReward> getImplementation() {
+        return QuestReward.class;
+    }
 }

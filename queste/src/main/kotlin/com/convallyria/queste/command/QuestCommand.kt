@@ -6,13 +6,14 @@ import co.aikar.commands.annotation.*
 import com.convallyria.queste.Queste
 import com.convallyria.queste.colour.ColourScheme
 import com.convallyria.queste.quest.Quest
+import com.convallyria.queste.quest.objective.QuestObjective
 import com.convallyria.queste.quest.objective.QuestObjectiveRegistry
-import com.convallyria.queste.quest.reward.ItemReward
-import com.convallyria.queste.quest.reward.QuestReward
-import com.convallyria.queste.quest.reward.QuestRewardRegistry
 import com.convallyria.queste.quest.requirement.ItemRequirement
 import com.convallyria.queste.quest.requirement.QuestQuestRequirement
 import com.convallyria.queste.quest.requirement.QuestRequirementRegistry
+import com.convallyria.queste.quest.reward.ItemReward
+import com.convallyria.queste.quest.reward.QuestReward
+import com.convallyria.queste.quest.reward.QuestRewardRegistry
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.Material
@@ -97,6 +98,18 @@ class QuestCommand(private val plugin: Queste) : BaseCommand(), IQuesteCommand {
         sender.sendMessage(ChatColor.GREEN.toString() + "Done! (" + totalTime + "ms)")
     }
 
+    @Subcommand("copy|clone")
+    @CommandPermission("quest.copy")
+    fun onClone(sender: CommandSender, quest: Quest, name: String) {
+        if (plugin.managers.questeCache.getQuest(name) != null) {
+            sender.sendMessage(translate("&cQuest by that name already exists. Please choose another name."))
+            return
+        }
+        val newQuest = Quest(name, quest)
+        plugin.managers.questeCache.addQuest(newQuest)
+        sender.sendMessage(translate("&aThe quest &6$name&a has been copied from " + quest.name + " and created."))
+    }
+
     @Subcommand("create")
     fun onCreate(sender: CommandSender, name: String) {
         if (plugin.managers.questeCache.getQuest(name) != null) {
@@ -140,6 +153,13 @@ class QuestCommand(private val plugin: Queste) : BaseCommand(), IQuesteCommand {
         }
     }
 
+    @Subcommand("setdummy")
+    @CommandCompletion("@quests")
+    fun onSetDummy(sender: CommandSender, quest: Quest) {
+        quest.isDummy = !quest.isDummy
+        sender.sendMessage(translate("&aDummy has been set to &6" + quest.isDummy + "&a."))
+    }
+
     @Subcommand("addrequirement")
     @CommandCompletion("@requirements @quests")
     fun onAddRequirement(player: Player, requirementName: String, quest: Quest) {
@@ -164,10 +184,25 @@ class QuestCommand(private val plugin: Queste) : BaseCommand(), IQuesteCommand {
         if (registry is QuestObjectiveRegistry) {
             val objective = registry.getNewObjective(objectiveName, plugin, quest)
             if (objective != null) {
-                quest.addObjective(objective)
+                if (!quest.addObjective(objective)) {
+                    sender.sendMessage(translate("&cThat quest is a dummy quest and cannot have multiple objectives of the same type."))
+                    return
+                }
                 quest.save(plugin)
                 sender.sendMessage(translate("&aAdded new objective " + objective.name + " to " + quest.name + "."))
             }
+        }
+    }
+
+    @Subcommand("addobjectivepreset")
+    @CommandCompletion("@objectives-presets @quests")
+    fun onAddObjectivePreset(sender: CommandSender, presetName: String, quest: Quest) {
+        val registry = plugin.managers.getQuestRegistry(QuestObjectiveRegistry::class.java)
+        val objective: Any? = registry?.loadPreset(presetName)
+        if (objective is QuestObjective) {
+            quest.addObjective(objective)
+            Bukkit.getPluginManager().registerEvents(objective, plugin)
+            sender.sendMessage(translate("&aObjective preset has been added to quest."))
         }
     }
 

@@ -45,4 +45,9 @@ public final class QuestObjectiveRegistry extends QuesteRegistry<QuestObjective>
     public String getRegistryName() {
         return "objectives";
     }
+
+    @Override
+    public Class<QuestObjective> getImplementation() {
+        return QuestObjective.class;
+    }
 }

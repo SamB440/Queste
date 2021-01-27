@@ -50,6 +50,14 @@ public abstract class QuestObjective implements Listener, Keyed {
         Bukkit.getPluginManager().registerEvents(this, (Plugin) plugin);
     }
 
+    /**
+     * @deprecated Use discouraged. Only used internally.
+     * @see #increment(Player)
+     * @see #setIncrement(Player, int)
+     * @see #getIncrement(Player)
+     * @see #checkIfCanIncrement(Quest, Player)
+     * @param progress progress map
+     */
     @Deprecated
     public void setProgress(Map<UUID, Integer> progress) {
         this.progress = progress;
@@ -131,7 +139,7 @@ public abstract class QuestObjective implements Listener, Keyed {
         return future;
     }
 
-    public boolean checkIfCanIncrement(Quest quest, Player player) {
+    public boolean checkIfCanIncrement(@NotNull Quest quest, @NotNull Player player) {
         for (QuestObjective otherObjective : quest.getObjectives()) {
             // If the player has not completed another objective, story mode is enabled, and our story
             // is later on, do not continue.

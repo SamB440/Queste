@@ -43,6 +43,7 @@ public final class Quest implements Keyed {
     private int time;
     private Material icon;
     private String description;
+    private boolean dummy;
 
     public Quest(@NotNull String name) {
         this.name = name;
@@ -54,20 +55,47 @@ public final class Quest implements Keyed {
         this.description = "A quest of great honour!";
     }
 
+    public Quest(@NotNull String name, @NotNull Quest quest) {
+        this.name = name;
+        this.displayName = quest.getDisplayName();
+        this.canRestart = quest.canRestart();
+        this.objectives = quest.getObjectives();
+        this.rewards = quest.getRewards();
+        this.requirements = quest.getRequirements();
+        this.storyMode = quest.isStoryMode();
+        this.completeSound = quest.getCompleteSound();
+        this.time = quest.getTime();
+        this.icon = quest.getIcon();
+        this.description = quest.getDescription();
+        this.dummy = quest.isDummy();
+    }
+
     @Override
     @NotNull
     public NamespacedKey getKey() {
         return new NamespacedKey((Plugin) QuesteAPI.getAPI(), getSafeName() + "/root");
     }
 
+    /**
+     * Gets the unique name of this quest.
+     * @return unique quest name
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Gets a name safe to use everywhere, an example being the {@link NamespacedKey}.
+     * @return safe name of this quest
+     */
     public String getSafeName() {
         return getName().replace(" ", "_");
     }
 
+    /**
+     * Gets the display name for this quest.
+     * @return quest display name
+     */
     public String getDisplayName() {
         if (displayName == null) this.displayName = name;
         return displayName;
@@ -85,8 +113,13 @@ public final class Quest implements Keyed {
         this.canRestart = canRestart;
     }
 
-    public void addObjective(QuestObjective objective) {
+    public boolean addObjective(QuestObjective objective) {
+        if (dummy
+            && !getObjectivesFromType(objective.getClass()).isEmpty()) {
+            return false;
+        }
         objectives.add(objective);
+        return true;
     }
 
     public void removeObjective(QuestObjective objective) {
@@ -97,6 +130,11 @@ public final class Quest implements Keyed {
         return objectives;
     }
 
+    /**
+     * Gets a list of {@link QuestObjective}s by type.
+     * @param type type of objective to check
+     * @return list of {@link QuestObjective}s
+     */
     @NotNull
     public List<QuestObjective> getObjectivesFromType(Class<? extends QuestObjective> type) {
         List<QuestObjective> objectivesByType = new ArrayList<>();
@@ -172,6 +210,25 @@ public final class Quest implements Keyed {
         this.description = description;
     }
 
+    public boolean isDummy() {
+        return dummy;
+    }
+
+    /**
+     * Sets whether a quest is a dummy or not.
+     * A dummy quest is one that is only used for configuration reasons.
+     * Objectives of the same type cannot be added.
+     * @param dummy whether the quest should be a dummy quest
+     */
+    public void setDummy(boolean dummy) {
+        this.dummy = dummy;
+    }
+
+    /**
+     * Gets the current objective a player should be on.
+     * @param player player to check
+     * @return current {@link QuestObjective}
+     */
     @Nullable
     public QuestObjective getCurrentObjective(@NotNull Player player) {
         if (isStoryMode()) {
@@ -280,6 +337,11 @@ public final class Quest implements Keyed {
         return future;
     }
 
+    /**
+     * Checks whether a player meets all requirements to start this quest.
+     * @param player player to check
+     * @return true if requirements are met, false otherwise
+     */
     public boolean testRequirements(@NotNull Player player) {
         if (!getRequirements().isEmpty()) {
             for (QuestRequirement requirement : requirements) {

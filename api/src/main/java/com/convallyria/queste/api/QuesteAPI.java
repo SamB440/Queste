@@ -1,6 +1,8 @@
 package com.convallyria.queste.api;
 
-public class QuesteAPI {
+public final class QuesteAPI {
+
+    private QuesteAPI() {}
 
     private static IQuesteAPI api;
 

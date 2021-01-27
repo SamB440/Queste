@@ -50,6 +50,24 @@ class QuestObjectiveCommand(private val plugin: Queste) : BaseCommand(), IQueste
         }
     }
 
+    @Subcommand("savepreset")
+    @CommandPermission("queste.savepreset")
+    @CommandCompletion("@objectives @quests")
+    fun onSavePreset(sender: CommandSender, objectiveName: String, quest: Quest, name: String) {
+        if (!quest.isDummy) {
+            sender.sendMessage(translate("&cThat quest is not a dummy quest."))
+            return
+        }
+
+        quest.objectives.forEach { questObjective ->
+            if (questObjective.javaClass.simpleName == objectiveName) {
+                val registry = plugin.managers.getQuestRegistry(QuestObjectiveRegistry::class.java)
+                registry?.savePreset(questObjective, name)
+                sender.sendMessage(translate("&aPreset has been saved as $name.json."))
+            }
+        }
+    }
+
     @Subcommand("setdisplayname")
     @CommandCompletion("@objectives @quests")
     fun onSetDisplayName(player: Player, objectiveName: String, quest: Quest, displayName: String) {
@@ -110,9 +128,9 @@ class QuestObjectiveCommand(private val plugin: Queste) : BaseCommand(), IQueste
                 quest.objectives.forEach { questObjective ->
                     if (questObjective.javaClass.simpleName == objectiveName
                         && questObjective is LocationObjective) {
-                        questObjective.location = location
+                        questObjective.addLocation(location)
                         quest.save(plugin)
-                        player.sendMessage(translate("&aSet objective " + objective.name + " location to " + questObjective.location.toString() + "."))
+                        player.sendMessage(translate("&Added objective " + objective.name + " location."))
                     }
                 }
             } else {
@@ -177,7 +195,6 @@ class QuestObjectiveCommand(private val plugin: Queste) : BaseCommand(), IQueste
                 }
             }
         }
-
         return false
     }
 }

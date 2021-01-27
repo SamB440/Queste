@@ -53,6 +53,7 @@ public class QuestAdapter implements JsonSerializer<Quest>, JsonDeserializer<Que
         result.add("time", new JsonPrimitive(quest.getTime()));
         result.add("icon", new JsonPrimitive(quest.getIcon().toString()));
         result.add("description", new JsonPrimitive(quest.getDescription()));
+        result.add("dummy", new JsonPrimitive(quest.isDummy()));
         return result;
     }
 
@@ -109,9 +110,13 @@ public class QuestAdapter implements JsonSerializer<Quest>, JsonDeserializer<Que
             quest.setDescription(jsonObject.get("description").getAsString());
         }
 
+        if (jsonObject.get("dummy") != null) {
+            quest.setDummy(jsonObject.get("dummy").getAsBoolean());
+        }
         quest.getObjectives().forEach(questObjective -> {
             questObjective.setProgress(new ConcurrentHashMap<>());
         });
+
         return quest;
     }
 

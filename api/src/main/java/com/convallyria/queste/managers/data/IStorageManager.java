@@ -23,6 +23,10 @@ public interface IStorageManager {
      */
     ConcurrentMap<UUID, QuesteAccount> getCachedAccounts();
 
+    /**
+     * Deletes an account in its entirety, and removes it from the cached accounts.
+     * @param uuid uuid of player
+     */
     void deleteAccount(UUID uuid);
 
     /**

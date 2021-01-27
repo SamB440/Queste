@@ -13,7 +13,6 @@ public class SqlStorage extends SQLCommonStorage {
 
     public SqlStorage(Queste plugin) {
         super(plugin);
-
         DatabaseOptions options = DatabaseOptions.builder().mysql(plugin.getConfig().getString("settings.sql.user"),
                 plugin.getConfig().getString("settings.sql.pass"),
                 plugin.getConfig().getString("settings.sql.db"),
@@ -22,6 +21,7 @@ public class SqlStorage extends SQLCommonStorage {
         DB.setGlobalDatabase(db);
         try {
             db.executeUpdate(CREATE_TABLE);
+            db.executeUpdate(CREATE_OBJECTIVE_TABLE);
         } catch (SQLException e) {
             e.printStackTrace();
         }

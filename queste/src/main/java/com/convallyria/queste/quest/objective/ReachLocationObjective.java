@@ -15,7 +15,7 @@ public final class ReachLocationObjective extends LocationObjective {
 
     public ReachLocationObjective(Queste plugin, Quest quest, Location location) {
         super(plugin, quest);
-        setLocation(location);
+        getLocations().add(location);
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -28,12 +28,14 @@ public final class ReachLocationObjective extends LocationObjective {
             int x = location.getBlockX();
             int y = location.getBlockY();
             int z = location.getBlockZ();
-            int requiredX = getLocation().getBlockX();
-            int requiredY = getLocation().getBlockY();
-            int requiredZ = getLocation().getBlockZ();
-            if (x == requiredX && y == requiredY && z == requiredZ) {
-                this.increment(player);
-            }
+            getLocations().forEach(requiredLocation -> {
+                int requiredX = requiredLocation.getBlockX();
+                int requiredY = requiredLocation.getBlockY();
+                int requiredZ = requiredLocation.getBlockZ();
+                if (x == requiredX && y == requiredY && z == requiredZ) {
+                    this.increment(player);
+                }
+            });
         }
     }
 
