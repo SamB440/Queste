@@ -52,7 +52,7 @@ class QuestObjectiveCommand(private val plugin: Queste) : BaseCommand(), IQueste
 
     @Subcommand("savepreset")
     @CommandPermission("queste.savepreset")
-    @CommandCompletion("@objectives @quests")
+    @CommandCompletion("@objectives @quests @nothing")
     fun onSavePreset(sender: CommandSender, objectiveName: String, quest: Quest, name: String) {
         if (!quest.isDummy) {
             sender.sendMessage(translate("&cThat quest is not a dummy quest."))

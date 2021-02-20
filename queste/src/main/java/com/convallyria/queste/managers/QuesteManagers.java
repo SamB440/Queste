@@ -75,26 +75,30 @@ public class QuesteManagers implements IQuesteManagers {
                     plugin.getLogger().severe("Unable to load quest " + file.getName() + ". Json invalid.");
                     continue;
                 }
-                quest.getObjectives().forEach(questObjective -> {
-                    if (questObjective.getPluginRequirement() != null
-                        && Bukkit.getPluginManager().getPlugin(questObjective.getPluginRequirement()) == null) {
-                        plugin.getLogger().warning("Objective " + questObjective.getName() + " requires plugin "
-                                + questObjective.getPluginRequirement()
-                                + " which is not loaded. Objective will be skipped for event registration.");
-                        return;
-                    }
-                    Bukkit.getPluginManager().registerEvents(questObjective, plugin);
-                });
+
                 reader.close();
+                if (!quest.isDummy()) {
+                    quest.getObjectives().forEach(questObjective -> {
+                        if (questObjective.getPluginRequirement() != null
+                                && Bukkit.getPluginManager().getPlugin(questObjective.getPluginRequirement()) == null) {
+                            plugin.getLogger().warning("Objective " + questObjective.getName() + " requires plugin "
+                                    + questObjective.getPluginRequirement()
+                                    + " which is not loaded. Objective will be skipped for event registration.");
+                            return;
+                        }
+                        Bukkit.getPluginManager().registerEvents(questObjective, plugin);
+                    });
+                }
                 questeCache.addQuest(quest);
                 long startTime = System.currentTimeMillis();
-                if (plugin.getConfig().getBoolean("settings.server.advancements.generate")) {
+                if (plugin.getConfig().getBoolean("settings.server.advancements.generate")
+                    && !quest.isDummy()) {
                     this.loadAdvancements(quest, plugin);
                 }
                 long endTime = System.currentTimeMillis();
                 long totalTime = endTime - startTime;
                 if (plugin.debug()) {
-                    plugin.getLogger().info("Loaded quest " + quest.getName() + ".");
+                    plugin.getLogger().info("Loaded quest " + quest.getName() + "." + (quest.isDummy() ? " (dummy)" : ""));
                 }
                 plugin.getLogger().info("Done in " + totalTime + "ms.");
             } catch (IOException e) {

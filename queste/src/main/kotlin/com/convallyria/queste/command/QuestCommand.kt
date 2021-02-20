@@ -20,6 +20,8 @@ import org.bukkit.Material
 import org.bukkit.Sound
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
+import java.util.*
+import kotlin.collections.HashMap
 
 @CommandAlias("quest")
 @CommandPermission("queste.quest|queste.admin")
@@ -100,6 +102,7 @@ class QuestCommand(private val plugin: Queste) : BaseCommand(), IQuesteCommand {
 
     @Subcommand("copy|clone")
     @CommandPermission("quest.copy")
+    @CommandCompletion("@quests @nothing")
     fun onClone(sender: CommandSender, quest: Quest, name: String) {
         if (plugin.managers.questeCache.getQuest(name) != null) {
             sender.sendMessage(translate("&cQuest by that name already exists. Please choose another name."))
@@ -200,6 +203,7 @@ class QuestCommand(private val plugin: Queste) : BaseCommand(), IQuesteCommand {
         val registry = plugin.managers.getQuestRegistry(QuestObjectiveRegistry::class.java)
         val objective: Any? = registry?.loadPreset(presetName)
         if (objective is QuestObjective) {
+            objective.setProgress(HashMap<UUID, Int>())
             quest.addObjective(objective)
             Bukkit.getPluginManager().registerEvents(objective, plugin)
             sender.sendMessage(translate("&aObjective preset has been added to quest."))
