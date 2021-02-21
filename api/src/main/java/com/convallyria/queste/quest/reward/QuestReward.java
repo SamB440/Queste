@@ -1,8 +1,9 @@
 package com.convallyria.queste.quest.reward;
 
+import com.convallyria.queste.gui.IGuiEditable;
 import org.bukkit.entity.Player;
 
-public abstract class QuestReward {
+public abstract class QuestReward implements IGuiEditable {
 
     /**
      * Awards this reward to the specified player

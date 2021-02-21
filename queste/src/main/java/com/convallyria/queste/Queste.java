@@ -22,7 +22,9 @@ import com.convallyria.queste.quest.objective.BreedQuestObjective;
 import com.convallyria.queste.quest.objective.BucketFillObjective;
 import com.convallyria.queste.quest.objective.EnchantQuestObjective;
 import com.convallyria.queste.quest.objective.FishQuestObjective;
+import com.convallyria.queste.quest.objective.HitTargetLocationObjective;
 import com.convallyria.queste.quest.objective.InteractEntityObjective;
+import com.convallyria.queste.quest.objective.JumpQuestObjective;
 import com.convallyria.queste.quest.objective.KillEntityQuestObjective;
 import com.convallyria.queste.quest.objective.LevelQuestObjective;
 import com.convallyria.queste.quest.objective.PlaceBlockQuestObjective;
@@ -278,6 +280,8 @@ public final class Queste extends JavaPlugin implements IQuesteAPI, LanguagyPlug
         registry.register(FinishDungeonQuestObjective.class);
         registry.register(KillDungeonMobQuestObjective.class);
         registry.register(ReachLocationObjective.class);
+        registry.register(JumpQuestObjective.class);
+        registry.register(HitTargetLocationObjective.class);
     }
 
     private void registerRewards() {

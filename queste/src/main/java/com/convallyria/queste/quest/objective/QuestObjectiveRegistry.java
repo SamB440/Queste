@@ -32,13 +32,13 @@ public final class QuestObjectiveRegistry extends QuesteRegistry<QuestObjective>
     }
 
     /**
-     * @deprecated Constructor is invalid.
+     * @deprecated Not the recommended way to generate a new objective.
      * {@link #getNewObjective(String, Queste, Quest)} {@link #getNewObjective(Class, Queste, Quest)}
      */
     @Deprecated
     @Override
-    public @Nullable QuestObjective getNew(Class<? extends QuestObjective> clazz, Queste plugin) {
-        throw new IllegalStateException("Use getNewObjective instead");
+    public @Nullable QuestObjective getNew(Class<? extends QuestObjective> clazz, Queste plugin, Object... data) {
+        return getNewObjective(clazz, plugin, (Quest) data[0]);
     }
 
     @Override

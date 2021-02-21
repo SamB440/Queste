@@ -113,7 +113,7 @@ public final class Quest implements Keyed {
         this.canRestart = canRestart;
     }
 
-    public boolean addObjective(QuestObjective objective) {
+    public boolean addObjective(@NotNull QuestObjective objective) {
         if (dummy
             && !getObjectivesFromType(objective.getClass()).isEmpty()) {
             return false;

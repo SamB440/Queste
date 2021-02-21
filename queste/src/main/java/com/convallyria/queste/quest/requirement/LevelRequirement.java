@@ -1,9 +1,11 @@
 package com.convallyria.queste.quest.requirement;
 
+import com.convallyria.queste.gui.GuiEditable;
 import org.bukkit.entity.Player;
 
 public final class LevelRequirement extends QuestRequirement {
 
+    @GuiEditable("Level")
     private final int level;
 
     public LevelRequirement() {

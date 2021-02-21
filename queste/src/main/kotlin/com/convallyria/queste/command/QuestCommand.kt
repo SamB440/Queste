@@ -5,6 +5,7 @@ import co.aikar.commands.CommandHelp
 import co.aikar.commands.annotation.*
 import com.convallyria.queste.Queste
 import com.convallyria.queste.colour.ColourScheme
+import com.convallyria.queste.gui.QuestCreateGUI
 import com.convallyria.queste.quest.Quest
 import com.convallyria.queste.quest.objective.QuestObjective
 import com.convallyria.queste.quest.objective.QuestObjectiveRegistry
@@ -154,6 +155,12 @@ class QuestCommand(private val plugin: Queste) : BaseCommand(), IQuesteCommand {
         } else {
             sender.sendMessage(translate("&cCould not delete the quest. Does the file exist still?"))
         }
+    }
+
+    @Subcommand("edit")
+    @CommandCompletion("@quests")
+    fun onEdit(player: Player, quest: Quest) {
+        QuestCreateGUI(plugin, player, quest).open()
     }
 
     @Subcommand("setdummy")

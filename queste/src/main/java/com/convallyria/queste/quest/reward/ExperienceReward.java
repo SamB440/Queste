@@ -1,9 +1,11 @@
 package com.convallyria.queste.quest.reward;
 
+import com.convallyria.queste.gui.GuiEditable;
 import org.bukkit.entity.Player;
 
 public final class ExperienceReward extends QuestReward {
-	
+
+	@GuiEditable("Experience")
 	private final int xp;
 
 	public ExperienceReward() {

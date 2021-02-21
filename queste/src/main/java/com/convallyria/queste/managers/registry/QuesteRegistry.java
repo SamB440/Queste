@@ -105,12 +105,12 @@ public abstract class QuesteRegistry<T> {
     }
 
     @Nullable
-    public T getNew(String name, Queste plugin) {
-        return getNew(registeredClasses.get(name), plugin);
+    public T getNew(String name, Queste plugin, Object... data) {
+        return getNew(registeredClasses.get(name), plugin, data);
     }
 
     @Nullable
-    public abstract T getNew(Class<? extends T> clazz, Queste plugin);
+    public abstract T getNew(Class<? extends T> clazz, Queste plugin, Object... data);
 
     public abstract String getRegistryName();
 

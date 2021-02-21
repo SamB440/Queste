@@ -9,7 +9,7 @@ import java.lang.reflect.Constructor;
 public final class QuestRewardRegistry extends QuesteRegistry<QuestReward> {
 
     @Nullable
-    public QuestReward getNew(Class<? extends QuestReward> clazz, Queste plugin) {
+    public QuestReward getNew(Class<? extends QuestReward> clazz, Queste plugin, Object... data) {
         try {
             Constructor<?> constructor = clazz.getConstructor();
             return (QuestReward) constructor.newInstance();

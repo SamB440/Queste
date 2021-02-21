@@ -19,13 +19,21 @@ import java.util.List;
 
 public class QuestViewGUI extends QuesteGUI {
 
-    private final ChestGui gui;
+    private final Queste plugin;
+    private final Player player;
+    private ChestGui gui;
 
     public QuestViewGUI(Queste plugin, Player player) {
         super(plugin, player);
+        this.plugin = plugin;
+        this.player = player;
+    }
+
+    @Override
+    public void render() {
         this.gui = new ChestGui(6, "Quests");
 
-        PaginatedPane pane = super.render();
+        PaginatedPane pane = super.generateDefaultConfig();
         List<GuiItem> guiItems = new ArrayList<>();
         plugin.getManagers().getStorageManager().getAccount(player.getUniqueId()).thenAccept(account -> {
             for (Quest activeQuest : account.getActiveQuests()) {
@@ -55,10 +63,5 @@ public class QuestViewGUI extends QuesteGUI {
     @Override
     public ChestGui getGui() {
         return gui;
-    }
-
-    @Override
-    public void open() {
-        gui.show(getPlayer());
     }
 }

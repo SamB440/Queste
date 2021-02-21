@@ -1,10 +1,12 @@
 package com.convallyria.queste.quest.reward;
 
+import com.convallyria.queste.gui.GuiEditable;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 public final class ConsoleCommandReward extends QuestReward {
 
+	@GuiEditable("Command")
 	private final String command;
 
 	public ConsoleCommandReward() {

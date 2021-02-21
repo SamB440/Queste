@@ -1,8 +1,9 @@
 package com.convallyria.queste.quest.requirement;
 
+import com.convallyria.queste.gui.IGuiEditable;
 import org.bukkit.entity.Player;
 
-public abstract class QuestRequirement {
+public abstract class QuestRequirement implements IGuiEditable {
 
     /**
      * Checks if this player meets the requirements

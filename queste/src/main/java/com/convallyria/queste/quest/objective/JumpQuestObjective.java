@@ -1,6 +1,6 @@
 package com.convallyria.queste.quest.objective;
 
-import com.convallyria.queste.api.IQuesteAPI;
+import com.convallyria.queste.Queste;
 import com.convallyria.queste.quest.Quest;
 import org.bukkit.Statistic;
 import org.bukkit.entity.Player;
@@ -9,7 +9,7 @@ import org.bukkit.event.player.PlayerStatisticIncrementEvent;
 
 public final class JumpQuestObjective extends QuestObjective {
 
-    public JumpQuestObjective(IQuesteAPI plugin, Quest quest) {
+    public JumpQuestObjective(Queste plugin, Quest quest) {
         super(plugin, quest);
     }
 

@@ -21,30 +21,30 @@ public abstract class QuesteGUI {
 
     private final Queste plugin;
     private final Player player;
-    private final int backX;
-    private final int backY;
-    private final int backL;
-    private final int backH;
-    private final int forwardX;
-    private final int forwardY;
-    private final int forwardL;
-    private final int forwardH;
-    private final int exitX;
-    private final int exitY;
-    private final int exitL;
-    private final int exitH;
-    private final int paneX;
-    private final int paneY;
-    private final int paneL;
-    private final int paneH;
-    private final int oPaneX;
-    private final int oPaneY;
-    private final int oPaneL;
-    private final int oPaneH;
-    private final int iPaneX;
-    private final int iPaneY;
-    private final int iPaneL;
-    private final int iPaneH;
+    protected final int backX;
+    protected final int backY;
+    protected final int backL;
+    protected final int backH;
+    protected final int forwardX;
+    protected final int forwardY;
+    protected final int forwardL;
+    protected final int forwardH;
+    protected final int exitX;
+    protected final int exitY;
+    protected final int exitL;
+    protected final int exitH;
+    protected final int paneX;
+    protected final int paneY;
+    protected final int paneL;
+    protected final int paneH;
+    protected final int oPaneX;
+    protected final int oPaneY;
+    protected final int oPaneL;
+    protected final int oPaneH;
+    protected final int iPaneX;
+    protected final int iPaneY;
+    protected final int iPaneL;
+    protected final int iPaneH;
 
     protected QuesteGUI(Queste plugin, Player player) {
         this.plugin = plugin;
@@ -80,7 +80,9 @@ public abstract class QuesteGUI {
         return player;
     }
 
-    public PaginatedPane render() {
+    public abstract void render();
+
+    public PaginatedPane generateDefaultConfig() {
         ChestGui gui = getGui();
 
         gui.setOnGlobalClick(click -> click.setCancelled(true));
@@ -186,5 +188,9 @@ public abstract class QuesteGUI {
 
     public abstract ChestGui getGui();
 
-    public abstract void open();
+    public void open() {
+        player.closeInventory();
+        render();
+        getGui().show(player);
+    }
 }

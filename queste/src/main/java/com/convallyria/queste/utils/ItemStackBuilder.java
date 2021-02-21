@@ -8,6 +8,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
@@ -71,6 +72,14 @@ public class ItemStackBuilder {
         return this;
     }
 
+    public ItemStackBuilder withLore(String... name) {
+        List<String> lines = new ArrayList<>();
+        for (String lore : name) {
+            lines.add(ChatColor.translateAlternateColorCodes('&', lore));
+        }
+        return withLore(lines);
+    }
+
     public ItemStackBuilder withDurability(int durability) {
         final ItemMeta meta = ITEM_STACK.getItemMeta();
         final Damageable damageable = (Damageable) meta;
@@ -110,6 +119,18 @@ public class ItemStackBuilder {
             return this;
         } else {
             throw new IllegalArgumentException("withSkullOwner is only applicable for skulls!");
+        }
+    }
+
+    public ItemStackBuilder generation(BookMeta.Generation generation) {
+        Material type = ITEM_STACK.getType();
+        if (type == Material.WRITTEN_BOOK) {
+            final ItemMeta meta = ITEM_STACK.getItemMeta();
+            final BookMeta bookMeta = (BookMeta) meta;
+            bookMeta.setGeneration(generation);
+            return this;
+        } else {
+            throw new IllegalArgumentException("generation is only applicable for written books!");
         }
     }
 

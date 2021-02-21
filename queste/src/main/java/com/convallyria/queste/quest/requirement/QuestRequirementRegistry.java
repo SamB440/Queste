@@ -9,7 +9,7 @@ import java.lang.reflect.Constructor;
 public final class QuestRequirementRegistry extends QuesteRegistry<QuestRequirement> {
 
     @Override
-    public @Nullable QuestRequirement getNew(Class<? extends QuestRequirement> clazz, Queste plugin) {
+    public @Nullable QuestRequirement getNew(Class<? extends QuestRequirement> clazz, Queste plugin, Object... data) {
         try {
             Constructor<?> constructor = clazz.getConstructor(Queste.class);
             return (QuestRequirement) constructor.newInstance(plugin);

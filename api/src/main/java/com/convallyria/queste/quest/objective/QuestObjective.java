@@ -2,6 +2,8 @@ package com.convallyria.queste.quest.objective;
 
 import com.convallyria.queste.api.IQuesteAPI;
 import com.convallyria.queste.api.QuesteAPI;
+import com.convallyria.queste.gui.GuiEditable;
+import com.convallyria.queste.gui.IGuiEditable;
 import com.convallyria.queste.quest.Quest;
 import com.convallyria.queste.translation.Translations;
 import net.md_5.bungee.api.ChatMessageType;
@@ -24,14 +26,17 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
-public abstract class QuestObjective implements Listener, Keyed {
+public abstract class QuestObjective implements Listener, Keyed, IGuiEditable {
 
     private transient IQuesteAPI plugin;
 
     private final String questName;
+    @GuiEditable("Completion Amount")
     private int completionAmount;
     private transient Map<UUID, Integer> progress;
+    @GuiEditable("Story Mode Key")
     private int storyModeKey;
+    @GuiEditable("Display Name")
     private String displayName;
 
     protected QuestObjective(IQuesteAPI plugin, Quest quest) {

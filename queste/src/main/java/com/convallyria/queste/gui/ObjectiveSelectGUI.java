@@ -19,13 +19,29 @@ import java.util.List;
 
 public class ObjectiveSelectGUI extends QuesteGUI {
 
-    private final ChestGui gui;
+    private final Queste plugin;
+    private final Player player;
+    private final Quest quest;
+    private final Class<? extends QuestObjective> type;
+    private final Method method;
+    private final Object[] data;
+    private ChestGui gui;
 
     public ObjectiveSelectGUI(Queste plugin, Player player, Quest quest, Class<? extends QuestObjective> type, Method method, Object... data) {
         super(plugin, player);
+        this.plugin = plugin;
+        this.player = player;
+        this.quest = quest;
+        this.type = type;
+        this.method = method;
+        this.data = data;
+    }
+
+    @Override
+    public void render() {
         this.gui = new ChestGui(6, quest.getDisplayName());
 
-        PaginatedPane pane = super.render();
+        PaginatedPane pane = super.generateDefaultConfig();
         List<QuestObjective> objectives = quest.getObjectivesFromType(type);
         List<GuiItem> guiItems = new ArrayList<>();
         for (QuestObjective objective : objectives) {
@@ -54,10 +70,5 @@ public class ObjectiveSelectGUI extends QuesteGUI {
     @Override
     public ChestGui getGui() {
         return gui;
-    }
-
-    @Override
-    public void open() {
-        gui.show(getPlayer());
     }
 }
