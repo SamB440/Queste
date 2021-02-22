@@ -116,7 +116,7 @@ public abstract class QuestObjective implements Listener, Keyed, IGuiEditable {
                 return;
             }
 
-            if (!checkIfCanIncrement(quest, player)) {
+            if (!account.getActiveQuests().contains(quest) || !checkIfCanIncrement(quest, player)) {
                 future.complete(false);
                 return;
             }

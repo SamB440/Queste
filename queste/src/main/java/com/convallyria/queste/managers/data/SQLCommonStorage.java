@@ -62,7 +62,7 @@ public abstract class SQLCommonStorage implements IStorageManager {
             for (DbRow row : results) {
                 String questName = row.getString("quest");
                 Quest quest = plugin.getManagers().getQuesteCache().getQuest(questName);
-                if (quest == null) {
+                if (quest == null && plugin.debug()) {
                     plugin.getLogger().warning("Cannot find quest " + questName);
                     continue;
                 }
