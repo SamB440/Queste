@@ -146,6 +146,16 @@ public final class Quest implements Keyed {
         return objectivesByType;
     }
 
+    public int findNextStoryKey() {
+        if (!storyMode) return 0;
+        int high = 0;
+        for (QuestObjective storyObjective : objectives) {
+            if (storyObjective.getStoryModeKey() > high) {
+                high = storyObjective.getStoryModeKey();
+            }
+        }
+        return high + 1;
+    }
     public void addReward(@NotNull QuestReward reward) {
         rewards.add(reward);
     }

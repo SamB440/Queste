@@ -1,11 +1,13 @@
 package com.convallyria.queste.quest.requirement;
 
+import com.convallyria.queste.gui.GuiEditable;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 public final class ItemRequirement extends QuestRequirement {
 
+	@GuiEditable("Item")
 	private ItemStack item;
 
 	public ItemRequirement() {

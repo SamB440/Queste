@@ -38,13 +38,18 @@ public abstract class QuestObjective implements Listener, Keyed, IGuiEditable {
     private int storyModeKey;
     @GuiEditable("Display Name")
     private String displayName;
+    @GuiEditable("Show Particle Effects")
+    private boolean particles;
 
     protected QuestObjective(IQuesteAPI plugin, Quest quest) {
         this.plugin = plugin;
         this.questName = quest.getName();
         this.completionAmount = 10;
         this.progress = new ConcurrentHashMap<>();
-        this.storyModeKey = 0; // Auto set it as first - maybe change this in the future to set it as last compared to other objectives.
+        // EDIT: Auto set as next highest story key.
+        // (*Auto set it as first - maybe change this in the future to set it as last compared to other objectives.*)
+        this.storyModeKey = quest.findNextStoryKey();
+        this.particles = true;
         if (getPluginRequirement() != null
                 && Bukkit.getPluginManager().getPlugin(getPluginRequirement()) == null) {
             plugin.getLogger().warning("Objective " + getName() + " requires plugin "

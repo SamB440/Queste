@@ -1,6 +1,7 @@
 package com.convallyria.queste.gui;
 
 import com.convallyria.queste.Queste;
+import com.convallyria.queste.gui.element.IGuiFieldElement;
 import com.convallyria.queste.quest.Quest;
 import com.convallyria.queste.translation.Translations;
 import com.convallyria.queste.utils.ItemStackBuilder;
@@ -11,7 +12,6 @@ import com.github.stefvanschie.inventoryframework.pane.PaginatedPane;
 import com.github.stefvanschie.inventoryframework.pane.Pane;
 import com.github.stefvanschie.inventoryframework.pane.StaticPane;
 import net.wesjd.anvilgui.AnvilGUI;
-import org.apache.commons.lang.reflect.FieldUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -72,20 +72,29 @@ public class EditGuiElementGUI extends QuesteGUI {
                         .withLore("&e&lClick &7to set value.")
                         .generation(null).build();
                 GuiItem guiItem = new GuiItem(item, click -> {
-                    new AnvilGUI.Builder()
-                            .onClose(player -> {
-                                open();
-                            })
-                            .onComplete((player, text) -> {
-                                setField(field, text);
-                                player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 1f);
-                                return AnvilGUI.Response.close();
-                            })
-                            .text("")
-                            .itemLeft(new ItemStack(Material.WRITABLE_BOOK))
-                            .title("Set value of this element")
-                            .plugin(plugin)
-                            .open(player);
+                    IGuiFieldElement element = plugin.getManagers().getGuiFieldElementRegistry().fromClass(field.getType());
+                    if (element != null) {
+                        if (!element.needsValue()) { // Just toggle it.
+                            element.set(player, guiEditable, field, null).thenAccept(done -> open());
+                        } else {
+                            new AnvilGUI.Builder()
+                                .onClose(player -> {
+                                    open();
+                                })
+                                .onComplete((player, text) -> {
+                                    element.set(player, guiEditable, field, text).thenAccept(done -> {
+                                        player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 1f);
+                                        open();
+                                    });
+                                    return AnvilGUI.Response.text("Please wait.");
+                                })
+                                .text("Enter value")
+                                .itemLeft(new ItemStack(Material.WRITABLE_BOOK))
+                                .title("Set value of this element")
+                                .plugin(plugin)
+                                .open(player);
+                        }
+                    }
                     player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 1f);
                 });
                 items.add(guiItem);
@@ -99,20 +108,6 @@ public class EditGuiElementGUI extends QuesteGUI {
         });
         pane.populateWithGuiItems(items);
         gui.update();
-    }
-
-    private void setField(Field field, String text) { // Don't throw exceptions for cleaner code elsewhere
-        field.setAccessible(true);
-        try {
-            FieldUtils.writeField(field, guiEditable, Integer.parseInt(text));
-        } catch (NumberFormatException | ReflectiveOperationException e) {
-            Object value = field.getType().cast(text);
-            try {
-                FieldUtils.writeField(field, guiEditable, value);
-            } catch (IllegalAccessException e2) {
-                e2.printStackTrace();
-            }
-        }
     }
 
     private Object getField(Field field) { // Don't throw exceptions for cleaner code elsewhere

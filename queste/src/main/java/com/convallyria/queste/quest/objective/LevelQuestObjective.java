@@ -1,6 +1,7 @@
 package com.convallyria.queste.quest.objective;
 
 import com.convallyria.queste.Queste;
+import com.convallyria.queste.gui.GuiEditable;
 import com.convallyria.queste.quest.Quest;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -8,6 +9,7 @@ import org.bukkit.event.player.PlayerLevelChangeEvent;
 
 public final class LevelQuestObjective extends QuestObjective {
 
+    @GuiEditable("Level")
     private int level;
 
     public LevelQuestObjective(Queste plugin, Quest quest) {

@@ -1,6 +1,11 @@
 package com.convallyria.queste.managers;
 
 import com.convallyria.queste.Queste;
+import com.convallyria.queste.gui.element.BooleanGuiFieldElement;
+import com.convallyria.queste.gui.element.GuiFieldElementRegistry;
+import com.convallyria.queste.gui.element.IGuiFieldElementRegistry;
+import com.convallyria.queste.gui.element.IntegerGuiFieldElement;
+import com.convallyria.queste.gui.element.ItemStackGuiFieldElement;
 import com.convallyria.queste.managers.data.IStorageManager;
 import com.convallyria.queste.managers.data.QuesteCache;
 import com.convallyria.queste.managers.data.StorageType;
@@ -35,6 +40,7 @@ public class QuesteManagers implements IQuesteManagers {
     private IStorageManager storageManager;
     private final QuesteCache questeCache;
     private final Map<Class<? extends QuesteRegistry<?>>, QuesteRegistry<?>> registry;
+    private final IGuiFieldElementRegistry guiFieldElementRegistry;
 
     public File getPresetFolder() {
         return new File(plugin.getDataFolder() + File.separator + "presets");
@@ -108,6 +114,11 @@ public class QuesteManagers implements IQuesteManagers {
         try {
             Bukkit.reloadData();
         } catch (Exception ignored) { }
+
+        this.guiFieldElementRegistry = new GuiFieldElementRegistry();
+        guiFieldElementRegistry.register(new BooleanGuiFieldElement());
+        guiFieldElementRegistry.register(new IntegerGuiFieldElement());
+        guiFieldElementRegistry.register(new ItemStackGuiFieldElement());
     }
 
     private void loadAdvancements(Quest quest, Queste plugin) {
@@ -154,6 +165,11 @@ public class QuesteManagers implements IQuesteManagers {
     @Override
     public QuesteCache getQuesteCache() {
         return questeCache;
+    }
+
+    @Override
+    public IGuiFieldElementRegistry getGuiFieldElementRegistry() {
+        return guiFieldElementRegistry;
     }
 
     public Map<Class<? extends QuesteRegistry<?>>, QuesteRegistry<?>> getQuestRegistry() {

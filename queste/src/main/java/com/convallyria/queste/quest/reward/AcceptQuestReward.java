@@ -1,12 +1,14 @@
 package com.convallyria.queste.quest.reward;
 
 import com.convallyria.queste.Queste;
+import com.convallyria.queste.gui.GuiEditable;
 import com.convallyria.queste.quest.Quest;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class AcceptQuestReward extends QuestReward {
-    
+
+    @GuiEditable("The Quest")
     private final String questName;
     
     public AcceptQuestReward() {

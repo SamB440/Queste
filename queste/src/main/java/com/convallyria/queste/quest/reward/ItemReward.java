@@ -1,11 +1,13 @@
 package com.convallyria.queste.quest.reward;
 
+import com.convallyria.queste.gui.GuiEditable;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 public final class ItemReward extends QuestReward {
-	
+
+	@GuiEditable("Item")
 	private ItemStack item;
 
 	public ItemReward() {

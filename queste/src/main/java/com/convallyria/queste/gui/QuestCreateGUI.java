@@ -54,7 +54,7 @@ public class QuestCreateGUI extends QuesteGUI {
         StaticPane questInfo = new StaticPane(4, 0, 1, 1, Pane.Priority.HIGH);
         ItemStack questInfoItem = new ItemStackBuilder(Material.TOTEM_OF_UNDYING)
                 .withName("&6" + quest.getName())
-                .withLore("&e&lClick &7to save the quest.")
+                .withLore("&7" + quest.getDescription(), "&e&lClick &7to save the quest.")
                 .build();
         questInfo.addItem(new GuiItem(questInfoItem, event -> {
             quest.save(plugin);
@@ -84,6 +84,29 @@ public class QuestCreateGUI extends QuesteGUI {
             player.closeInventory();
         }),0, 0);
         gui.addPane(displayName);
+
+        StaticPane description = new StaticPane(0, 3, 1, 1, Pane.Priority.HIGH);
+        ItemStack descriptionItem = new ItemStackBuilder(Material.PAPER)
+                .withName("&6Set quest description &7- &6" + quest.getDescription())
+                .withLore("&7What description the quest should have.", "&e&lClick &7to set the quest description.")
+                .build();
+        description.addItem(new GuiItem(descriptionItem, event -> {
+            ConversationFactory factory = new ConversationFactory(plugin)
+                    .withModality(true)
+                    .withPrefix(new QuesteConversationPrefix())
+                    .withFirstPrompt(new QuesteStringPrompt("What description should this quest have?"))
+                    .withEscapeSequence("quit")
+                    .withLocalEcho(true)
+                    .withTimeout(60);
+            Conversation conversation = factory.buildConversation(player);
+            conversation.begin();
+            conversation.addConversationAbandonedListener(abandonedEvent -> {
+                quest.setDescription((String) abandonedEvent.getContext().getSessionData("input"));
+                open();
+            });
+            player.closeInventory();
+        }),0, 0);
+        gui.addPane(description);
 
         StaticPane requirements = new StaticPane(4, 2, 1, 1, Pane.Priority.HIGH);
         ItemStack requirementsItem = new ItemStackBuilder(Material.COMPARATOR)
@@ -162,6 +185,20 @@ public class QuestCreateGUI extends QuesteGUI {
             }
         }),0, 0);
         gui.addPane(restartable);
+
+        StaticPane dummy = new StaticPane(6, 5, 1, 1, Pane.Priority.HIGH);
+        ItemStack dummyItem = new ItemStackBuilder(Material.RED_BANNER)
+                .withName("&6Toggle dummy quest &7- &6" + quest.isDummy())
+                .withLore("&7Whether this quest is simply for editing", "&7Quest &ccannot &7be used by players", "&c&lShift-Click &7to toggle dummy.")
+                .build();
+        dummy.addItem(new GuiItem(dummyItem, event -> {
+            if (event.getClick() == ClickType.SHIFT_LEFT) {
+                quest.setDummy(!quest.isDummy());
+                player.playSound(player.getLocation(), Sound.BLOCK_TRIPWIRE_CLICK_ON, 1f, 1f);
+                open();
+            }
+        }),0, 0);
+        gui.addPane(dummy);
 
         StaticPane rewards = new StaticPane(8, 2, 1, 1, Pane.Priority.HIGH);
         ItemStack rewardsItem = new ItemStackBuilder(Material.CHEST)
