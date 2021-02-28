@@ -38,7 +38,9 @@ public class QuestViewGUI extends QuesteGUI {
         plugin.getManagers().getStorageManager().getAccount(player.getUniqueId()).thenAccept(account -> {
             for (Quest activeQuest : account.getActiveQuests()) {
                 List<String> lore = new ArrayList<>();
-                lore.add(ColourScheme.getPrimaryColour() + "Time: " + ColourScheme.getSecondaryColour() + activeQuest.getTime() + "s");
+                if (activeQuest.getTime() != 0) {
+                    lore.add(ColourScheme.getPrimaryColour() + "Time: " + ColourScheme.getSecondaryColour() + activeQuest.getTime() + "s");
+                }
                 lore.add(ColourScheme.getPrimaryColour() + "Objectives: ");
                 for (QuestObjective objective : activeQuest.getObjectives()) {
                     lore.add(ColourScheme.getSecondaryColour() + " - " + objective.getDisplayName() + " (x" + objective.getCompletionAmount() + ")");

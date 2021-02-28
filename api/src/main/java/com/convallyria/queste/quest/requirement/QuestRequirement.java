@@ -8,12 +8,7 @@ public abstract class QuestRequirement implements IGuiEditable {
     /**
      * Checks if this player meets the requirements
      * @param player player to check
+     * @return true if player meets requirements
      */
     public abstract boolean meetsRequirements(Player player);
-
-    /**
-     * User friendly name of this reward.
-     * @return name of reward
-     */
-    public abstract String getName();
 }

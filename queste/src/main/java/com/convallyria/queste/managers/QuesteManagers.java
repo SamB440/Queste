@@ -15,6 +15,7 @@ import com.convallyria.queste.quest.objective.QuestObjective;
 import com.convallyria.queste.quest.objective.QuestObjectiveRegistry;
 import com.convallyria.queste.quest.requirement.QuestRequirementRegistry;
 import com.convallyria.queste.quest.reward.QuestRewardRegistry;
+import com.convallyria.queste.quest.start.QuestStartRegistry;
 import hu.trigary.advancementcreator.Advancement;
 import hu.trigary.advancementcreator.shared.ItemObject;
 import hu.trigary.advancementcreator.trigger.ImpossibleTrigger;
@@ -62,6 +63,7 @@ public class QuesteManagers implements IQuesteManagers {
         registry.put(QuestObjectiveRegistry.class, new QuestObjectiveRegistry());
         registry.put(QuestRewardRegistry.class, new QuestRewardRegistry());
         registry.put(QuestRequirementRegistry.class, new QuestRequirementRegistry());
+        registry.put(QuestStartRegistry.class, new QuestStartRegistry());
 
         File accountsFolder = new File(plugin.getDataFolder() + "/accounts/");
         if (!accountsFolder.exists()) accountsFolder.mkdirs();
@@ -94,6 +96,7 @@ public class QuesteManagers implements IQuesteManagers {
                         }
                         Bukkit.getPluginManager().registerEvents(questObjective, plugin);
                     });
+                    quest.getStarters().forEach(questStart -> Bukkit.getPluginManager().registerEvents(questStart, plugin));
                 }
                 questeCache.addQuest(quest);
                 long startTime = System.currentTimeMillis();
@@ -113,7 +116,7 @@ public class QuesteManagers implements IQuesteManagers {
         }
         try {
             Bukkit.reloadData();
-        } catch (Exception ignored) { }
+        } catch (Exception ignored) { } // MockBukkit
 
         this.guiFieldElementRegistry = new GuiFieldElementRegistry();
         guiFieldElementRegistry.register(new BooleanGuiFieldElement());

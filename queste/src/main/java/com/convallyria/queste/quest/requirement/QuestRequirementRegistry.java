@@ -2,6 +2,7 @@ package com.convallyria.queste.quest.requirement;
 
 import com.convallyria.queste.Queste;
 import com.convallyria.queste.managers.registry.QuesteRegistry;
+import org.bukkit.Material;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Constructor;
@@ -27,5 +28,10 @@ public final class QuestRequirementRegistry extends QuesteRegistry<QuestRequirem
     @Override
     public Class<QuestRequirement> getImplementation() {
         return QuestRequirement.class;
+    }
+
+    @Override
+    public Material getIcon() {
+        return Material.REDSTONE;
     }
 }

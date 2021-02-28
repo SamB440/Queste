@@ -59,8 +59,10 @@ public abstract class SQLCommonStorage implements IStorageManager {
 
         DB.getResultsAsync(SELECT_QUEST, getDatabaseUuid(uuid)).whenComplete((results, err) -> {
             Map<Quest, Boolean> quests = new HashMap<>();
+            System.out.println("b: " + results);
             for (DbRow row : results) {
                 String questName = row.getString("quest");
+                System.out.println("a: " + questName);
                 Quest quest = plugin.getManagers().getQuesteCache().getQuest(questName);
                 if (quest == null && plugin.debug()) {
                     plugin.getLogger().warning("Cannot find quest " + questName);
@@ -81,11 +83,13 @@ public abstract class SQLCommonStorage implements IStorageManager {
                     });
                 });
                 boolean completed = row.getInt("completed") == 1;
+                System.out.println("ADDING CACHE: " + questName + ":" + completed);
                 quests.put(quest, completed);
             }
 
             QuesteAccount account = new QuesteAccount(uuid);
             quests.forEach((quest, completed) -> {
+                System.out.println(quest.getName() + ":" + completed);
                 if (completed) account.addCompletedQuest(quest);
                 else account.addActiveQuest(quest);
             });
@@ -125,17 +129,20 @@ public abstract class SQLCommonStorage implements IStorageManager {
         DB.getResultsAsync(SELECT_QUEST, getDatabaseUuid(uuid)).thenAccept(results -> {
             Map<String, Boolean> current = new HashMap<>();
             for (DbRow row : results) {
+                System.out.println("CURRENT: " + row.getString("quest") + ":" + (row.getInt("completed") == 1));
                 current.put(row.getString("quest"), row.getInt("completed") == 1);
             }
 
             for (Quest allQuest : account.getAllQuests()) {
                 if (!current.containsKey(allQuest.getName())) {
                     try {
+                        System.out.println("INSERT: " + allQuest.getName() + ":" + (allQuest.isCompleted(player)));
                         DB.executeInsert(INSERT_QUEST, getDatabaseUuid(uuid), allQuest.getName(), allQuest.isCompleted(player));
                     } catch (SQLException throwables) {
                         throwables.printStackTrace();
                     }
                 } else {
+                    System.out.println("UPDATE: " + allQuest.getName() + ":" + (allQuest.isCompleted(player)));
                     DB.executeUpdateAsync(UPDATE_QUEST, allQuest.isCompleted(player), getDatabaseUuid(uuid), allQuest.getName());
                 }
             }

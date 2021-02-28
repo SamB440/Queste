@@ -85,28 +85,64 @@ public abstract class QuestObjective implements Listener, Keyed, IGuiEditable {
         return plugin;
     }
 
+    /**
+     * Gets the name of the associated quest
+     * @return associated quest
+     */
     @NotNull
     public String getQuestName() {
         return questName;
     }
 
+    /**
+     * Gets the quest this objective is associated with.
+     * @return linked quest, possibly null
+     */
     @Nullable
     public Quest getQuest() {
         return getPlugin().getManagers().getQuesteCache().getQuest(getQuestName());
     }
 
+    /**
+     * Gets how many times this objective must be completed.
+     * @return completion amount
+     */
     public int getCompletionAmount() {
         return completionAmount;
     }
 
+    /**
+     * Sets how many times this objective must be completed.
+     * @param completionAmount times to complete
+     */
     public void setCompletionAmount(int completionAmount) {
         this.completionAmount = completionAmount;
     }
 
+    /**
+     * Gets the current completion amount for the specified player.
+     * @param player player to check
+     * @return completion amount
+     * @see #getCompletionAmount()
+     * @see #setCompletionAmount(int)
+     * @see #increment(Player)
+     * @see #checkIfCanIncrement(Quest, Player)
+     * @see #setIncrement(Player, int)
+     */
     public int getIncrement(@NotNull Player player) {
         return progress.getOrDefault(player.getUniqueId(), 0);
     }
 
+    /**
+     * Increments the current completion amount for the specified player by 1.
+     * @param player player to check
+     * @return {@link CompletableFuture} with a {@link Boolean} stating whether the increment was successful
+     * @see #getCompletionAmount()
+     * @see #setCompletionAmount(int)
+     * @see #increment(Player)
+     * @see #checkIfCanIncrement(Quest, Player)
+     * @see #setIncrement(Player, int)
+     */
     public CompletableFuture<Boolean> increment(@NotNull Player player) {
         CompletableFuture<Boolean> future = new CompletableFuture<>();
         getPlugin().getManagers().getStorageManager().getAccount(player.getUniqueId()).thenAccept(account -> {
@@ -149,6 +185,17 @@ public abstract class QuestObjective implements Listener, Keyed, IGuiEditable {
         return future;
     }
 
+    /**
+     * Checks whether this objective can be incremented by the player.
+     * @param quest quest to check compared to this
+     * @param player player to check
+     * @return true if player can increment, false otherwise
+     * @see #getCompletionAmount()
+     * @see #setCompletionAmount(int)
+     * @see #increment(Player)
+     * @see #checkIfCanIncrement(Quest, Player)
+     * @see #setIncrement(Player, int)
+     */
     public boolean checkIfCanIncrement(@NotNull Quest quest, @NotNull Player player) {
         for (QuestObjective otherObjective : quest.getObjectives()) {
             // If the player has not completed another objective, story mode is enabled, and our story
@@ -182,6 +229,11 @@ public abstract class QuestObjective implements Listener, Keyed, IGuiEditable {
         this.storyModeKey = storyModeKey;
     }
 
+    /**
+     * Returns whether the player has completed this objective.
+     * @param player player to check
+     * @return true if completed, false otherwise
+     */
     public boolean hasCompleted(@NotNull Player player) {
         return progress.getOrDefault(player.getUniqueId(), 0) == completionAmount;
     }
@@ -195,12 +247,14 @@ public abstract class QuestObjective implements Listener, Keyed, IGuiEditable {
         this.displayName = displayName;
     }
 
-    public abstract String getName();
-
     public String getSafeName() {
         return getName().replace(" ", "_");
     }
 
+    /**
+     * The plugin that this objective requires.
+     * @return required plugin, possibly null
+     */
     @Nullable
     public String getPluginRequirement() {
         return null;

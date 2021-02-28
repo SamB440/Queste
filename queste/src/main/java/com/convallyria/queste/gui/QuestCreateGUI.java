@@ -7,6 +7,7 @@ import com.convallyria.queste.quest.Quest;
 import com.convallyria.queste.quest.objective.QuestObjectiveRegistry;
 import com.convallyria.queste.quest.requirement.QuestRequirementRegistry;
 import com.convallyria.queste.quest.reward.QuestRewardRegistry;
+import com.convallyria.queste.quest.start.QuestStartRegistry;
 import com.convallyria.queste.utils.ItemStackBuilder;
 import com.github.stefvanschie.inventoryframework.gui.GuiItem;
 import com.github.stefvanschie.inventoryframework.gui.type.ChestGui;
@@ -107,6 +108,44 @@ public class QuestCreateGUI extends QuesteGUI {
             player.closeInventory();
         }),0, 0);
         gui.addPane(description);
+
+        StaticPane delete = new StaticPane(0, 3, 1, 1, Pane.Priority.HIGH);
+        ItemStack deleteItem = new ItemStackBuilder(Material.REDSTONE)
+                .withName("&c&lDelete Quest")
+                .withLore(" ", "&cThis action cannot be undone.", " ", "&c&lShift-Click &7to delete the quest.")
+                .build();
+        delete.addItem(new GuiItem(deleteItem, event -> {
+            if (event.getClick() == ClickType.SHIFT_LEFT) {
+                //TODO chat delete
+            }
+            player.closeInventory();
+        }),0, 0);
+        gui.addPane(delete);
+
+        StaticPane starters = new StaticPane(2, 2, 1, 1, Pane.Priority.HIGH);
+        ItemStack startersItem = new ItemStackBuilder(Material.STICK)
+                .withName("&6Starters")
+                .withLore("&7Starters for how the quest", "&7can be started by a player", "&e&lClick &7to edit quest starters.")
+                .build();
+        starters.addItem(new GuiItem(startersItem, event -> {
+            player.playSound(player.getLocation(), Sound.BLOCK_COMPARATOR_CLICK, 1f, 1f);
+            ItemStack editStarters = new ItemStackBuilder(Material.WRITABLE_BOOK)
+                    .withName("&6Edit starters")
+                    .build();
+            ItemStack addStarters = new ItemStackBuilder(Material.WRITABLE_BOOK)
+                    .withName("&6Add starters")
+                    .build();
+            GuiItem editStartersGuiItem = new GuiItem(editStarters, click -> {
+                new EditQuestElementGUI(plugin, player, quest, plugin.getManagers().getQuestRegistry(QuestStartRegistry.class)).open();
+                player.playSound(player.getLocation(), Sound.ITEM_BOOK_PAGE_TURN, 1f, 1f);
+            });
+            GuiItem addStarterGuiItem = new GuiItem(addStarters, click -> {
+                new AddQuestElementGUI(plugin, player, quest, plugin.getManagers().getQuestRegistry(QuestStartRegistry.class)).open();
+                player.playSound(player.getLocation(), Sound.ITEM_BOOK_PAGE_TURN, 1f, 1f);
+            });
+            new QueryGUI(plugin, player, Arrays.asList(addStarterGuiItem, editStartersGuiItem)).open();
+        }),0, 0);
+        gui.addPane(starters);
 
         StaticPane requirements = new StaticPane(4, 2, 1, 1, Pane.Priority.HIGH);
         ItemStack requirementsItem = new ItemStackBuilder(Material.COMPARATOR)

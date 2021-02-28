@@ -4,6 +4,7 @@ import com.convallyria.queste.quest.Quest;
 import com.convallyria.queste.quest.objective.QuestObjective;
 import com.convallyria.queste.quest.requirement.QuestRequirement;
 import com.convallyria.queste.quest.reward.QuestReward;
+import com.convallyria.queste.quest.start.QuestStart;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
@@ -48,6 +49,13 @@ public class QuestAdapter implements JsonSerializer<Quest>, JsonDeserializer<Que
         });
         result.add("requirements", requirements);
 
+        AbstractAdapter<QuestStart> startAdapter = new AbstractAdapter<>(null);
+        JsonArray starters = new JsonArray();
+        quest.getStarters().forEach(questStarter -> {
+            starters.add(startAdapter.serialize(questStarter, typeOfSrc, context));
+        });
+        result.add("starters", starters);
+
         result.add("storyMode", new JsonPrimitive(quest.isStoryMode()));
         result.add("completeSound", new JsonPrimitive(quest.getCompleteSound().toString()));
         result.add("time", new JsonPrimitive(quest.getTime()));
@@ -88,6 +96,14 @@ public class QuestAdapter implements JsonSerializer<Quest>, JsonDeserializer<Que
             });
         }
 
+        AbstractAdapter<QuestStart> startAdapter = new AbstractAdapter<>(null);
+        JsonArray starters = jsonObject.getAsJsonArray("starters");
+        if (starters != null) {
+            starters.forEach(jsonElement -> {
+                quest.addStarter(startAdapter.deserialize(jsonElement, typeOfT, context));
+            });
+        }
+
         if (jsonObject.get("storyMode") != null) {
             boolean storyMode = jsonObject.get("storyMode").getAsBoolean();
             quest.setStoryMode(storyMode);
@@ -113,7 +129,8 @@ public class QuestAdapter implements JsonSerializer<Quest>, JsonDeserializer<Que
         if (jsonObject.get("dummy") != null) {
             quest.setDummy(jsonObject.get("dummy").getAsBoolean());
         }
-        quest.getObjectives().forEach(questObjective -> {
+
+        quest.getObjectives().forEach(questObjective -> { // temp-fix
             questObjective.setProgress(new ConcurrentHashMap<>());
         });
 

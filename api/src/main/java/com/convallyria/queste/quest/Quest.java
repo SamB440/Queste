@@ -5,6 +5,7 @@ import com.convallyria.queste.api.QuesteAPI;
 import com.convallyria.queste.quest.objective.QuestObjective;
 import com.convallyria.queste.quest.requirement.QuestRequirement;
 import com.convallyria.queste.quest.reward.QuestReward;
+import com.convallyria.queste.quest.start.QuestStart;
 import com.convallyria.queste.translation.Translations;
 import com.google.gson.Gson;
 import org.bukkit.Bukkit;
@@ -38,6 +39,7 @@ public final class Quest implements Keyed {
     private final List<QuestObjective> objectives;
     private final List<QuestReward> rewards;
     private final List<QuestRequirement> requirements;
+    private final List<QuestStart> starters;
     private boolean storyMode;
     private Sound completeSound;
     private int time;
@@ -50,6 +52,7 @@ public final class Quest implements Keyed {
         this.objectives = new ArrayList<>();
         this.rewards = new ArrayList<>();
         this.requirements = new ArrayList<>();
+        this.starters = new ArrayList<>();
         this.completeSound = Sound.UI_TOAST_CHALLENGE_COMPLETE;
         this.icon = Material.TOTEM_OF_UNDYING;
         this.description = "A quest of great honour!";
@@ -62,6 +65,7 @@ public final class Quest implements Keyed {
         this.objectives = quest.getObjectives();
         this.rewards = quest.getRewards();
         this.requirements = quest.getRequirements();
+        this.starters = quest.getStarters();
         this.storyMode = quest.isStoryMode();
         this.completeSound = quest.getCompleteSound();
         this.time = quest.getTime();
@@ -178,6 +182,18 @@ public final class Quest implements Keyed {
 
     public List<QuestRequirement> getRequirements() {
         return requirements;
+    }
+
+    public void addStarter(@NotNull QuestStart starter) {
+        starters.add(starter);
+    }
+
+    public void removeStarter(@NotNull QuestStart starter) {
+        starters.remove(starter);
+    }
+
+    public List<QuestStart> getStarters() {
+        return starters;
     }
 
     public boolean isStoryMode() {

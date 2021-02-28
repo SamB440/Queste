@@ -13,7 +13,7 @@ import com.convallyria.queste.command.QuesteCommand;
 import com.convallyria.queste.command.QuestsCommand;
 import com.convallyria.queste.gson.ConfigurationSerializableAdapter;
 import com.convallyria.queste.gson.QuestAdapter;
-import com.convallyria.queste.listener.PlayerQuitListener;
+import com.convallyria.queste.listener.PlayerConnectionListener;
 import com.convallyria.queste.managers.QuesteManagers;
 import com.convallyria.queste.managers.registry.QuesteRegistry;
 import com.convallyria.queste.quest.Quest;
@@ -40,6 +40,7 @@ import com.convallyria.queste.quest.objective.rpgregions.DiscoverRegionQuestObje
 import com.convallyria.queste.quest.requirement.ItemRequirement;
 import com.convallyria.queste.quest.requirement.LevelRequirement;
 import com.convallyria.queste.quest.requirement.MoneyRequirement;
+import com.convallyria.queste.quest.requirement.PermissionRequirement;
 import com.convallyria.queste.quest.requirement.QuestQuestRequirement;
 import com.convallyria.queste.quest.requirement.QuestRequirement;
 import com.convallyria.queste.quest.requirement.QuestRequirementRegistry;
@@ -51,6 +52,9 @@ import com.convallyria.queste.quest.reward.MoneyReward;
 import com.convallyria.queste.quest.reward.PlayerCommandReward;
 import com.convallyria.queste.quest.reward.QuestReward;
 import com.convallyria.queste.quest.reward.QuestRewardRegistry;
+import com.convallyria.queste.quest.start.NPCQuestStart;
+import com.convallyria.queste.quest.start.QuestStart;
+import com.convallyria.queste.quest.start.QuestStartRegistry;
 import com.convallyria.queste.translation.Translations;
 import com.google.common.collect.ImmutableList;
 import com.google.gson.Gson;
@@ -109,6 +113,7 @@ public final class Queste extends JavaPlugin implements IQuesteAPI, LanguagyPlug
         this.registerObjectives();
         this.registerRewards();
         this.registerRequirements();
+        this.registerStarters();
         try {
             this.hook(this);
             this.registerCommands();
@@ -255,7 +260,7 @@ public final class Queste extends JavaPlugin implements IQuesteAPI, LanguagyPlug
 
     private void registerListeners() {
         PluginManager pm = Bukkit.getPluginManager();
-        pm.registerEvents(new PlayerQuitListener(this), this);
+        pm.registerEvents(new PlayerConnectionListener(this), this);
     }
 
     private void registerObjectives() {
@@ -308,6 +313,16 @@ public final class Queste extends JavaPlugin implements IQuesteAPI, LanguagyPlug
         registry.register(ItemRequirement.class);
         registry.register(MoneyRequirement.class);
         registry.register(QuestQuestRequirement.class);
+        registry.register(PermissionRequirement.class);
+    }
+
+    private void registerStarters() {
+        QuesteRegistry<QuestStart> registry = (QuestStartRegistry) managers.getQuestRegistry(QuestStartRegistry.class);
+        if (registry == null) {
+            getLogger().warning("Unable to register starters");
+            return;
+        }
+        registry.register(NPCQuestStart.class);
     }
 
     @Override

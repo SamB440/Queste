@@ -10,10 +10,4 @@ public abstract class QuestReward implements IGuiEditable {
      * @param player player to award to
      */
     public abstract void award(Player player);
-
-    /**
-     * User friendly name of this reward.
-     * @return name of reward
-     */
-    public abstract String getName();
 }

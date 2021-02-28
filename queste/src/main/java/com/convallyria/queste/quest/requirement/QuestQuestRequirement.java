@@ -36,7 +36,6 @@ public final class QuestQuestRequirement extends QuestRequirement {
             }
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
-            Thread.currentThread().interrupt();
         }
         return false;
     }

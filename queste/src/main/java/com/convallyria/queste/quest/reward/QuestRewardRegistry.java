@@ -2,6 +2,7 @@ package com.convallyria.queste.quest.reward;
 
 import com.convallyria.queste.Queste;
 import com.convallyria.queste.managers.registry.QuesteRegistry;
+import org.bukkit.Material;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Constructor;
@@ -27,5 +28,10 @@ public final class QuestRewardRegistry extends QuesteRegistry<QuestReward> {
     @Override
     public Class<QuestReward> getImplementation() {
         return QuestReward.class;
+    }
+
+    @Override
+    public Material getIcon() {
+        return Material.GOLD_NUGGET;
     }
 }

@@ -9,6 +9,8 @@ import com.convallyria.queste.quest.requirement.QuestRequirement;
 import com.convallyria.queste.quest.requirement.QuestRequirementRegistry;
 import com.convallyria.queste.quest.reward.QuestReward;
 import com.convallyria.queste.quest.reward.QuestRewardRegistry;
+import com.convallyria.queste.quest.start.QuestStart;
+import com.convallyria.queste.quest.start.QuestStartRegistry;
 import com.convallyria.queste.translation.Translations;
 import com.convallyria.queste.utils.ItemStackBuilder;
 import com.github.stefvanschie.inventoryframework.gui.GuiItem;
@@ -78,31 +80,30 @@ public class EditQuestElementGUI extends QuesteGUI {
             }
         } else if (registry instanceof QuestRewardRegistry) {
             for (QuestReward reward : quest.getRewards()) {
-                ItemStack item = new ItemStackBuilder(Material.GOLD_NUGGET)
-                        .withName("&6" + reward.getName())
-                        .withLore("&7No additional data to display")
-                        .build();
-                GuiItem guiItem = new GuiItem(item, click -> {
-                    new EditGuiElementGUI(plugin, player, quest, reward).open();
-                    player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 1f);
-                });
-                items.add(guiItem);
+                items.add(getDefaultGuiItem(reward, registry));
             }
         } else if (registry instanceof QuestRequirementRegistry) {
             for (QuestRequirement requirement : quest.getRequirements()) {
-                ItemStack item = new ItemStackBuilder(Material.REDSTONE)
-                        .withName("&6" + requirement.getName())
-                        .withLore("&7No additional data to display")
-                        .build();
-                GuiItem guiItem = new GuiItem(item, click -> {
-                    new EditGuiElementGUI(plugin, player, quest, requirement).open();
-                    player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 1f);
-                });
-                items.add(guiItem);
+                items.add(getDefaultGuiItem(requirement, registry));
+            }
+        } else if (registry instanceof QuestStartRegistry) {
+            for (QuestStart start : quest.getStarters()) {
+                items.add(getDefaultGuiItem(start, registry));
             }
         }
         pane.populateWithGuiItems(items);
         gui.update();
+    }
+
+    public GuiItem getDefaultGuiItem(IGuiEditable guiEditable, QuesteRegistry<?> registry) {
+        ItemStack item = new ItemStackBuilder(registry.getIcon())
+                .withName("&6" + guiEditable.getName())
+                .withLore("&7No additional data to display")
+                .build();
+        return new GuiItem(item, click -> {
+            new EditGuiElementGUI(plugin, player, quest, guiEditable).open();
+            player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 1f);
+        });
     }
 
     @Override

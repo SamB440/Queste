@@ -6,6 +6,7 @@ import com.convallyria.queste.gson.ConfigurationSerializableAdapter;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import org.bukkit.Material;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
@@ -115,4 +116,6 @@ public abstract class QuesteRegistry<T> {
     public abstract String getRegistryName();
 
     public abstract Class<T> getImplementation();
+
+    public abstract Material getIcon();
 }

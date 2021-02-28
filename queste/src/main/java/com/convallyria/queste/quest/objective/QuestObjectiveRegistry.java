@@ -4,6 +4,7 @@ import com.convallyria.queste.Queste;
 import com.convallyria.queste.managers.registry.QuesteRegistry;
 import com.convallyria.queste.quest.Quest;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Constructor;
@@ -49,5 +50,10 @@ public final class QuestObjectiveRegistry extends QuesteRegistry<QuestObjective>
     @Override
     public Class<QuestObjective> getImplementation() {
         return QuestObjective.class;
+    }
+
+    @Override
+    public Material getIcon() {
+        return Material.WRITTEN_BOOK;
     }
 }

@@ -9,6 +9,8 @@ import com.convallyria.queste.quest.requirement.QuestRequirement;
 import com.convallyria.queste.quest.requirement.QuestRequirementRegistry;
 import com.convallyria.queste.quest.reward.QuestReward;
 import com.convallyria.queste.quest.reward.QuestRewardRegistry;
+import com.convallyria.queste.quest.start.QuestStart;
+import com.convallyria.queste.quest.start.QuestStartRegistry;
 import com.convallyria.queste.translation.Translations;
 import com.convallyria.queste.utils.ItemStackBuilder;
 import com.github.stefvanschie.inventoryframework.gui.GuiItem;
@@ -79,6 +81,8 @@ public class AddQuestElementGUI extends QuesteGUI {
                     quest.addReward((QuestReward) newInstance);
                 } else if (registry instanceof QuestRequirementRegistry) {
                     quest.addRequirement((QuestRequirement) newInstance);
+                } else if (registry instanceof QuestStartRegistry) {
+                    quest.addStarter((QuestStart) newInstance);
                 }
 
                 player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 1f);
