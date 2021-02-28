@@ -235,7 +235,7 @@ public abstract class QuestObjective implements Listener, Keyed, IGuiEditable {
      * @return true if completed, false otherwise
      */
     public boolean hasCompleted(@NotNull Player player) {
-        return progress.getOrDefault(player.getUniqueId(), 0) == completionAmount;
+        return progress.getOrDefault(player.getUniqueId(), 0) >= completionAmount;
     }
 
     public String getDisplayName() {

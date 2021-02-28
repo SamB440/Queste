@@ -4,6 +4,7 @@ import com.convallyria.queste.Queste;
 import com.convallyria.queste.quest.Quest;
 import org.bukkit.Location;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class LocationObjective extends QuestObjective {
@@ -12,10 +13,11 @@ public abstract class LocationObjective extends QuestObjective {
 
     protected LocationObjective(Queste plugin, Quest quest) {
         super(plugin, quest);
+        this.locations = new ArrayList<>();
     }
 
     public void addLocation(Location location) {
-        location.add(location);
+        locations.add(location);
     }
 
     public List<Location> getLocations() {
