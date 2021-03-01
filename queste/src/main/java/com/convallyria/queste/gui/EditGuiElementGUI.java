@@ -1,6 +1,9 @@
 package com.convallyria.queste.gui;
 
 import com.convallyria.queste.Queste;
+import com.convallyria.queste.chat.QuesteConversationPrefix;
+import com.convallyria.queste.chat.QuesteStringPrompt;
+import com.convallyria.queste.gui.element.ICustomGuiFeedback;
 import com.convallyria.queste.gui.element.IGuiFieldElement;
 import com.convallyria.queste.quest.Quest;
 import com.convallyria.queste.translation.Translations;
@@ -13,8 +16,11 @@ import com.github.stefvanschie.inventoryframework.pane.Pane;
 import com.github.stefvanschie.inventoryframework.pane.StaticPane;
 import net.wesjd.anvilgui.AnvilGUI;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.conversations.Conversation;
+import org.bukkit.conversations.ConversationFactory;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -77,11 +83,45 @@ public class EditGuiElementGUI extends QuesteGUI {
                         if (!element.needsValue()) { // Just toggle it.
                             element.set(player, guiEditable, field, null).thenAccept(done -> open());
                         } else {
+                            if (annotation.type() == GuiEditable.GuiEditableType.CHAT) {
+                                String info = getInfoIfApplicable();
+                                if (info != null) player.sendMessage(ChatColor.GREEN + "Info provided: " + ChatColor.GRAY + info);
+                                ConversationFactory factory = new ConversationFactory(plugin)
+                                        .withModality(true)
+                                        .withPrefix(new QuesteConversationPrefix())
+                                        .withFirstPrompt(new QuesteStringPrompt("Enter value:"))
+                                        .withEscapeSequence("quit")
+                                        .withLocalEcho(true)
+                                        .withTimeout(60);
+                                Conversation conversation = factory.buildConversation(player);
+                                conversation.begin();
+                                conversation.addConversationAbandonedListener(abandonedEvent -> {
+                                    String input = (String) abandonedEvent.getContext().getSessionData("input");
+                                    if (ICustomGuiFeedback.class.isAssignableFrom(guiEditable.getClass())) {
+                                        ICustomGuiFeedback customGuiFeedback = (ICustomGuiFeedback) guiEditable;
+                                        customGuiFeedback.feedback(player, input);
+                                    } else {
+                                        element.set(player, guiEditable, field, input);
+                                    }
+                                    player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 1f);
+                                    open();
+                                });
+                                player.closeInventory();
+                                return;
+                            }
+
                             new AnvilGUI.Builder()
                                 .onClose(player -> {
                                     open();
                                 })
                                 .onComplete((player, text) -> {
+                                    if (ICustomGuiFeedback.class.isAssignableFrom(guiEditable.getClass())) {
+                                        ICustomGuiFeedback customGuiFeedback = (ICustomGuiFeedback) guiEditable;
+                                        customGuiFeedback.feedback(player, text);
+                                        player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 1f);
+                                        return AnvilGUI.Response.close();
+                                    }
+
                                     element.set(player, guiEditable, field, text).thenAccept(done -> {
                                         player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 1f);
                                         open();
@@ -108,6 +148,14 @@ public class EditGuiElementGUI extends QuesteGUI {
         });
         pane.populateWithGuiItems(items);
         gui.update();
+    }
+
+    private String getInfoIfApplicable() {
+        if (ICustomGuiFeedback.class.isAssignableFrom(guiEditable.getClass())) {
+            ICustomGuiFeedback customGuiFeedback = (ICustomGuiFeedback) guiEditable;
+            return customGuiFeedback.info();
+        }
+        return null;
     }
 
     private Object getField(Field field) { // Don't throw exceptions for cleaner code elsewhere

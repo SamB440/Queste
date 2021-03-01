@@ -1,13 +1,14 @@
 package com.convallyria.queste.quest.objective;
 
 import com.convallyria.queste.Queste;
+import com.convallyria.queste.gui.element.ICustomGuiFeedback;
 import com.convallyria.queste.quest.Quest;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerMoveEvent;
 
-public final class ReachLocationObjective extends LocationObjective {
+public final class ReachLocationObjective extends LocationObjective implements ICustomGuiFeedback {
 
     public ReachLocationObjective(Queste plugin, Quest quest) {
         super(plugin, quest);
@@ -15,7 +16,7 @@ public final class ReachLocationObjective extends LocationObjective {
 
     public ReachLocationObjective(Queste plugin, Quest quest, Location location) {
         super(plugin, quest);
-        getLocations().add(location);
+        addLocation(location);
     }
 
     @EventHandler(ignoreCancelled = true)

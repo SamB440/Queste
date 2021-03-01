@@ -15,4 +15,12 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 public @interface GuiEditable {
     String value();
+
+    GuiEditableType type() default GuiEditableType.DEFAULT;
+
+    enum GuiEditableType {
+        CHAT,
+        ANVIL,
+        DEFAULT
+    }
 }
