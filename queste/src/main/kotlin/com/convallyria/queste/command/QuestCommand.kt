@@ -120,10 +120,14 @@ class QuestCommand(private val plugin: Queste) : BaseCommand(), IQuesteCommand {
             sender.sendMessage(translate("&cQuest by that name already exists. Please choose another name."))
             return
         }
+        if (name.contains(' ')) {
+            sender.sendMessage(translate("&cQuest names must be unique with no spaces. You can set the display name afterwards."))
+            return
+        }
         val quest = Quest(name)
         plugin.managers.questeCache.addQuest(quest)
         quest.save(plugin)
-        sender.sendMessage(translate("&aThe quest &6$name&a has been created."))
+        sender.sendMessage(translate("&aThe quest &6$name&a has been created. Use /quest edit $name to edit it."))
     }
 
     @Subcommand("delete|remove")
@@ -307,7 +311,7 @@ class QuestCommand(private val plugin: Queste) : BaseCommand(), IQuesteCommand {
         }
     }
 
-    @Subcommand("addplayer")
+    @Subcommand("addplayer|start")
     @CommandCompletion("@players @quests @options")
     fun onAddPlayer(sender: CommandSender, playerName: String, quest: Quest, arguments: Array<String>) {
         val player = Bukkit.getPlayer(playerName)
