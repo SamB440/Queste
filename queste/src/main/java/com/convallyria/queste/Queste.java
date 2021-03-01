@@ -104,8 +104,11 @@ public final class Queste extends JavaPlugin implements IQuesteAPI, LanguagyPlug
         return advancementFactory;
     }
 
+    private boolean isShuttingDown;
+
     @Override
     public void onEnable() {
+        this.isShuttingDown = false;
         QuesteAPI.setAPI(this);
         this.createConfig();
         this.generateLang();
@@ -127,6 +130,7 @@ public final class Queste extends JavaPlugin implements IQuesteAPI, LanguagyPlug
 
     @Override
     public void onDisable() {
+        this.isShuttingDown = true;
         if (getManagers() != null) {
             getManagers().getQuesteCache().getQuests().values().forEach(quest -> quest.save(this));
             getManagers().getStorageManager().getCachedAccounts().forEach((uuid, account) -> {
@@ -143,6 +147,10 @@ public final class Queste extends JavaPlugin implements IQuesteAPI, LanguagyPlug
         }
         QuesteAPI.setAPI(null);
         DB.close();
+    }
+
+    public boolean isShuttingDown() {
+        return isShuttingDown;
     }
 
     private void createConfig() {

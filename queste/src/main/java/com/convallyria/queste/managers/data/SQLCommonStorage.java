@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -143,33 +144,45 @@ public abstract class SQLCommonStorage implements IStorageManager {
                     }
                 } else {
                     System.out.println("UPDATE: " + allQuest.getName() + ":" + (allQuest.isCompleted(player)));
-                    DB.executeUpdateAsync(UPDATE_QUEST, allQuest.isCompleted(player), getDatabaseUuid(uuid), allQuest.getName());
+                    if (plugin.isShuttingDown()) {
+                        try {
+                            DB.executeUpdate(UPDATE_QUEST, allQuest.isCompleted(player), getDatabaseUuid(uuid), allQuest.getName());
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        }
+                    } else DB.executeUpdateAsync(UPDATE_QUEST, allQuest.isCompleted(player), getDatabaseUuid(uuid), allQuest.getName());
                 }
             }
 
-            DB.getResultsAsync(SELECT_OBJECTIVE, getDatabaseUuid(uuid)).thenAccept(objectiveResults -> {
-                Map<String, Integer> currentProgress = new HashMap<>();
-                for (DbRow row : objectiveResults) {
-                    currentProgress.put(row.getString("objective"), row.getInt("progress"));
-                }
+            try {
+                CompletableFuture<List<DbRow>> future = plugin.isShuttingDown()
+                        ? CompletableFuture.completedFuture(DB.getResults(SELECT_OBJECTIVE, getDatabaseUuid(uuid)))
+                        : DB.getResultsAsync(SELECT_OBJECTIVE, getDatabaseUuid(uuid));
+                future.thenAccept(objectiveResults -> {
+                    Map<String, Integer> currentProgress = new HashMap<>();
+                    for (DbRow row : objectiveResults) {
+                        currentProgress.put(row.getString("objective"), row.getInt("progress"));
+                    }
 
-                account.getAllQuests().forEach(quest -> {
-                    quest.getObjectives().forEach(objective -> {
-                        int progress = objective.getIncrement(player);
-                        if (!currentProgress.containsKey(objective.getSafeName())) {
-                            try {
-                                DB.executeInsert(INSERT_OBJECTIVE, getDatabaseUuid(uuid), objective.getSafeName(), progress);
-                            } catch (SQLException throwables) {
-                                throwables.printStackTrace();
+                    account.getAllQuests().forEach(quest -> {
+                        quest.getObjectives().forEach(objective -> {
+                            int progress = objective.getIncrement(player);
+                            if (!currentProgress.containsKey(objective.getSafeName())) {
+                                try {
+                                    DB.executeInsert(INSERT_OBJECTIVE, getDatabaseUuid(uuid), objective.getSafeName(), progress);
+                                } catch (SQLException throwables) {
+                                    throwables.printStackTrace();
+                                }
+                            } else {
+                                DB.executeUpdateAsync(UPDATE_OBJECTIVE, progress, getDatabaseUuid(uuid), objective.getSafeName());
                             }
-                        } else {
-                            DB.executeUpdateAsync(UPDATE_OBJECTIVE, progress, getDatabaseUuid(uuid), objective.getSafeName());
-                        }
-                        objective.untrack(uuid);
+                            objective.untrack(uuid);
+                        });
                     });
                 });
-            });
-
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
             cachedAccounts.remove(uuid);
         }).exceptionally(t -> {
             t.printStackTrace();
