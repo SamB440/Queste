@@ -1,6 +1,7 @@
 package com.convallyria.queste.quest.objective;
 
 import com.convallyria.queste.Queste;
+import com.convallyria.queste.gui.GuiEditable;
 import com.convallyria.queste.quest.Quest;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -9,6 +10,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 
 public final class PlaceBlockQuestObjective extends QuestObjective {
 
+    @GuiEditable("Block Type")
     private Material blockType;
 
     public PlaceBlockQuestObjective(Queste plugin, Quest quest) {

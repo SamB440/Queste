@@ -30,12 +30,22 @@ public final class FishQuestObjective extends QuestObjective {
             this.increment(player).thenAccept(incremented -> {
                 if (incremented) {
                     FishHook hook = event.getHook();
-                    hook.getWorld().playEffect(hook.getLocation(), Effect.VILLAGER_PLANT_GROW, 0);
+                    if (showParticles()) {
+                        hook.getWorld().playEffect(hook.getLocation(), Effect.VILLAGER_PLANT_GROW, 0);
+                    }
                 }
             });
         }
     }
-
+    
+    public boolean isEnforceFish() {
+        return enforceFish;
+    }
+    
+    public void setEnforceFish(boolean enforceFish) {
+        this.enforceFish = enforceFish;
+    }
+    
     @Override
     public String getName() {
         return "Fish";

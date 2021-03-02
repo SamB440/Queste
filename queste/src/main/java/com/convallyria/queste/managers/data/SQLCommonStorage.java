@@ -5,6 +5,7 @@ import co.aikar.idb.DbRow;
 import com.convallyria.queste.Queste;
 import com.convallyria.queste.managers.data.account.QuesteAccount;
 import com.convallyria.queste.quest.Quest;
+import com.convallyria.queste.quest.objective.QuestObjective;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -134,27 +135,19 @@ public abstract class SQLCommonStorage implements IStorageManager {
                 current.put(row.getString("quest"), row.getInt("completed") == 1);
             }
 
-            for (Quest allQuest : account.getAllQuests()) {
-                if (!current.containsKey(allQuest.getName())) {
-                    try {
+            try {
+                for (Quest allQuest : account.getAllQuests()) {
+                    if (!current.containsKey(allQuest.getName())) {
                         System.out.println("INSERT: " + allQuest.getName() + ":" + (allQuest.isCompleted(player)));
                         DB.executeInsert(INSERT_QUEST, getDatabaseUuid(uuid), allQuest.getName(), allQuest.isCompleted(player));
-                    } catch (SQLException throwables) {
-                        throwables.printStackTrace();
+                        continue;
                     }
-                } else {
                     System.out.println("UPDATE: " + allQuest.getName() + ":" + (allQuest.isCompleted(player)));
                     if (plugin.isShuttingDown()) {
-                        try {
-                            DB.executeUpdate(UPDATE_QUEST, allQuest.isCompleted(player), getDatabaseUuid(uuid), allQuest.getName());
-                        } catch (SQLException e) {
-                            e.printStackTrace();
-                        }
+                        DB.executeUpdate(UPDATE_QUEST, allQuest.isCompleted(player), getDatabaseUuid(uuid), allQuest.getName());
                     } else DB.executeUpdateAsync(UPDATE_QUEST, allQuest.isCompleted(player), getDatabaseUuid(uuid), allQuest.getName());
                 }
-            }
-
-            try {
+                
                 CompletableFuture<List<DbRow>> future = plugin.isShuttingDown()
                         ? CompletableFuture.completedFuture(DB.getResults(SELECT_OBJECTIVE, getDatabaseUuid(uuid)))
                         : DB.getResultsAsync(SELECT_OBJECTIVE, getDatabaseUuid(uuid));
@@ -163,25 +156,25 @@ public abstract class SQLCommonStorage implements IStorageManager {
                     for (DbRow row : objectiveResults) {
                         currentProgress.put(row.getString("objective"), row.getInt("progress"));
                     }
-
-                    account.getAllQuests().forEach(quest -> {
-                        quest.getObjectives().forEach(objective -> {
+        
+                    for (Quest quest : account.getAllQuests()) {
+                        for (QuestObjective objective : quest.getObjectives()) {
                             int progress = objective.getIncrement(player);
                             if (!currentProgress.containsKey(objective.getSafeName())) {
                                 try {
                                     DB.executeInsert(INSERT_OBJECTIVE, getDatabaseUuid(uuid), objective.getSafeName(), progress);
-                                } catch (SQLException throwables) {
-                                    throwables.printStackTrace();
+                                } catch (SQLException e) {
+                                    e.printStackTrace();
                                 }
                             } else {
                                 DB.executeUpdateAsync(UPDATE_OBJECTIVE, progress, getDatabaseUuid(uuid), objective.getSafeName());
                             }
                             objective.untrack(uuid);
-                        });
-                    });
+                        }
+                    }
                 });
-            } catch (SQLException throwables) {
-                throwables.printStackTrace();
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
             cachedAccounts.remove(uuid);
         }).exceptionally(t -> {

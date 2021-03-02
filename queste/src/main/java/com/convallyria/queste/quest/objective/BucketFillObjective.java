@@ -1,6 +1,7 @@
 package com.convallyria.queste.quest.objective;
 
 import com.convallyria.queste.Queste;
+import com.convallyria.queste.gui.GuiEditable;
 import com.convallyria.queste.quest.Quest;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -10,6 +11,7 @@ import org.jetbrains.annotations.Nullable;
 
 public final class BucketFillObjective extends QuestObjective {
 
+    @GuiEditable("Liquid Type")
     private Material blockType;
 
     public BucketFillObjective(Queste plugin, Quest quest) {

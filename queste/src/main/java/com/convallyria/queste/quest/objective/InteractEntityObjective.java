@@ -1,6 +1,7 @@
 package com.convallyria.queste.quest.objective;
 
 import com.convallyria.queste.Queste;
+import com.convallyria.queste.gui.GuiEditable;
 import com.convallyria.queste.quest.Quest;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -10,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 
 public final class InteractEntityObjective extends QuestObjective {
 
+    @GuiEditable("Entity Type")
     private EntityType entityType;
 
     public InteractEntityObjective(Queste plugin, Quest quest) {

@@ -246,7 +246,15 @@ public abstract class QuestObjective implements Listener, Keyed, IGuiEditable {
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
     }
-
+    
+    public boolean showParticles() {
+        return particles;
+    }
+    
+    public void setParticles(boolean particles) {
+        this.particles = particles;
+    }
+    
     public String getSafeName() {
         return getName().replace(" ", "_");
     }
