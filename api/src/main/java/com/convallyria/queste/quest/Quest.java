@@ -7,6 +7,7 @@ import com.convallyria.queste.quest.requirement.QuestRequirement;
 import com.convallyria.queste.quest.reward.QuestReward;
 import com.convallyria.queste.quest.start.QuestStart;
 import com.convallyria.queste.translation.Translations;
+import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import org.bukkit.Bukkit;
 import org.bukkit.Keyed;
@@ -27,8 +28,10 @@ import java.io.IOException;
 import java.io.Writer;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 public final class Quest implements Keyed {
 
@@ -152,14 +155,12 @@ public final class Quest implements Keyed {
 
     public int findNextStoryKey() {
         if (!storyMode) return 0;
-        int high = 0;
-        for (QuestObjective storyObjective : objectives) {
-            if (storyObjective.getStoryModeKey() > high) {
-                high = storyObjective.getStoryModeKey();
-            }
-        }
-        return high + 1;
+        List<QuestObjective> sortedObjectives = Lists.reverse(objectives.stream()
+                .sorted(Comparator.comparingInt(QuestObjective::getStoryModeKey))
+                .collect(Collectors.toList()));
+        return sortedObjectives.get(0).getStoryModeKey() + 1;
     }
+
     public void addReward(@NotNull QuestReward reward) {
         rewards.add(reward);
     }

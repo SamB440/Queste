@@ -177,7 +177,6 @@ public abstract class QuestObjective implements Listener, Keyed, IGuiEditable {
                 }
                 quest.tryComplete(player); // Attempt completion of quest
             }
-            account.update(quest);
         }).exceptionally(err -> {
             err.printStackTrace();
             return null;

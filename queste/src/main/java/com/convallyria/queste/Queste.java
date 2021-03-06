@@ -55,6 +55,7 @@ import com.convallyria.queste.quest.reward.QuestRewardRegistry;
 import com.convallyria.queste.quest.start.NPCQuestStart;
 import com.convallyria.queste.quest.start.QuestStart;
 import com.convallyria.queste.quest.start.QuestStartRegistry;
+import com.convallyria.queste.task.UpdateBossbarTask;
 import com.convallyria.queste.translation.Translations;
 import com.google.common.collect.ImmutableList;
 import com.google.gson.Gson;
@@ -123,6 +124,7 @@ public final class Queste extends JavaPlugin implements IQuesteAPI, LanguagyPlug
             this.registerListeners();
             new Metrics(this, 9954);
             this.advancementFactory = new AdvancementFactory(this, true, false);
+            this.startTasks();
         } catch (Exception e) { // MockBukkit support. Throws an exception stating commands are unsupported.
             getLogger().log(Level.WARNING, "Unable to initialise listeners/commands", e);
         }
@@ -331,6 +333,10 @@ public final class Queste extends JavaPlugin implements IQuesteAPI, LanguagyPlug
             return;
         }
         registry.register(NPCQuestStart.class);
+    }
+
+    private void startTasks() {
+        Bukkit.getScheduler().scheduleAsyncRepeatingTask(this, new UpdateBossbarTask(this), 20L, 1L);
     }
 
     @Override
