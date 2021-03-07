@@ -1,6 +1,7 @@
 package com.convallyria.queste.managers;
 
 import com.convallyria.queste.Queste;
+import com.convallyria.queste.config.Configurations;
 import com.convallyria.queste.gui.element.BooleanGuiFieldElement;
 import com.convallyria.queste.gui.element.GuiFieldElementRegistry;
 import com.convallyria.queste.gui.element.IGuiFieldElementRegistry;
@@ -53,7 +54,7 @@ public class QuesteManagers implements IQuesteManagers {
 
     public QuesteManagers(Queste plugin) {
         this.plugin = plugin;
-        StorageType.valueOf(plugin.getConfig().getString("settings.storage.mode").toUpperCase())
+        StorageType.valueOf(Configurations.STORAGE_MODE.getString().toUpperCase())
             .get(plugin)
             .ifPresent(generatedManager -> storageManager = generatedManager);
         if (storageManager == null) throw new IllegalStateException("Could not find StorageManager!");
@@ -100,7 +101,7 @@ public class QuesteManagers implements IQuesteManagers {
                 }
                 questeCache.addQuest(quest);
                 long startTime = System.currentTimeMillis();
-                if (plugin.getConfig().getBoolean("settings.server.advancements.generate")
+                if (Configurations.GENERATE_ADVANCEMENTS.getBoolean()
                     && !quest.isDummy()) {
                     this.loadAdvancements(quest, plugin);
                 }

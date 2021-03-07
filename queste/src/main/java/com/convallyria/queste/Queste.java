@@ -11,6 +11,7 @@ import com.convallyria.queste.command.QuestCommand;
 import com.convallyria.queste.command.QuestObjectiveCommand;
 import com.convallyria.queste.command.QuesteCommand;
 import com.convallyria.queste.command.QuestsCommand;
+import com.convallyria.queste.config.Configurations;
 import com.convallyria.queste.gson.ConfigurationSerializableAdapter;
 import com.convallyria.queste.gson.QuestAdapter;
 import com.convallyria.queste.listener.PlayerConnectionListener;
@@ -68,7 +69,6 @@ import net.islandearth.languagy.api.language.Translator;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
@@ -76,7 +76,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.java.JavaPluginLoader;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.logging.Level;
 
 public final class Queste extends JavaPlugin implements IQuesteAPI, LanguagyPluginHook {
@@ -156,76 +155,7 @@ public final class Queste extends JavaPlugin implements IQuesteAPI, LanguagyPlug
     }
 
     private void createConfig() {
-        FileConfiguration config = this.getConfig();
-        String header;
-        String eol = System.getProperty("line.separator");
-        header = "This is the config for Queste." + eol;
-        header += "------ Useful information ------" + eol;
-        header += "Documentation can be found at https://fortitude.islandearth.net" + eol;
-        header += "Sounds can be found at https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html" + eol;
-        header += "------ Support ------" + eol;
-        header += "Found a bug? Create an issue at https://gitlab.com/convallyria/queste/issues" + eol;
-        header += "Need help? Join our discord at https://discord.gg/fh62mxU" + eol;
-        config.options().header(header);
-        config.addDefault("settings.server.advancements.generate", true);
-        config.addDefault("settings.server.player.journal.enabled", true);
-        config.addDefault("settings.server.player.journal.slot", 8);
-        config.addDefault("settings.server.player.journal.removable", false);
-        config.addDefault("settings.dev.debug", false);
-        config.addDefault("settings.storage.mode", "file");
-        config.addDefault("settings.sql.host", "localhost");
-        config.addDefault("settings.sql.port", 3306);
-        config.addDefault("settings.sql.db", "Queste");
-        config.addDefault("settings.sql.user", "user");
-        config.addDefault("settings.sql.pass", "pass");
-        config.addDefault("settings.server.gui.general.rows", 6);
-        config.addDefault("settings.server.gui.back.posX", 0);
-        config.addDefault("settings.server.gui.back.posY", 5);
-        config.addDefault("settings.server.gui.back.length", 1);
-        config.addDefault("settings.server.gui.back.height", 1);
-        config.addDefault("settings.server.gui.forward.posX", 8);
-        config.addDefault("settings.server.gui.forward.posY", 5);
-        config.addDefault("settings.server.gui.forward.length", 1);
-        config.addDefault("settings.server.gui.forward.height", 1);
-        config.addDefault("settings.server.gui.exit.posX", 4);
-        config.addDefault("settings.server.gui.exit.posY", 5);
-        config.addDefault("settings.server.gui.exit.length", 1);
-        config.addDefault("settings.server.gui.exit.height", 1);
-        config.addDefault("settings.server.gui.exit.command", "");
-        config.addDefault("settings.server.gui.exit.show", true);
-        config.addDefault("settings.server.gui.pane.posX", 1);
-        config.addDefault("settings.server.gui.pane.posY", 1);
-        config.addDefault("settings.server.gui.pane.length", 7);
-        config.addDefault("settings.server.gui.pane.height", 4);
-        config.addDefault("settings.server.gui.outlinePane.posX", 0);
-        config.addDefault("settings.server.gui.outlinePane.posY", 0);
-        config.addDefault("settings.server.gui.outlinePane.length", 9);
-        config.addDefault("settings.server.gui.outlinePane.height", 6);
-        config.addDefault("settings.server.gui.outlinePane.show", true);
-        config.addDefault("settings.server.gui.outlinePane.mask", Arrays.asList(
-                "111111111",
-                "100000001",
-                "100000001",
-                "100000001",
-                "100000001",
-                "111111111"));
-        config.addDefault("settings.server.gui.innerPane.posX", 1);
-        config.addDefault("settings.server.gui.innerPane.posY", 1);
-        config.addDefault("settings.server.gui.innerPane.length", 7);
-        config.addDefault("settings.server.gui.innerPane.height", 4);
-        config.addDefault("settings.server.gui.innerPane.show", true);
-        config.addDefault("settings.server.gui.innerPane.mask", Arrays.asList(
-                "1111111",
-                "1111111",
-                "1111111",
-                "1111111"));
-        config.addDefault("settings.server.gui.forward.forward", Material.ARROW.name());
-        config.addDefault("settings.server.gui.back.back", Material.ARROW.name());
-        config.addDefault("settings.server.gui.exit.exit", Material.BARRIER.name());
-        config.addDefault("settings.server.gui.outlinePane.outlinePane", Material.GRAY_STAINED_GLASS_PANE.name());
-        config.addDefault("settings.server.gui.innerPane.innerPane", Material.WHITE_STAINED_GLASS_PANE.name());
-        config.options().copyDefaults(true);
-        saveConfig();
+        Configurations.generate(this);
     }
 
     private void generateLang() {
@@ -336,7 +266,13 @@ public final class Queste extends JavaPlugin implements IQuesteAPI, LanguagyPlug
     }
 
     private void startTasks() {
-        Bukkit.getScheduler().scheduleAsyncRepeatingTask(this, new UpdateBossbarTask(this), 20L, 1L);
+        int interval = Configurations.BOSSBAR_INTERVAL.getInt();
+        boolean async = Configurations.BOSSBAR_ASYNC.getBoolean();
+        if (async) {
+            Bukkit.getScheduler().scheduleAsyncRepeatingTask(this, new UpdateBossbarTask(this), 20L, interval);
+        } else {
+            Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new UpdateBossbarTask(this), 20L, interval);
+        }
     }
 
     @Override
@@ -356,7 +292,7 @@ public final class Queste extends JavaPlugin implements IQuesteAPI, LanguagyPlug
 
     @Override
     public boolean debug() {
-        return getConfig().getBoolean("settings.dev.debug");
+        return Configurations.DEBUG.getBoolean();
     }
 
     @Override
