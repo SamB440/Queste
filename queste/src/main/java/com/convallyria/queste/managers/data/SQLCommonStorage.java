@@ -51,23 +51,21 @@ public abstract class SQLCommonStorage implements IStorageManager {
 
     @Override
     public CompletableFuture<QuesteAccount> getAccount(UUID uuid) {
-        // Add a check to ensure accounts aren't taking a long time
-        long startTime = System.currentTimeMillis();
         CompletableFuture<QuesteAccount> future = new CompletableFuture<>();
         if (cachedAccounts.containsKey(uuid)) {
             future.complete(cachedAccounts.get(uuid));
             return future;
         }
 
-        DB.getResultsAsync(SELECT_QUEST, getDatabaseUuid(uuid)).whenComplete((results, err) -> {
+        DB.getResultsAsync(SELECT_QUEST, getDatabaseUuid(uuid)).thenAccept(results -> {
             Map<Quest, Boolean> quests = new HashMap<>();
             System.out.println("b: " + results);
             for (DbRow row : results) {
                 String questName = row.getString("quest");
                 System.out.println("a: " + questName);
                 Quest quest = plugin.getManagers().getQuesteCache().getQuest(questName);
-                if (quest == null && plugin.debug()) {
-                    plugin.getLogger().warning("Cannot find quest " + questName);
+                if (quest == null) {
+                    if (plugin.debug()) plugin.getLogger().warning("Cannot find quest " + questName);
                     continue;
                 }
 
@@ -97,13 +95,7 @@ public abstract class SQLCommonStorage implements IStorageManager {
             });
 
             cachedAccounts.put(uuid, account);
-            Bukkit.getScheduler().runTask(plugin, () -> future.complete(account));
-
-            long endTime = System.currentTimeMillis();
-            long totalTime = endTime - startTime;
-            if (totalTime >= 20) {
-                plugin.getLogger().warning("Grabbing accounts is taking a long time! (" + totalTime + "ms)");
-            }
+            Bukkit.getScheduler().runTask(plugin, () -> future.complete(account)); // Enforce main thread completion
         }).exceptionally(t -> {
             t.printStackTrace();
             return null;

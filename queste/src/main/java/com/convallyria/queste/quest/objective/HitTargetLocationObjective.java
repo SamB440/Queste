@@ -46,6 +46,6 @@ public final class HitTargetLocationObjective extends LocationObjective {
 
     @Override
     public String getName() {
-        return "Reach Location";
+        return "Hit Target";
     }
 }
