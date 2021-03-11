@@ -4,7 +4,9 @@ import com.convallyria.queste.Queste;
 import com.convallyria.queste.quest.Quest;
 import com.convallyria.queste.quest.objective.QuestObjective;
 import com.convallyria.queste.translation.Translations;
+import com.convallyria.queste.utils.TimeUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.NamespacedKey;
 import org.bukkit.advancement.Advancement;
 import org.bukkit.advancement.AdvancementProgress;
@@ -12,6 +14,8 @@ import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
+
+import java.util.concurrent.TimeUnit;
 
 public class UpdateBossbarTask implements Runnable {
 
@@ -34,6 +38,12 @@ public class UpdateBossbarTask implements Runnable {
                         float percent = (increment * 100.0f) / currentObjective.getCompletionAmount();
                         if (quest.getTime() == 0)
                             bossBar.setTitle(Translations.OBJECTIVE_PROGRESS.get(player, currentObjective.getDisplayName(), increment, currentObjective.getCompletionAmount()));
+                        else {
+                            long time = TimeUtils.convertTicks(quest.getTime(), TimeUnit.MILLISECONDS);
+                            long startTime = account.getStartTime(quest);
+                            long timeLeft = TimeUtils.convert((startTime + time) - System.currentTimeMillis(), TimeUnit.MILLISECONDS, TimeUnit.SECONDS);
+                            bossBar.setTitle(Translations.OBJECTIVE_PROGRESS.get(player, currentObjective.getDisplayName() + ChatColor.GRAY + " (" + timeLeft + "s)", increment, currentObjective.getCompletionAmount()));
+                        }
                         bossBar.setProgress(percent / 100);
                     } else {
                         bossBar.removeAll();

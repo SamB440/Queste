@@ -56,6 +56,7 @@ import com.convallyria.queste.quest.reward.QuestRewardRegistry;
 import com.convallyria.queste.quest.start.NPCQuestStart;
 import com.convallyria.queste.quest.start.QuestStart;
 import com.convallyria.queste.quest.start.QuestStartRegistry;
+import com.convallyria.queste.task.ExpiringQuestTask;
 import com.convallyria.queste.task.UpdateBossbarTask;
 import com.convallyria.queste.translation.Translations;
 import com.google.common.collect.ImmutableList;
@@ -273,6 +274,7 @@ public final class Queste extends JavaPlugin implements IQuesteAPI, LanguagyPlug
         } else {
             Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new UpdateBossbarTask(this), 20L, interval);
         }
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new ExpiringQuestTask(this), 20L, 20L);
     }
 
     @Override

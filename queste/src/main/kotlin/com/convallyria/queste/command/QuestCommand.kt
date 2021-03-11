@@ -15,6 +15,7 @@ import com.convallyria.queste.quest.requirement.QuestRequirementRegistry
 import com.convallyria.queste.quest.reward.ItemReward
 import com.convallyria.queste.quest.reward.QuestReward
 import com.convallyria.queste.quest.reward.QuestRewardRegistry
+import com.convallyria.queste.utils.TimeUtils
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.Material
@@ -22,6 +23,7 @@ import org.bukkit.Sound
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import java.util.*
+import java.util.concurrent.TimeUnit
 import kotlin.collections.HashMap
 
 @CommandAlias("quest")
@@ -79,13 +81,14 @@ class QuestCommand(private val plugin: Queste) : BaseCommand(), IQuesteCommand {
             sender.sendMessage(translate(" " + secondaryColour + "- " + requirement.name))
         }
 
+        val timeSeconds = TimeUtils.convertTicks(quest.time.toLong(), TimeUnit.SECONDS)
         sender.sendMessage(" ")
         sender.sendMessage(secondaryColour + "Is a story? " + quest.isStoryMode)
         sender.sendMessage(secondaryColour + "Complete Sound: " + quest.completeSound)
         sender.sendMessage(secondaryColour + "Icon: " + quest.icon)
         sender.sendMessage(secondaryColour + "Description: " + quest.description)
         sender.sendMessage(secondaryColour + "Display name: " + quest.displayName)
-        sender.sendMessage(secondaryColour + "Time: " + quest.time)
+        sender.sendMessage(secondaryColour + "Time: " + quest.time + " (" + timeSeconds + "s)")
         sender.sendMessage(secondaryColour + "Restartable: " + quest.canRestart())
         sender.sendMessage(" ")
     }

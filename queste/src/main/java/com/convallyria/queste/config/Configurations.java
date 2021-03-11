@@ -16,6 +16,7 @@ public enum Configurations {
     JOURNAL_REMOVABLE("settings.server.player.journal.removable", false),
     BOSSBAR_ASYNC("settings.server.tasks.bossbar.async", false),
     BOSSBAR_INTERVAL("settings.server.tasks.bossbar.interval", 1),
+    USE_ENTITY_TOTEM_EFFECT("settings.server.quest.completed.use_entity_totem_effect", true),
     DEBUG("settings.dev.debug", false),
     STORAGE_MODE("settings.storage.mode", "file"),
     SQL_HOST("settings.sql.host", "localhost"),

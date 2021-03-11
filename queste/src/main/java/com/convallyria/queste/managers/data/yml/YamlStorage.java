@@ -39,7 +39,7 @@ public class YamlStorage implements IStorageManager {
             Player player = Bukkit.getPlayer(uuid);
             File file = new File(plugin.getDataFolder() + "/accounts/" + uuid.toString() + ".yml");
             FileConfiguration config = YamlConfiguration.loadConfiguration(file);
-            List<Quest> activeQuests = new ArrayList<>();
+            QuesteAccount account = new QuesteAccount(uuid);
             for (String activeQuest : config.getStringList("Quests")) {
                 if (plugin.getManagers().getQuesteCache().getQuests().containsKey(activeQuest)) {
                     Quest quest = plugin.getManagers().getQuesteCache().getQuests().get(activeQuest);
@@ -47,13 +47,13 @@ public class YamlStorage implements IStorageManager {
                         int progress = config.getInt(quest.getName() + "." + objective.getSafeName() + "." + uuid.toString());
                         objective.setIncrement(player, progress);
                     });
-                    activeQuests.add(quest);
+                    long time = config.getLong(quest.getName() + "." + "startTime" + "." + uuid.toString());
+                    account.addActiveQuest(quest, time);
                 } else {
                     plugin.getLogger().warning(activeQuest + " quest not found.");
                 }
             }
 
-            List<Quest> completedQuests = new ArrayList<>();
             for (String completedQuest : config.getStringList("CompletedQuests")) {
                 if (plugin.getManagers().getQuesteCache().getQuests().containsKey(completedQuest)) {
                     Quest quest = plugin.getManagers().getQuesteCache().getQuests().get(completedQuest);
@@ -61,15 +61,12 @@ public class YamlStorage implements IStorageManager {
                         int progress = config.getInt(quest.getName() + "." + objective.getSafeName() + "." + uuid.toString());
                         objective.setIncrement(player, progress);
                     });
-                    completedQuests.add(quest);
+                    account.addCompletedQuest(quest);
                 } else {
                     plugin.getLogger().warning(completedQuest + " quest not found.");
                 }
             }
 
-            QuesteAccount account = new QuesteAccount(uuid);
-            activeQuests.forEach(account::addActiveQuest);
-            completedQuests.forEach(account::addCompletedQuest);
             cachedAccounts.put(uuid, account);
             future.complete(account);
         }
@@ -101,7 +98,10 @@ public class YamlStorage implements IStorageManager {
         FileConfiguration config = YamlConfiguration.loadConfiguration(file);
 
         List<String> activeQuests = new ArrayList<>();
-        account.getActiveQuests().forEach(quest -> activeQuests.add(quest.getName()));
+        account.getActiveQuests().forEach(quest -> {
+            activeQuests.add(quest.getName());
+            config.set(quest.getName() + "." + "startTime" + "." + uuid.toString(), account.getStartTime(quest));
+        });
 
         List<String> completedQuests = new ArrayList<>();
         account.getCompletedQuests().forEach(completedQuest -> completedQuests.add(completedQuest.getName()));
