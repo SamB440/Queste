@@ -10,6 +10,7 @@ import com.convallyria.queste.translation.Translations;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import org.bukkit.Bukkit;
+import org.bukkit.EntityEffect;
 import org.bukkit.Keyed;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -154,7 +155,7 @@ public final class Quest implements Keyed {
     }
 
     public int findNextStoryKey() {
-        if (!storyMode) return 0;
+        if (!storyMode || objectives.isEmpty()) return 0;
         List<QuestObjective> sortedObjectives = Lists.reverse(objectives.stream()
                 .sorted(Comparator.comparingInt(QuestObjective::getStoryModeKey))
                 .collect(Collectors.toList()));
@@ -321,7 +322,11 @@ public final class Quest implements Keyed {
         player.sendTitle(Translations.QUEST_COMPLETED_TITLE.get(player), getName(), 40, 60, 40);
         player.playSound(player.getLocation(),
                 completeSound == null ? Sound.UI_TOAST_CHALLENGE_COMPLETE : completeSound, 1f, 1f);
-        player.getWorld().spawnParticle(Particle.TOTEM, player.getLocation(), 1000, 0.25, 0.25, 0.25, 1);
+        if (plugin.getConfig().getBoolean("settings.server.quest.completed.use_entity_totem_effect")) { // Use default effect
+            player.playEffect(EntityEffect.TOTEM_RESURRECT);
+        } else { // Use only particles
+            player.getWorld().spawnParticle(Particle.TOTEM, player.getLocation(), 1000, 0.25, 0.25, 0.25, 1);
+        }
         rewards.forEach(reward -> reward.award(player));
         Translations.QUEST_COMPLETED.sendList(player, getDisplayName());
     }
