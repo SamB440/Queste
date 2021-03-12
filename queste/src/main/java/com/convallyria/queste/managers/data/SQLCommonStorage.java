@@ -17,6 +17,7 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.logging.Level;
 
 public abstract class SQLCommonStorage implements IStorageManager {
 
@@ -25,7 +26,7 @@ public abstract class SQLCommonStorage implements IStorageManager {
             "  `quest` varchar(64) NOT NULL," +
             "  `completed` boolean NOT NULL," +
             "  `start_time` BIGINT NOT NULL," +
-            // TODO add completed_time
+            "  `completed_time` BIGINT NOT NULL, " +
             "  PRIMARY KEY (`uuid`, `quest`)" +
             ");";
     protected static final String CREATE_OBJECTIVE_TABLE = "CREATE TABLE IF NOT EXISTS `queste_objectives` (" +
@@ -39,10 +40,10 @@ public abstract class SQLCommonStorage implements IStorageManager {
     protected static final String UPDATE_OBJECTIVE = "UPDATE queste_objectives SET progress = ? WHERE uuid = ? AND objective = ?";
     protected static final String DELETE_OBJECTIVES = "DELETE * FROM queste_objectives WHERE uuid = ?";
     protected static final String SELECT_QUEST = "SELECT * FROM queste_users WHERE uuid = ?";
-    protected static final String INSERT_QUEST = "INSERT INTO queste_users (uuid, quest, completed, start_time) VALUES (?, ?, ?, ?)";
+    protected static final String INSERT_QUEST = "INSERT INTO queste_users (uuid, quest, completed, start_time, completed_time) VALUES (?, ?, ?, ?, ?)";
     protected static final String DELETE_QUESTS = "DELETE * FROM queste_users WHERE uuid = ?";
     protected static final String DELETE_QUEST = "DELETE * FROM queste_users WHERE uuid = ? AND quest = ?";
-    protected static final String UPDATE_QUEST = "UPDATE queste_users SET completed = ?, start_time = ? WHERE uuid = ? AND quest = ?";
+    protected static final String UPDATE_QUEST = "UPDATE queste_users SET completed = ?, start_time = ?, completed_time = ? WHERE uuid = ? AND quest = ?";
 
     protected final Queste plugin;
     protected final ConcurrentMap<UUID, QuesteAccount> cachedAccounts = new ConcurrentHashMap<>();
@@ -61,17 +62,20 @@ public abstract class SQLCommonStorage implements IStorageManager {
 
         DB.getResultsAsync(SELECT_QUEST, getDatabaseUuid(uuid)).thenAccept(results -> {
             QuesteAccount account = new QuesteAccount(uuid);
-            System.out.println("b: " + results);
+            plugin.debug("Query results: " + results);
             for (DbRow row : results) {
                 String questName = row.getString("quest");
-                long time = row.getLong("start_time");
-                System.out.println("a: " + questName);
+                plugin.debug("Current row: " + questName);
                 Quest quest = plugin.getManagers().getQuesteCache().getQuest(questName);
                 if (quest == null) {
-                    if (plugin.debug()) plugin.getLogger().warning("Cannot find quest " + questName);
+                    plugin.debug("Cannot find quest " + questName, Level.WARNING);
                     continue;
                 }
 
+                long startTime = row.getLong("start_time");
+                long completeTime = row.getInt("completed_time");
+                plugin.debug("Start time is: " + startTime + " Completed time is: " + completeTime);
+                // Update objective progress
                 DB.getResultsAsync(SELECT_OBJECTIVE,  getDatabaseUuid(uuid)).thenAccept(objectiveResults -> {
                     Map<String, Integer> currentProgress = new HashMap<>();
                     for (DbRow objectiveRow : objectiveResults) {
@@ -85,10 +89,11 @@ public abstract class SQLCommonStorage implements IStorageManager {
                         }
                     });
                 });
+
                 boolean completed = row.getInt("completed") == 1;
-                System.out.println("ADDING CACHE: " + questName + ":" + completed);
-                if (completed) account.addCompletedQuest(quest);
-                else account.addActiveQuest(quest, time);
+                plugin.debug("Adding to cache: " + questName + ", completed? " + completed);
+                if (completed) account.addCompletedQuest(quest, completeTime);
+                else account.addActiveQuest(quest, startTime);
             }
 
             cachedAccounts.put(uuid, account);
@@ -120,21 +125,29 @@ public abstract class SQLCommonStorage implements IStorageManager {
         DB.getResultsAsync(SELECT_QUEST, getDatabaseUuid(uuid)).thenAccept(results -> {
             Map<String, Boolean> current = new HashMap<>();
             for (DbRow row : results) {
-                System.out.println("CURRENT: " + row.getString("quest") + ":" + (row.getInt("completed") == 1));
-                current.put(row.getString("quest"), row.getInt("completed") == 1);
+                String quest = row.getString("quest");
+                boolean completed = row.getInt("completed") == 1;
+                plugin.debug("Current: " + quest + ", completed? " + completed);
+                current.put(quest, completed);
             }
 
             try {
                 for (Quest allQuest : account.getAllQuests()) {
                     if (!current.containsKey(allQuest.getName())) {
-                        System.out.println("INSERT: " + allQuest.getName() + ":" + (allQuest.isCompleted(player)));
-                        DB.executeInsert(INSERT_QUEST, getDatabaseUuid(uuid), allQuest.getName(), allQuest.isCompleted(player), account.getStartTime(allQuest));
+                        plugin.debug("Inserting: " + allQuest.getName() + ", completed? " + allQuest.isCompleted(player));
+                        DB.executeInsert(INSERT_QUEST, getDatabaseUuid(uuid), allQuest.getName(),
+                                allQuest.isCompleted(player), account.getStartTime(allQuest), account.getCompletedTime(allQuest));
                         continue;
                     }
-                    System.out.println("UPDATE: " + allQuest.getName() + ":" + (allQuest.isCompleted(player)));
+
+                    plugin.debug("Updating: " + allQuest.getName() + ", completed? " + allQuest.isCompleted(player));
                     if (plugin.isShuttingDown()) {
-                        DB.executeUpdate(UPDATE_QUEST, allQuest.isCompleted(player), account.getStartTime(allQuest), getDatabaseUuid(uuid), allQuest.getName());
-                    } else DB.executeUpdateAsync(UPDATE_QUEST, allQuest.isCompleted(player), account.getStartTime(allQuest), getDatabaseUuid(uuid), allQuest.getName());
+                        DB.executeUpdate(UPDATE_QUEST, allQuest.isCompleted(player), account.getStartTime(allQuest),
+                                account.getCompletedTime(allQuest), getDatabaseUuid(uuid), allQuest.getName());
+                    } else {
+                        DB.executeUpdateAsync(UPDATE_QUEST, allQuest.isCompleted(player), account.getStartTime(allQuest),
+                                account.getCompletedTime(allQuest), getDatabaseUuid(uuid), allQuest.getName());
+                    }
                 }
                 
                 CompletableFuture<List<DbRow>> future = plugin.isShuttingDown()

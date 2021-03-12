@@ -297,6 +297,14 @@ public final class Queste extends JavaPlugin implements IQuesteAPI, LanguagyPlug
         return Configurations.DEBUG.getBoolean();
     }
 
+    public void debug(String debug) {
+        this.debug(debug, Level.INFO);
+    }
+
+    public void debug(String debug, Level level) {
+        if (debug()) this.getLogger().log(level, "[Debug] " + debug);
+    }
+
     @Override
     public void onLanguagyHook() {
         translator.setDisplay(Material.TOTEM_OF_UNDYING);

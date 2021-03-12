@@ -15,7 +15,7 @@ import com.convallyria.queste.quest.requirement.QuestRequirementRegistry
 import com.convallyria.queste.quest.reward.ItemReward
 import com.convallyria.queste.quest.reward.QuestReward
 import com.convallyria.queste.quest.reward.QuestRewardRegistry
-import com.convallyria.queste.utils.TimeUtils
+import com.convallyria.queste.util.TimeUtils
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.Material
@@ -82,6 +82,7 @@ class QuestCommand(private val plugin: Queste) : BaseCommand(), IQuesteCommand {
         }
 
         val timeSeconds = TimeUtils.convertTicks(quest.time.toLong(), TimeUnit.SECONDS)
+        val cooldownTimeSeconds = TimeUtils.convertTicks(quest.cooldown.toLong(), TimeUnit.SECONDS)
         sender.sendMessage(" ")
         sender.sendMessage(secondaryColour + "Is a story? " + quest.isStoryMode)
         sender.sendMessage(secondaryColour + "Complete Sound: " + quest.completeSound)
@@ -90,6 +91,7 @@ class QuestCommand(private val plugin: Queste) : BaseCommand(), IQuesteCommand {
         sender.sendMessage(secondaryColour + "Display name: " + quest.displayName)
         sender.sendMessage(secondaryColour + "Time: " + quest.time + " (" + timeSeconds + "s)")
         sender.sendMessage(secondaryColour + "Restartable: " + quest.canRestart())
+        sender.sendMessage(secondaryColour + "Cooldown: " + quest.cooldown + " (" + cooldownTimeSeconds + "s)")
         sender.sendMessage(" ")
     }
 
@@ -175,6 +177,13 @@ class QuestCommand(private val plugin: Queste) : BaseCommand(), IQuesteCommand {
     fun onSetDummy(sender: CommandSender, quest: Quest) {
         quest.isDummy = !quest.isDummy
         sender.sendMessage(translate("&aDummy has been set to &6" + quest.isDummy + "&a."))
+    }
+
+    @Subcommand("setcooldown")
+    @CommandCompletion("@quests @range:160")
+    fun onSetCooldown(sender: CommandSender, quest: Quest, cooldown: Int) {
+        quest.cooldown = cooldown
+        sender.sendMessage(translate("&aCooldown has been set to &6$cooldown&a."))
     }
 
     @Subcommand("addrequirement")
@@ -353,5 +362,4 @@ class QuestCommand(private val plugin: Queste) : BaseCommand(), IQuesteCommand {
         quest.description = description
         sender.sendMessage(translate("&aQuest icon has been set to &6" + quest.description + "&a from &6" + currentDescription + "&a."))
     }
-
 }

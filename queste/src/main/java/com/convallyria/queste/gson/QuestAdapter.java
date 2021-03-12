@@ -62,6 +62,7 @@ public class QuestAdapter implements JsonSerializer<Quest>, JsonDeserializer<Que
         result.add("icon", new JsonPrimitive(quest.getIcon().toString()));
         result.add("description", new JsonPrimitive(quest.getDescription()));
         result.add("dummy", new JsonPrimitive(quest.isDummy()));
+        result.add("cooldown", new JsonPrimitive(quest.getCooldown()));
         return result;
     }
 
@@ -128,6 +129,10 @@ public class QuestAdapter implements JsonSerializer<Quest>, JsonDeserializer<Que
 
         if (jsonObject.get("dummy") != null) {
             quest.setDummy(jsonObject.get("dummy").getAsBoolean());
+        }
+
+        if (jsonObject.get("cooldown") != null) {
+            quest.setCooldown(jsonObject.get("cooldown").getAsInt());
         }
 
         quest.getObjectives().forEach(questObjective -> { // temp-fix

@@ -4,7 +4,7 @@ import com.convallyria.queste.Queste;
 import com.convallyria.queste.quest.Quest;
 import com.convallyria.queste.quest.objective.QuestObjective;
 import com.convallyria.queste.translation.Translations;
-import com.convallyria.queste.utils.TimeUtils;
+import com.convallyria.queste.util.TimeUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.NamespacedKey;
@@ -36,13 +36,21 @@ public class UpdateBossbarTask implements Runnable {
                         if (!bossBar.getPlayers().contains(player)) bossBar.addPlayer(player);
                         int increment = currentObjective.getIncrement(player);
                         float percent = (increment * 100.0f) / currentObjective.getCompletionAmount();
-                        if (quest.getTime() == 0)
-                            bossBar.setTitle(Translations.OBJECTIVE_PROGRESS.get(player, currentObjective.getDisplayName(), increment, currentObjective.getCompletionAmount()));
-                        else {
+                        if (quest.getTime() == 0) {
+                            bossBar.setTitle(Translations.OBJECTIVE_PROGRESS.get(player,
+                                    currentObjective.getDisplayName(),
+                                    "",
+                                    increment,
+                                    currentObjective.getCompletionAmount()));
+                        } else {
                             long time = TimeUtils.convertTicks(quest.getTime(), TimeUnit.MILLISECONDS);
                             long startTime = account.getStartTime(quest);
                             long timeLeft = TimeUtils.convert((startTime + time) - System.currentTimeMillis(), TimeUnit.MILLISECONDS, TimeUnit.SECONDS);
-                            bossBar.setTitle(Translations.OBJECTIVE_PROGRESS.get(player, currentObjective.getDisplayName() + ChatColor.GRAY + " (" + timeLeft + "s)", increment, currentObjective.getCompletionAmount()));
+                            bossBar.setTitle(Translations.OBJECTIVE_PROGRESS.get(player,
+                                    currentObjective.getDisplayName(),
+                                    ChatColor.GRAY + "(" + timeLeft + "s)",
+                                    increment,
+                                    currentObjective.getCompletionAmount()));
                         }
                         bossBar.setProgress(percent / 100);
                     } else {

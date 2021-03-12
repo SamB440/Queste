@@ -1,4 +1,4 @@
-package com.convallyria.queste.utils;
+package com.convallyria.queste.util;
 
 import java.util.concurrent.TimeUnit;
 

@@ -2,7 +2,7 @@ package com.convallyria.queste.task;
 
 import com.convallyria.queste.Queste;
 import com.convallyria.queste.quest.Quest;
-import com.convallyria.queste.utils.TimeUtils;
+import com.convallyria.queste.util.TimeUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 

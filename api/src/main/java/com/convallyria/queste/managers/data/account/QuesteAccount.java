@@ -18,12 +18,14 @@ public class QuesteAccount {
     private final List<Quest> activeQuests;
     private final List<Quest> completedQuests;
     private final ConcurrentMap<Quest, Long> startTimes;
+    private final ConcurrentMap<Quest, Long> completedTimes;
 
     public QuesteAccount(UUID uuid) {
         this.uuid = uuid;
         this.activeQuests = new ArrayList<>();
         this.completedQuests = new ArrayList<>();
         this.startTimes = new ConcurrentHashMap<>();
+        this.completedTimes = new ConcurrentHashMap<>();
     }
 
     public ImmutableList<Quest> getActiveQuests() {
@@ -44,8 +46,16 @@ public class QuesteAccount {
         return ImmutableMap.copyOf(startTimes);
     }
 
+    public ImmutableMap<Quest, Long> getCompletedTimes() {
+        return ImmutableMap.copyOf(completedTimes);
+    }
+
     public long getStartTime(Quest quest) {
         return startTimes.containsKey(quest) ? startTimes.get(quest) : -1;
+    }
+
+    public long getCompletedTime(Quest quest) {
+        return completedTimes.containsKey(quest) ? completedTimes.get(quest) : -1;
     }
 
     public void addActiveQuest(Quest quest) {
@@ -65,10 +75,16 @@ public class QuesteAccount {
 
     public void removeCompletedQuest(Quest quest) {
         completedQuests.remove(quest);
+        completedTimes.remove(quest);
     }
 
     public void addCompletedQuest(Quest quest) {
         completedQuests.add(quest);
+        completedTimes.put(quest, System.currentTimeMillis());
     }
 
+    public void addCompletedQuest(Quest quest, long completedTime) {
+        completedQuests.add(quest);
+        completedTimes.put(quest, completedTime);
+    }
 }

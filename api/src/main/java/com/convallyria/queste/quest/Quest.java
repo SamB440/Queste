@@ -7,6 +7,7 @@ import com.convallyria.queste.quest.requirement.QuestRequirement;
 import com.convallyria.queste.quest.reward.QuestReward;
 import com.convallyria.queste.quest.start.QuestStart;
 import com.convallyria.queste.translation.Translations;
+import com.convallyria.queste.util.TimeUtils;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import org.bukkit.Bukkit;
@@ -32,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public final class Quest implements Keyed {
@@ -50,6 +52,7 @@ public final class Quest implements Keyed {
     private Material icon;
     private String description;
     private boolean dummy;
+    private int cooldown;
 
     public Quest(@NotNull String name) {
         this.name = name;
@@ -252,6 +255,14 @@ public final class Quest implements Keyed {
         this.dummy = dummy;
     }
 
+    public int getCooldown() {
+        return cooldown;
+    }
+
+    public void setCooldown(int cooldown) {
+        this.cooldown = cooldown;
+    }
+
     /**
      * Gets the current objective a player should be on.
      * @param player player to check
@@ -334,7 +345,8 @@ public final class Quest implements Keyed {
     /**
      * Attempts to start a quest for a player.
      * @param player player to start quest for
-     * @return true if quest was started, false if player has already completed and cannot restart
+     * @return true if quest was started, false if player has already completed and cannot restart,
+     *         has an active quest cooldown,
      *         or does not meet required quests beforehand
      */
     public CompletableFuture<DenyReason> tryStart(@NotNull Player player) {
@@ -344,6 +356,14 @@ public final class Quest implements Keyed {
                 future.complete(DenyReason.CANNOT_RESTART);
                 return;
             } else {
+                System.out.println(System.currentTimeMillis());
+                long cdTime = TimeUtils.convertTicks(cooldown, TimeUnit.MILLISECONDS);
+                System.out.println("CHECKING: " + (account.getCompletedTime(this) + cdTime));
+                if (System.currentTimeMillis() <= (account.getCompletedTime(this) + cdTime)) {
+                    future.complete(DenyReason.COOLDOWN);
+                    return;
+                }
+
                 account.removeCompletedQuest(this);
             }
 
@@ -424,6 +444,7 @@ public final class Quest implements Keyed {
     public enum DenyReason {
         REQUIREMENTS_NOT_MET,
         CANNOT_RESTART,
+        COOLDOWN,
         NONE
     }
 }
