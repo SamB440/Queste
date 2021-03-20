@@ -360,6 +360,6 @@ class QuestCommand(private val plugin: Queste) : BaseCommand(), IQuesteCommand {
     fun onSetDescription(sender: CommandSender, quest: Quest, description: String) {
         val currentDescription = quest.description
         quest.description = description
-        sender.sendMessage(translate("&aQuest icon has been set to &6" + quest.description + "&a from &6" + currentDescription + "&a."))
+        sender.sendMessage(translate("&aQuest description has been set to &6" + quest.description + "&a from &6" + currentDescription + "&a."))
     }
 }

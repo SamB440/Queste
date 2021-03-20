@@ -28,6 +28,10 @@ public class QuesteAccount {
         this.completedTimes = new ConcurrentHashMap<>();
     }
 
+    public UUID getUuid() {
+        return uuid;
+    }
+
     public ImmutableList<Quest> getActiveQuests() {
         return ImmutableList.copyOf(activeQuests);
     }

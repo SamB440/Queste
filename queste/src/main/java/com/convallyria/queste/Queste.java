@@ -16,6 +16,8 @@ import com.convallyria.queste.gson.ConfigurationSerializableAdapter;
 import com.convallyria.queste.gson.QuestAdapter;
 import com.convallyria.queste.listener.PlayerConnectionListener;
 import com.convallyria.queste.managers.QuesteManagers;
+import com.convallyria.queste.managers.data.IStorageManager;
+import com.convallyria.queste.managers.data.account.QuesteAccount;
 import com.convallyria.queste.managers.registry.QuesteRegistry;
 import com.convallyria.queste.quest.Quest;
 import com.convallyria.queste.quest.objective.BreakBlockQuestObjective;
@@ -77,6 +79,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.java.JavaPluginLoader;
 
 import java.io.File;
+import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 
 public final class Queste extends JavaPlugin implements IQuesteAPI, LanguagyPluginHook {
@@ -133,16 +136,22 @@ public final class Queste extends JavaPlugin implements IQuesteAPI, LanguagyPlug
     @Override
     public void onDisable() {
         this.isShuttingDown = true;
+        IStorageManager storageManager = getManagers().getStorageManager();
         if (getManagers() != null) {
             getManagers().getQuesteCache().getQuests().values().forEach(quest -> quest.save(this));
-            getManagers().getStorageManager().getCachedAccounts().forEach((uuid, account) -> {
+            for (QuesteAccount account : storageManager.getCachedAccounts().values()) {
                 for (Quest activeQuest : account.getActiveQuests()) {
                     if (activeQuest.getTime() != 0) {
                         account.removeActiveQuest(activeQuest);
                     }
                 }
-                getManagers().getStorageManager().removeCachedAccount(uuid);
-            });
+                try {
+                    storageManager.removeCachedAccount(account.getUuid()).get();
+                } catch (InterruptedException | ExecutionException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+
             getManagers().getQuesteCache().getQuests().clear();
         } else {
             getLogger().warning("Unable to save data because managers were null.");

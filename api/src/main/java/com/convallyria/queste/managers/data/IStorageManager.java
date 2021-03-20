@@ -2,6 +2,7 @@ package com.convallyria.queste.managers.data;
 
 import com.convallyria.queste.managers.data.account.QuesteAccount;
 
+import java.math.BigInteger;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentMap;
@@ -33,7 +34,7 @@ public interface IStorageManager {
      * Removes an account from the storage cache and saves its data.
      * @param uuid player's UUID
      */
-    void removeCachedAccount(UUID uuid);
+    CompletableFuture<Void> removeCachedAccount(UUID uuid);
 
     /**
      * Gets a UUID safe to use in databases.
@@ -42,5 +43,10 @@ public interface IStorageManager {
      */
     default String getDatabaseUuid(UUID uuid) {
         return uuid.toString().replace("-", "");
+    }
+
+    default UUID fromDatabaseUUID(String uuidString) {
+        return new UUID(new BigInteger(uuidString.substring(0, 16), 16).longValue(),
+                new BigInteger(uuidString.substring(16), 16).longValue());
     }
 }

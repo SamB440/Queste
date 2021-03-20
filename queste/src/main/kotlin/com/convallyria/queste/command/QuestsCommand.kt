@@ -22,7 +22,7 @@ class QuestsCommand(private val plugin: Queste) : BaseCommand(), IQuesteCommand 
     @CommandAlias("save")
     @CommandPermission("quests.save|queste.admin")
     fun onSave(sender: CommandSender) {
-        plugin.managers.questeCache.quests.forEach { (_, quest) -> quest.save(plugin) }
+        plugin.managers.questeCache.quests.values.forEach { quest -> quest.save(plugin) }
         sender.sendMessage(translate("&aQuests have been saved to file."))
     }
 }

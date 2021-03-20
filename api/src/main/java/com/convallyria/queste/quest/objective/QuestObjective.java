@@ -30,6 +30,7 @@ public abstract class QuestObjective implements Listener, Keyed, IGuiEditable {
 
     private transient IQuesteAPI plugin;
 
+    private final UUID uuid;
     private final String questName;
     @GuiEditable("Completion Amount")
     private int completionAmount;
@@ -43,6 +44,7 @@ public abstract class QuestObjective implements Listener, Keyed, IGuiEditable {
 
     protected QuestObjective(IQuesteAPI plugin, Quest quest) {
         this.plugin = plugin;
+        this.uuid = UUID.randomUUID();
         this.questName = quest.getName();
         this.completionAmount = 10;
         this.progress = new ConcurrentHashMap<>();
@@ -101,6 +103,10 @@ public abstract class QuestObjective implements Listener, Keyed, IGuiEditable {
     @Nullable
     public Quest getQuest() {
         return getPlugin().getManagers().getQuesteCache().getQuest(getQuestName());
+    }
+
+    public UUID getUuid() {
+        return uuid;
     }
 
     /**

@@ -333,7 +333,7 @@ public final class Quest implements Keyed {
         player.sendTitle(Translations.QUEST_COMPLETED_TITLE.get(player), getName(), 40, 60, 40);
         player.playSound(player.getLocation(),
                 completeSound == null ? Sound.UI_TOAST_CHALLENGE_COMPLETE : completeSound, 1f, 1f);
-        if (plugin.getConfig().getBoolean("settings.server.quest.completed.use_entity_totem_effect")) { // Use default effect
+        if (getPlugin().getConfig().getBoolean("settings.server.quest.completed.use_entity_totem_effect")) { // Use default effect
             player.playEffect(EntityEffect.TOTEM_RESURRECT);
         } else { // Use only particles
             player.getWorld().spawnParticle(Particle.TOTEM, player.getLocation(), 1000, 0.25, 0.25, 0.25, 1);

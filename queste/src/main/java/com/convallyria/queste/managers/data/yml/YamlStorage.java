@@ -92,7 +92,7 @@ public class YamlStorage implements IStorageManager {
     }
 
     @Override
-    public void removeCachedAccount(UUID uuid) {
+    public CompletableFuture<Void> removeCachedAccount(UUID uuid) {
         QuesteAccount account = cachedAccounts.get(uuid);
         File file = new File(plugin.getDataFolder() + "/accounts/" + uuid.toString() + ".yml");
         FileConfiguration config = YamlConfiguration.loadConfiguration(file);
@@ -124,5 +124,6 @@ public class YamlStorage implements IStorageManager {
             e.printStackTrace();
         }
         cachedAccounts.remove(uuid);
+        return CompletableFuture.completedFuture(null);
     }
 }
