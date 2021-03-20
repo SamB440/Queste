@@ -2,6 +2,7 @@ package com.convallyria.queste.quest.objective;
 
 import com.convallyria.queste.api.IQuesteAPI;
 import com.convallyria.queste.api.QuesteAPI;
+import com.convallyria.queste.api.event.QuestObjectiveCompleteEvent;
 import com.convallyria.queste.gui.GuiEditable;
 import com.convallyria.queste.gui.IGuiEditable;
 import com.convallyria.queste.quest.Quest;
@@ -180,6 +181,7 @@ public abstract class QuestObjective implements Listener, Keyed, IGuiEditable {
                         AdvancementProgress progress = player.getAdvancementProgress(advancement);
                         progress.awardCriteria("impossible");
                     }
+                    Bukkit.getPluginManager().callEvent(new QuestObjectiveCompleteEvent(this, player));
                 }
                 quest.tryComplete(player); // Attempt completion of quest
             }

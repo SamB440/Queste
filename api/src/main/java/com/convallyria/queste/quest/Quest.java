@@ -2,6 +2,8 @@ package com.convallyria.queste.quest;
 
 import com.convallyria.queste.api.IQuesteAPI;
 import com.convallyria.queste.api.QuesteAPI;
+import com.convallyria.queste.api.event.QuestCompleteEvent;
+import com.convallyria.queste.api.event.QuestStartEvent;
 import com.convallyria.queste.quest.objective.QuestObjective;
 import com.convallyria.queste.quest.requirement.QuestRequirement;
 import com.convallyria.queste.quest.reward.QuestReward;
@@ -327,6 +329,7 @@ public final class Quest implements Keyed {
             AdvancementProgress progress = player.getAdvancementProgress(advancement);
             progress.awardCriteria("impossible");
         });
+        Bukkit.getPluginManager().callEvent(new QuestCompleteEvent(this, player));
     }
 
     private void giveEffectsAndRewards(Player player) {
@@ -356,14 +359,11 @@ public final class Quest implements Keyed {
                 future.complete(DenyReason.CANNOT_RESTART);
                 return;
             } else {
-                System.out.println(System.currentTimeMillis());
                 long cdTime = TimeUtils.convertTicks(cooldown, TimeUnit.MILLISECONDS);
-                System.out.println("CHECKING: " + (account.getCompletedTime(this) + cdTime));
                 if (System.currentTimeMillis() <= (account.getCompletedTime(this) + cdTime)) {
                     future.complete(DenyReason.COOLDOWN);
                     return;
                 }
-
                 account.removeCompletedQuest(this);
             }
 
@@ -376,6 +376,7 @@ public final class Quest implements Keyed {
             if (account.getActiveQuests().contains(this)) account.removeActiveQuest(this);
             account.addActiveQuest(this);
             objectives.forEach(objective -> objective.setIncrement(player, 0));
+            Bukkit.getPluginManager().callEvent(new QuestStartEvent(this, player));
             if (plugin.getConfig().getBoolean("settings.server.advancements.generate")) {
                 Advancement advancement = Bukkit.getAdvancement(getKey());
                 AdvancementProgress progress = player.getAdvancementProgress(advancement);
