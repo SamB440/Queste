@@ -26,7 +26,8 @@ public enum Translations {
     QUEST_COMPLETED_TITLE("&aQuest Completed"),
     QUEST_FAILED_TITLE("&cQuest Failed"),
     QUEST_STARTED("&aQuest Started"),
-    OBJECTIVE_PROGRESS("&6%0 %1 &7(%2/%3)");
+    OBJECTIVE_PROGRESS("&6%0 %1 &7(%2/%3)"),
+    JOURNAL_TITLE("&d&lQuest Journal");
 
     private final String defaultValue;
     private final boolean isList;
