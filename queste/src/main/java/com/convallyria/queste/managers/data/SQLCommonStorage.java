@@ -76,8 +76,8 @@ public abstract class SQLCommonStorage implements IStorageManager {
                     continue;
                 }
 
-                long startTime = row.getLong("start_time");
-                long completeTime = row.getInt("completed_time");
+                int startTime = row.getInt("start_time");
+                int completeTime = row.getInt("completed_time");
                 plugin.debug("Start time is: " + startTime + " Completed time is: " + completeTime);
                 // Update objective progress
                 DB.getResultsAsync(SELECT_OBJECTIVE, getDatabaseUuid(uuid), quest.getSafeName()).thenAccept(objectiveResults -> {
