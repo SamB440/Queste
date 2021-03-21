@@ -279,6 +279,11 @@ public final class BookUtil {
             return this;
         }
 
+        public TextBuilder onHover(HoverAction hoverAction) {
+            this.onHover = hoverAction;
+            return this;
+        }
+
         /**
          * Sets the color of the text, or takes the previous color (if null is passed)
          * @param color the color of the text

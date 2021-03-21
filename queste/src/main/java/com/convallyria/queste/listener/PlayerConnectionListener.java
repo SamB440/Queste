@@ -1,6 +1,7 @@
 package com.convallyria.queste.listener;
 
 import com.convallyria.queste.Queste;
+import com.convallyria.queste.config.Configurations;
 import com.convallyria.queste.items.QuestJournal;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -21,8 +22,9 @@ public class PlayerConnectionListener implements Listener {
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         plugin.getManagers().getStorageManager().getAccount(player.getUniqueId()).thenAccept(account -> {
+            if (!Configurations.JOURNAL_ENABLED.getBoolean()) return;
             Bukkit.getScheduler().runTask(plugin, () -> {
-                player.getInventory().addItem(QuestJournal.getQuestJournal(account));
+                player.getInventory().setItem(Configurations.JOURNAL_SLOT.getInt(), QuestJournal.getQuestJournal(account));
             });
         });
     }

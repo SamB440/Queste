@@ -14,6 +14,7 @@ import com.convallyria.queste.command.QuestsCommand;
 import com.convallyria.queste.config.Configurations;
 import com.convallyria.queste.gson.ConfigurationSerializableAdapter;
 import com.convallyria.queste.gson.QuestAdapter;
+import com.convallyria.queste.listener.JournalListener;
 import com.convallyria.queste.listener.PlayerConnectionListener;
 import com.convallyria.queste.managers.QuesteManagers;
 import com.convallyria.queste.managers.data.IStorageManager;
@@ -211,6 +212,7 @@ public final class Queste extends JavaPlugin implements IQuesteAPI, LanguagyPlug
     private void registerListeners() {
         PluginManager pm = Bukkit.getPluginManager();
         pm.registerEvents(new PlayerConnectionListener(this), this);
+        if (Configurations.JOURNAL_ENABLED.getBoolean()) pm.registerEvents(new JournalListener(this), this);
     }
 
     private void registerObjectives() {
