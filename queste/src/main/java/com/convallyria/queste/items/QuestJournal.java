@@ -3,6 +3,7 @@ package com.convallyria.queste.items;
 import com.convallyria.queste.managers.data.account.QuesteAccount;
 import com.convallyria.queste.quest.Quest;
 import com.convallyria.queste.quest.objective.QuestObjective;
+import com.convallyria.queste.quest.reward.ItemReward;
 import com.convallyria.queste.quest.reward.QuestReward;
 import com.convallyria.queste.translation.Translations;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -34,18 +35,34 @@ public class QuestJournal {
                     .color(ChatColor.DARK_AQUA)
                     .style(ChatColor.BOLD)
                     .onHover(BookUtil.HoverAction.showText(ChatColor.GOLD + quest.getDescription())).build());
-            lines++;
             pageBuilder.add("\nObjectives:");
+            lines = lines + 2;
             for (QuestObjective objective : quest.getObjectives()) {
-                pageBuilder.add(BookUtil.TextBuilder.of("\n" + ChatColor.RESET + objective.getDisplayName())
+                if (lines >= 14) {
+                    pages.add(pageBuilder.build());
+                    lines = 0;
+                    pageBuilder = new BookUtil.PageBuilder();
+                }
+                ChatColor colour = objective.hasCompleted(player) ? ChatColor.GREEN : ChatColor.RED;
+                pageBuilder.add(BookUtil.TextBuilder.of("\n" + ChatColor.RESET + colour + objective.getDisplayName())
                         .onHover(BookUtil.HoverAction.showText(ChatColor.WHITE + "" + objective.getIncrement(player) + "/" + objective.getCompletionAmount()))
                         .build());
                 lines++;
             }
             pageBuilder.add("\nRewards:");
+            lines++;
             for (QuestReward reward : quest.getRewards()) {
-                pageBuilder.add(BookUtil.TextBuilder.of("\n" + ChatColor.RESET + reward.getName())
-                        .build());
+                if (lines >= 14) {
+                    pages.add(pageBuilder.build());
+                    lines = 0;
+                    pageBuilder = new BookUtil.PageBuilder();
+                }
+                BookUtil.TextBuilder textBuilder = BookUtil.TextBuilder.of("\n" + ChatColor.RESET + reward.getName());
+                if (reward instanceof ItemReward) {
+                    ItemReward itemReward = (ItemReward) reward;
+                    textBuilder.onHover(BookUtil.HoverAction.showItem(itemReward.getItem()));
+                }
+                pageBuilder.add(textBuilder.build());
                 lines++;
             }
 

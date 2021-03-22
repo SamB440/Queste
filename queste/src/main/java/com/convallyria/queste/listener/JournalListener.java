@@ -1,6 +1,7 @@
 package com.convallyria.queste.listener;
 
 import com.convallyria.queste.Queste;
+import com.convallyria.queste.config.Configurations;
 import com.convallyria.queste.items.QuestJournal;
 import com.convallyria.queste.managers.data.account.QuesteAccount;
 import org.bukkit.entity.Player;
@@ -9,6 +10,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -58,5 +60,12 @@ public class JournalListener implements Listener {
             QuesteAccount account = plugin.getManagers().getStorageManager().getAccount(player.getUniqueId()).get();
             if (QuestJournal.isJournal(account, item)) iterator.remove();
         }
+    }
+
+    @EventHandler
+    public void onRespawn(PlayerRespawnEvent event) throws ExecutionException, InterruptedException {
+        Player player = event.getPlayer();
+        QuesteAccount account = plugin.getManagers().getStorageManager().getAccount(player.getUniqueId()).get();
+        player.getInventory().setItem(Configurations.JOURNAL_SLOT.getInt(), QuestJournal.getQuestJournal(account));
     }
 }
