@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -80,7 +81,8 @@ public abstract class SQLCommonStorage implements IStorageManager {
                 int completeTime = row.getInt("completed_time");
                 plugin.debug("Start time is: " + startTime + " Completed time is: " + completeTime);
                 // Update objective progress
-                DB.getResultsAsync(SELECT_OBJECTIVE, getDatabaseUuid(uuid), quest.getSafeName()).thenAccept(objectiveResults -> {
+                try {
+                    List<DbRow> objectiveResults = DB.getResults(SELECT_OBJECTIVE, getDatabaseUuid(uuid), quest.getSafeName());
                     Map<UUID, Integer> currentProgress = new HashMap<>();
                     for (DbRow objectiveRow : objectiveResults) {
                         currentProgress.put(fromDatabaseUUID(objectiveRow.getString("objective")), objectiveRow.getInt("progress"));
@@ -92,7 +94,9 @@ public abstract class SQLCommonStorage implements IStorageManager {
                             objective.setIncrement(player, currentProgress.get(objective.getUuid()));
                         }
                     });
-                });
+                } catch (SQLException throwables) {
+                    throwables.printStackTrace();
+                }
 
                 boolean completed = row.getInt("completed") == 1;
                 if (quest.getTime() != 0) {
@@ -132,8 +136,6 @@ public abstract class SQLCommonStorage implements IStorageManager {
         QuesteAccount account = cachedAccounts.get(uuid);
         Player player = Bukkit.getPlayer(uuid);
         return DB.getResultsAsync(SELECT_QUEST, getDatabaseUuid(uuid)).thenAccept(results -> {
-            System.out.println(Bukkit.isPrimaryThread());
-            System.out.println(Thread.currentThread());
             Map<String, Boolean> current = new HashMap<>();
             for (DbRow row : results) {
                 String quest = row.getString("quest");
@@ -156,7 +158,7 @@ public abstract class SQLCommonStorage implements IStorageManager {
                     } else {
                         plugin.debug("Updating: " + allQuest.getSafeName() + ", completed? " + allQuest.isCompleted(player));
                         if (allQuest.getTime() != 0) {
-                            plugin.debug("REMOVE QUEST! TIMED!");
+                            plugin.debug("Remove timed");
                             DB.executeUpdate(DELETE_OBJECTIVE_ALL_QUEST, getDatabaseUuid(uuid), allQuest.getSafeName());
                             DB.executeUpdate(DELETE_QUEST, getDatabaseUuid(uuid), allQuest.getSafeName());
                         } else {

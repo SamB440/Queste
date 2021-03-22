@@ -22,7 +22,6 @@ public class AbstractAdapter<T> implements JsonSerializer<T>, JsonDeserializer<T
     @Override
     public JsonElement serialize(T src, Type typeOfSrc, JsonSerializationContext context) {
         JsonObject result = new JsonObject();
-        System.out.println("serialising");
         if (thePackage != null)
             result.add("type", new JsonPrimitive(src.getClass().getSimpleName()));
         else
