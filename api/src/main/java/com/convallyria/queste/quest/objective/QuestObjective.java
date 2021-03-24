@@ -13,9 +13,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Keyed;
 import org.bukkit.NamespacedKey;
-import org.bukkit.Sound;
-import org.bukkit.advancement.Advancement;
-import org.bukkit.advancement.AdvancementProgress;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
@@ -175,12 +172,6 @@ public abstract class QuestObjective implements Listener, Keyed, IGuiEditable {
                             this.getStoryModeKey() + 2,
                             quest.getObjectives().size(),
                             currentObjective.getName());
-                    player.playSound(player.getLocation(), Sound.UI_TOAST_IN, 1f, 1f);
-                    if (plugin.getConfig().getBoolean("settings.server.advancements.generate")) {
-                        Advancement advancement = Bukkit.getAdvancement(getKey());
-                        AdvancementProgress progress = player.getAdvancementProgress(advancement);
-                        progress.awardCriteria("impossible");
-                    }
                     Bukkit.getPluginManager().callEvent(new QuestObjectiveCompleteEvent(this, player));
                 }
                 quest.tryComplete(player); // Attempt completion of quest

@@ -19,8 +19,6 @@ import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
-import org.bukkit.advancement.Advancement;
-import org.bukkit.advancement.AdvancementProgress;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
@@ -325,9 +323,6 @@ public final class Quest implements Keyed {
         getPlugin().getManagers().getStorageManager().getAccount(player.getUniqueId()).thenAccept(account -> {
             account.addCompletedQuest(this);
             account.removeActiveQuest(this);
-            Advancement advancement = Bukkit.getAdvancement(getKey());
-            AdvancementProgress progress = player.getAdvancementProgress(advancement);
-            progress.awardCriteria("impossible");
         });
         Bukkit.getPluginManager().callEvent(new QuestCompleteEvent(this, player));
     }
@@ -377,11 +372,6 @@ public final class Quest implements Keyed {
             account.addActiveQuest(this);
             objectives.forEach(objective -> objective.setIncrement(player, 0));
             Bukkit.getPluginManager().callEvent(new QuestStartEvent(this, player));
-            if (plugin.getConfig().getBoolean("settings.server.advancements.generate")) {
-                Advancement advancement = Bukkit.getAdvancement(getKey());
-                AdvancementProgress progress = player.getAdvancementProgress(advancement);
-                progress.awardCriteria("impossible");
-            }
             future.complete(DenyReason.NONE);
         }).exceptionally(err -> {
             err.printStackTrace();
