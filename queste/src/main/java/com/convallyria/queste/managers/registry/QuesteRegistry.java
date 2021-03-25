@@ -1,6 +1,7 @@
 package com.convallyria.queste.managers.registry;
 
 import com.convallyria.queste.Queste;
+import com.convallyria.queste.api.IQuesteAPI;
 import com.convallyria.queste.gson.AbstractAdapter;
 import com.convallyria.queste.gson.ConfigurationSerializableAdapter;
 import com.google.common.collect.ImmutableMap;
@@ -22,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public abstract class QuesteRegistry<T> {
+public abstract class QuesteRegistry<T> implements IQuesteRegistry<T> {
 
     private final Map<String, Class<? extends T>> registeredClasses;
 
@@ -36,11 +37,13 @@ public abstract class QuesteRegistry<T> {
     }
 
     @NotNull
+    @Override
     public ImmutableMap<String, Class<? extends T>> get() {
         return ImmutableMap.copyOf(registeredClasses);
     }
 
     @NotNull
+    @Override
     public List<String> loadAllPresets() {
         List<String> names = new ArrayList<>();
         Queste plugin = JavaPlugin.getPlugin(Queste.class);
@@ -53,6 +56,7 @@ public abstract class QuesteRegistry<T> {
         return names;
     }
 
+    @Override
     public void savePreset(Object toSave, String name) {
         Queste plugin = JavaPlugin.getPlugin(Queste.class);
         File preset = new File(plugin.getManagers().getPresetFolder(this) + File.separator + name + ".json");
@@ -73,6 +77,7 @@ public abstract class QuesteRegistry<T> {
     }
 
     @Nullable
+    @Override
     public T loadPreset(String name) {
         Queste plugin = JavaPlugin.getPlugin(Queste.class);
         File preset = new File(plugin.getManagers().getPresetFolder(this) + File.separator + name + ".json");
@@ -94,11 +99,7 @@ public abstract class QuesteRegistry<T> {
         return null;
     }
 
-    /**
-     * Attempts to register a class.
-     * @param clazz class to register
-     * @throws IllegalArgumentException if class is already registered
-     */
+    @Override
     public void register(Class<? extends T> clazz) {
         if (registeredClasses.containsKey(clazz.getSimpleName()))
             throw new IllegalArgumentException(clazz.getSimpleName() + " is already registered!");
@@ -106,16 +107,21 @@ public abstract class QuesteRegistry<T> {
     }
 
     @Nullable
-    public T getNew(String name, Queste plugin, Object... data) {
+    @Override
+    public T getNew(String name, IQuesteAPI plugin, Object... data) {
         return getNew(registeredClasses.get(name), plugin, data);
     }
 
     @Nullable
-    public abstract T getNew(Class<? extends T> clazz, Queste plugin, Object... data);
+    @Override
+    public abstract T getNew(Class<? extends T> clazz, IQuesteAPI plugin, Object... data);
 
+    @Override
     public abstract String getRegistryName();
 
+    @Override
     public abstract Class<T> getImplementation();
 
+    @Override
     public abstract Material getIcon();
 }

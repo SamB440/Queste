@@ -1,6 +1,7 @@
 package com.convallyria.queste.quest.objective.citizens;
 
 import com.convallyria.queste.Queste;
+import com.convallyria.queste.api.IQuesteAPI;
 import com.convallyria.queste.quest.Quest;
 import net.citizensnpcs.api.event.NPCRightClickEvent;
 import net.citizensnpcs.api.npc.NPC;
@@ -9,8 +10,8 @@ import org.bukkit.event.EventHandler;
 
 public final class CitizenInteractQuestObjective extends CitizensQuestObjective {
 
-    public CitizenInteractQuestObjective(Queste plugin, Quest quest) {
-        super(plugin, quest);
+    public CitizenInteractQuestObjective(IQuesteAPI api, Quest quest) {
+        super(api, quest);
     }
 
     @EventHandler

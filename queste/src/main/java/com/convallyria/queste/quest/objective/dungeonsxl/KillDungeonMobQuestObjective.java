@@ -1,6 +1,6 @@
 package com.convallyria.queste.quest.objective.dungeonsxl;
 
-import com.convallyria.queste.Queste;
+import com.convallyria.queste.api.IQuesteAPI;
 import com.convallyria.queste.quest.Quest;
 import com.convallyria.queste.quest.objective.QuestObjective;
 import de.erethon.dungeonsxl.api.event.mob.DungeonMobDeathEvent;
@@ -9,8 +9,8 @@ import org.bukkit.event.EventHandler;
 
 public final class KillDungeonMobQuestObjective extends QuestObjective {
 
-    public KillDungeonMobQuestObjective(Queste plugin, Quest quest) {
-        super(plugin, quest);
+    public KillDungeonMobQuestObjective(IQuesteAPI api, Quest quest) {
+        super(api, quest);
     }
 
     @EventHandler

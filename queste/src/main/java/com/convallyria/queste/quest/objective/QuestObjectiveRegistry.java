@@ -1,6 +1,6 @@
 package com.convallyria.queste.quest.objective;
 
-import com.convallyria.queste.Queste;
+import com.convallyria.queste.api.IQuesteAPI;
 import com.convallyria.queste.managers.registry.QuesteRegistry;
 import com.convallyria.queste.quest.Quest;
 import org.bukkit.Bukkit;
@@ -12,14 +12,14 @@ import java.lang.reflect.Constructor;
 public final class QuestObjectiveRegistry extends QuesteRegistry<QuestObjective> {
 
     @Nullable
-    public QuestObjective getNewObjective(String name, Queste plugin, Quest quest) {
+    public QuestObjective getNewObjective(String name, IQuesteAPI plugin, Quest quest) {
         return getNewObjective(getRegisteredClasses().get(name), plugin, quest);
     }
 
     @Nullable
-    public QuestObjective getNewObjective(Class<? extends QuestObjective> clazz, Queste plugin, Quest quest) {
+    public QuestObjective getNewObjective(Class<? extends QuestObjective> clazz, IQuesteAPI plugin, Quest quest) {
         try {
-            Constructor<?> constructor = clazz.getConstructor(Queste.class, Quest.class);
+            Constructor<?> constructor = clazz.getConstructor(IQuesteAPI.class, Quest.class);
             QuestObjective objective = (QuestObjective) constructor.newInstance(plugin, quest);
             if (objective.getPluginRequirement() != null
                 && Bukkit.getPluginManager().getPlugin(objective.getPluginRequirement()) == null) {
@@ -34,11 +34,11 @@ public final class QuestObjectiveRegistry extends QuesteRegistry<QuestObjective>
 
     /**
      * @deprecated Not the recommended way to generate a new objective.
-     * {@link #getNewObjective(String, Queste, Quest)} {@link #getNewObjective(Class, Queste, Quest)}
+     * {@link #getNewObjective(String, IQuesteAPI, Quest)} {@link #getNewObjective(Class, IQuesteAPI, Quest)}
      */
     @Deprecated
     @Override
-    public @Nullable QuestObjective getNew(Class<? extends QuestObjective> clazz, Queste plugin, Object... data) {
+    public @Nullable QuestObjective getNew(Class<? extends QuestObjective> clazz, IQuesteAPI plugin, Object... data) {
         return getNewObjective(clazz, plugin, (Quest) data[0]);
     }
 

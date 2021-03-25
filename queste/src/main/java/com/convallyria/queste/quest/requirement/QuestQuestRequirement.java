@@ -1,6 +1,7 @@
 package com.convallyria.queste.quest.requirement;
 
 import com.convallyria.queste.Queste;
+import com.convallyria.queste.api.IQuesteAPI;
 import com.convallyria.queste.gui.GuiEditable;
 import com.convallyria.queste.managers.data.account.QuesteAccount;
 import com.convallyria.queste.quest.Quest;
@@ -14,7 +15,8 @@ public final class QuestQuestRequirement extends QuestRequirement {
     @GuiEditable("The Quest")
     private String questName;
 
-    protected QuestQuestRequirement() {
+    protected QuestQuestRequirement(IQuesteAPI api) {
+        super(api);
         this.questName = "example";
     }
 

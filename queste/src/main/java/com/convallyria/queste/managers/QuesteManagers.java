@@ -10,6 +10,7 @@ import com.convallyria.queste.gui.element.ItemStackGuiFieldElement;
 import com.convallyria.queste.managers.data.IStorageManager;
 import com.convallyria.queste.managers.data.QuesteCache;
 import com.convallyria.queste.managers.data.StorageType;
+import com.convallyria.queste.managers.registry.IQuesteRegistry;
 import com.convallyria.queste.managers.registry.QuesteRegistry;
 import com.convallyria.queste.quest.Quest;
 import com.convallyria.queste.quest.objective.QuestObjective;
@@ -48,7 +49,7 @@ public class QuesteManagers implements IQuesteManagers {
         return new File(plugin.getDataFolder() + File.separator + "presets");
     }
 
-    public File getPresetFolder(QuesteRegistry<?> questeRegistry) {
+    public File getPresetFolder(IQuesteRegistry<?> questeRegistry) {
         return new File(plugin.getDataFolder() + File.separator + "presets" + File.separator + questeRegistry.getRegistryName());
     }
 
@@ -181,7 +182,8 @@ public class QuesteManagers implements IQuesteManagers {
     }
 
     @Nullable
-    public QuesteRegistry<?> getQuestRegistry(Class<? extends QuesteRegistry<?>> clazz) {
+    @Override
+    public QuesteRegistry<?> getQuestRegistry(Class<? extends IQuesteRegistry<?>> clazz) {
         return registry.get(clazz);
     }
 }

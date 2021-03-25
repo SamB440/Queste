@@ -1,6 +1,6 @@
 package com.convallyria.queste.quest.objective;
 
-import com.convallyria.queste.Queste;
+import com.convallyria.queste.api.IQuesteAPI;
 import com.convallyria.queste.quest.Quest;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
@@ -12,8 +12,8 @@ import org.bukkit.inventory.ItemStack;
 
 public final class ShearSheepQuestObjective extends QuestObjective {
 
-    public ShearSheepQuestObjective(Queste plugin, Quest quest) {
-        super(plugin, quest);
+    public ShearSheepQuestObjective(IQuesteAPI api, Quest quest) {
+        super(api, quest);
     }
 
     @EventHandler(ignoreCancelled = true)

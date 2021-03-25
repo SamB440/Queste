@@ -1,6 +1,6 @@
 package com.convallyria.queste.quest.objective.citizens;
 
-import com.convallyria.queste.Queste;
+import com.convallyria.queste.api.IQuesteAPI;
 import com.convallyria.queste.quest.Quest;
 import com.convallyria.queste.quest.objective.QuestObjective;
 
@@ -8,8 +8,8 @@ public abstract class CitizensQuestObjective extends QuestObjective {
 
     private int npcId;
 
-    protected CitizensQuestObjective(Queste plugin, Quest quest) {
-        super(plugin, quest);
+    protected CitizensQuestObjective(IQuesteAPI api, Quest quest) {
+        super(api, quest);
     }
 
     public int getNpcId() {

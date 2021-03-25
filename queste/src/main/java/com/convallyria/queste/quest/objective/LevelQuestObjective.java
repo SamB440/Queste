@@ -1,6 +1,6 @@
 package com.convallyria.queste.quest.objective;
 
-import com.convallyria.queste.Queste;
+import com.convallyria.queste.api.IQuesteAPI;
 import com.convallyria.queste.gui.GuiEditable;
 import com.convallyria.queste.quest.Quest;
 import org.bukkit.entity.Player;
@@ -12,8 +12,8 @@ public final class LevelQuestObjective extends QuestObjective {
     @GuiEditable("Level")
     private int level;
 
-    public LevelQuestObjective(Queste plugin, Quest quest) {
-        super(plugin, quest);
+    public LevelQuestObjective(IQuesteAPI api, Quest quest) {
+        super(api, quest);
         this.level = 1;
     }
 

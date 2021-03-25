@@ -1,6 +1,6 @@
 package com.convallyria.queste.quest.objective;
 
-import com.convallyria.queste.Queste;
+import com.convallyria.queste.api.IQuesteAPI;
 import com.convallyria.queste.gui.GuiEditable;
 import com.convallyria.queste.gui.element.ICustomGuiFeedback;
 import com.convallyria.queste.quest.Quest;
@@ -17,8 +17,8 @@ public abstract class LocationObjective extends QuestObjective implements ICusto
     @GuiEditable(value = "Locations", type = GuiEditable.GuiEditableType.CHAT)
     private List<Location> locations;
 
-    protected LocationObjective(Queste plugin, Quest quest) {
-        super(plugin, quest);
+    protected LocationObjective(IQuesteAPI api, Quest quest) {
+        super(api, quest);
         this.locations = new ArrayList<>();
     }
 

@@ -1,5 +1,6 @@
 package com.convallyria.queste.quest.requirement;
 
+import com.convallyria.queste.api.IQuesteAPI;
 import com.convallyria.queste.gui.GuiEditable;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
@@ -11,7 +12,8 @@ public final class MoneyRequirement extends QuestRequirement {
     @GuiEditable("Amount")
     private final int amount;
 
-    public MoneyRequirement() {
+    public MoneyRequirement(IQuesteAPI api) {
+        super(api);
         this.amount = 1;
     }
 

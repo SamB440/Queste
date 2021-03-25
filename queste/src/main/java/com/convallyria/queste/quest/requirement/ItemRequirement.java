@@ -1,5 +1,6 @@
 package com.convallyria.queste.quest.requirement;
 
+import com.convallyria.queste.api.IQuesteAPI;
 import com.convallyria.queste.gui.GuiEditable;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -10,7 +11,8 @@ public final class ItemRequirement extends QuestRequirement {
 	@GuiEditable("Item")
 	private ItemStack item;
 
-	public ItemRequirement() {
+	public ItemRequirement(IQuesteAPI api) {
+		super(api);
 		this.item = new ItemStack(Material.IRON_AXE);
 	}
 

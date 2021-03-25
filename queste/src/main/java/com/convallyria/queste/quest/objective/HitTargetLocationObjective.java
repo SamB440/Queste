@@ -1,6 +1,6 @@
 package com.convallyria.queste.quest.objective;
 
-import com.convallyria.queste.Queste;
+import com.convallyria.queste.api.IQuesteAPI;
 import com.convallyria.queste.quest.Quest;
 import org.bukkit.Location;
 import org.bukkit.entity.AbstractArrow;
@@ -11,12 +11,12 @@ import org.bukkit.event.entity.ProjectileHitEvent;
 
 public final class HitTargetLocationObjective extends LocationObjective {
 
-    public HitTargetLocationObjective(Queste plugin, Quest quest) {
-        super(plugin, quest);
+    public HitTargetLocationObjective(IQuesteAPI api, Quest quest) {
+        super(api, quest);
     }
 
-    public HitTargetLocationObjective(Queste plugin, Quest quest, Location location) {
-        super(plugin, quest);
+    public HitTargetLocationObjective(IQuesteAPI api, Quest quest, Location location) {
+        super(api, quest);
         getLocations().add(location);
     }
 

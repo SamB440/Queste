@@ -17,11 +17,10 @@ public final class QuestStartRegistry extends QuesteRegistry<QuestStart> {
     }
 
     @Nullable
-    public QuestStart getNewStarter(Class<? extends QuestStart> clazz, Queste plugin, Quest quest) {
+    public QuestStart getNewStarter(Class<? extends QuestStart> clazz, IQuesteAPI plugin, Quest quest) {
         try {
             Constructor<?> constructor = clazz.getConstructor(IQuesteAPI.class, Quest.class);
-            QuestStart start = (QuestStart) constructor.newInstance(plugin, quest);
-            return start;
+            return (QuestStart) constructor.newInstance(plugin, quest);
         } catch (ReflectiveOperationException e) {
             e.printStackTrace();
         }
@@ -30,11 +29,11 @@ public final class QuestStartRegistry extends QuesteRegistry<QuestStart> {
 
     /**
      * @deprecated Not the recommended way to generate a new starter.
-     * {@link #getNewStarter(String, Queste, Quest)} {@link #getNewStarter(Class, Queste, Quest)}
+     * {@link #getNewStarter(String, Queste, Quest)} {@link #getNewStarter(Class, IQuesteAPI, Quest)}
      */
     @Deprecated
     @Override
-    public @Nullable QuestStart getNew(Class<? extends QuestStart> clazz, Queste plugin, Object... data) {
+    public @Nullable QuestStart getNew(Class<? extends QuestStart> clazz, IQuesteAPI plugin, Object... data) {
         return getNewStarter(clazz, plugin, (Quest) data[0]);
     }
 

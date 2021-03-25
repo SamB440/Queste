@@ -1,6 +1,6 @@
 package com.convallyria.queste.quest.objective.dungeonsxl;
 
-import com.convallyria.queste.Queste;
+import com.convallyria.queste.api.IQuesteAPI;
 import com.convallyria.queste.quest.Quest;
 import com.convallyria.queste.quest.objective.QuestObjective;
 import de.erethon.dungeonsxl.api.event.group.GroupFinishDungeonEvent;
@@ -11,8 +11,8 @@ import org.bukkit.event.EventHandler;
 
 public final class FinishDungeonQuestObjective extends QuestObjective {
 
-    public FinishDungeonQuestObjective(Queste plugin, Quest quest) {
-        super(plugin, quest);
+    public FinishDungeonQuestObjective(IQuesteAPI api, Quest quest) {
+        super(api, quest);
     }
 
     @EventHandler
