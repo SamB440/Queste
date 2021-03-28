@@ -97,10 +97,13 @@ public class EditGuiElementGUI extends QuesteGUI {
                                 conversation.begin();
                                 conversation.addConversationAbandonedListener(abandonedEvent -> {
                                     String input = (String) abandonedEvent.getContext().getSessionData("input");
+                                    boolean flag = false;
                                     if (ICustomGuiFeedback.class.isAssignableFrom(guiEditable.getClass())) {
                                         ICustomGuiFeedback customGuiFeedback = (ICustomGuiFeedback) guiEditable;
-                                        customGuiFeedback.feedback(player, input);
-                                    } else {
+                                        flag = customGuiFeedback.feedback(player, input);
+                                    }
+
+                                    if (!flag) {
                                         element.set(player, guiEditable, field, input);
                                     }
                                     player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 1f);
