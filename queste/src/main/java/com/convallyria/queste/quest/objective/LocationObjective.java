@@ -31,11 +31,11 @@ public abstract class LocationObjective extends QuestObjective implements ICusto
     }
 
     @Override
-    public void feedback(Player player, String input) {
+    public boolean feedback(Player player, String input) {
         Location location = LocationUtils.getLocationFromInput(player, input);
         if (location == null) {
             player.sendMessage(ChatColor.RED + "Location could not be set: return value was null.");
-            return;
+            return true;
         }
         // Test if it already exists
         for (Location testLocation : locations) {
@@ -44,16 +44,17 @@ public abstract class LocationObjective extends QuestObjective implements ICusto
             int testZ = testLocation.getBlockZ();
             if (location.getBlockX() == testX && location.getBlockY() == testY && location.getBlockZ() == testZ) {
                 locations.remove(testLocation);
-                return;
+                return true;
             }
         }
 
         addLocation(location);
         player.sendMessage(ChatColor.GREEN + "Location added.");
+        return true;
     }
 
     @Override
-    public String info() {
+    public String info(String field) {
         return "Enter 'TARGET' to set to eye location, 'SELF' for your location, or enter chat coordinates, " +
                 "e.g 'x;y;z;yaw;pitch' (yaw/pitch optional). If the location already exists, it will be removed.";
     }

@@ -84,7 +84,7 @@ public class EditGuiElementGUI extends QuesteGUI {
                             element.set(player, guiEditable, field, null).thenAccept(done -> open());
                         } else {
                             if (annotation.type() == GuiEditable.GuiEditableType.CHAT) {
-                                String info = getInfoIfApplicable();
+                                String info = getInfoIfApplicable(field.getName());
                                 if (info != null) player.sendMessage(ChatColor.GREEN + "Info provided: " + ChatColor.GRAY + info);
                                 ConversationFactory factory = new ConversationFactory(plugin)
                                         .withModality(true)
@@ -150,10 +150,10 @@ public class EditGuiElementGUI extends QuesteGUI {
         gui.update();
     }
 
-    private String getInfoIfApplicable() {
+    private String getInfoIfApplicable(String field) {
         if (ICustomGuiFeedback.class.isAssignableFrom(guiEditable.getClass())) {
             ICustomGuiFeedback customGuiFeedback = (ICustomGuiFeedback) guiEditable;
-            return customGuiFeedback.info();
+            return customGuiFeedback.info(field);
         }
         return null;
     }

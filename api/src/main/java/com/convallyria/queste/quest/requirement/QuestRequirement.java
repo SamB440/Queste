@@ -6,7 +6,7 @@ import org.bukkit.entity.Player;
 
 public abstract class QuestRequirement implements IGuiEditable {
 
-    private final IQuesteAPI api;
+    private final transient IQuesteAPI api;
 
     public QuestRequirement(IQuesteAPI api) {
         this.api = api;
