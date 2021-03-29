@@ -1,6 +1,7 @@
 package com.convallyria.queste.gui;
 
 import com.convallyria.queste.Queste;
+import com.convallyria.queste.managers.registry.IQuesteRegistry;
 import com.convallyria.queste.managers.registry.QuesteRegistry;
 import com.convallyria.queste.quest.Quest;
 import com.convallyria.queste.quest.objective.QuestObjective;
@@ -21,11 +22,13 @@ import com.github.stefvanschie.inventoryframework.pane.StaticPane;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
 public class EditQuestElementGUI extends QuesteGUI {
 
@@ -70,9 +73,15 @@ public class EditQuestElementGUI extends QuesteGUI {
                         .withName("&6" + objective.getName())
                         .withLore("&6Completion amount: " + objective.getCompletionAmount(),
                                     "&6Display name: " + objective.getDisplayName(),
-                                    "&6Story key: " + objective.getStoryModeKey())
+                                    "&6Story key: " + objective.getStoryModeKey(),
+                                    " ",
+                                    "&c&lShift-Click &cto remove.")
                         .build();
                 GuiItem guiItem = new GuiItem(item, click -> {
+                    if (click.getClick() == ClickType.SHIFT_LEFT) {
+                        quest.getObjectives().remove(objective);
+                        return;
+                    }
                     new EditGuiElementGUI(plugin, player, quest, objective).open();
                     player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 1f);
                 });
@@ -80,30 +89,55 @@ public class EditQuestElementGUI extends QuesteGUI {
             }
         } else if (registry instanceof QuestRewardRegistry) {
             for (QuestReward reward : quest.getRewards()) {
-                items.add(getDefaultGuiItem(reward, registry));
+                items.add(getDefaultGuiItem(reward, registry, clickType -> {
+                    if (clickType == ClickType.SHIFT_LEFT) {
+                        quest.getRewards().remove(reward);
+                        return true;
+                    }
+                    return false;
+                }));
             }
         } else if (registry instanceof QuestRequirementRegistry) {
             for (QuestRequirement requirement : quest.getRequirements()) {
-                items.add(getDefaultGuiItem(requirement, registry));
+                items.add(getDefaultGuiItem(requirement, registry, clickType -> {
+                    if (clickType == ClickType.SHIFT_LEFT) {
+                        quest.getRequirements().remove(requirement);
+                        return true;
+                    }
+                    return false;
+                }));
             }
         } else if (registry instanceof QuestStartRegistry) {
             for (QuestStart start : quest.getStarters()) {
-                items.add(getDefaultGuiItem(start, registry));
+                items.add(getDefaultGuiItem(start, registry, clickType -> {
+                    if (clickType == ClickType.SHIFT_LEFT) {
+                        quest.getStarters().remove(start);
+                        return true;
+                    }
+                    return false;
+                }));
             }
         }
         pane.populateWithGuiItems(items);
         gui.update();
     }
 
-    public GuiItem getDefaultGuiItem(IGuiEditable guiEditable, QuesteRegistry<?> registry) {
+    public GuiItem getDefaultGuiItem(IGuiEditable guiEditable, IQuesteRegistry<?> registry, Predicate<ClickType> function) {
         ItemStack item = new ItemStackBuilder(registry.getIcon())
                 .withName("&6" + guiEditable.getName())
-                .withLore("&7No additional data to display")
+                .withLore("&7No additional data to display", "&c&lShift-Click &cto remove.")
                 .build();
-        return new GuiItem(item, click -> {
+        GuiItem guiItem = new GuiItem(item);
+        guiItem.setAction(click -> {
+            if (function.test(click.getClick())) {
+                guiItem.setVisible(false);
+                gui.update();
+                return;
+            }
             new EditGuiElementGUI(plugin, player, quest, guiEditable).open();
             player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 1f);
         });
+        return guiItem;
     }
 
     @Override
