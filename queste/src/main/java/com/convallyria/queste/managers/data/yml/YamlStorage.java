@@ -67,7 +67,7 @@ public class YamlStorage implements IStorageManager {
                 }
             }
 
-            cachedAccounts.put(uuid, account);
+            cachedAccounts.putIfAbsent(uuid, account);
             future.complete(account);
         }
         return future;

@@ -61,16 +61,16 @@ public abstract class QuesteRegistry<T> implements IQuesteRegistry<T> {
         Queste plugin = JavaPlugin.getPlugin(Queste.class);
         File preset = new File(plugin.getManagers().getPresetFolder(this) + File.separator + name + ".json");
         try {
-            Writer writer = new FileWriter(preset);
-            Gson gson = new GsonBuilder()
-                    .registerTypeHierarchyAdapter(getImplementation(), new AbstractAdapter<T>(null))
-                    .registerTypeHierarchyAdapter(ConfigurationSerializable.class, new ConfigurationSerializableAdapter())
-                    .setPrettyPrinting()
-                    .serializeNulls()
-                    .create();
-            gson.toJson(toSave, writer);
-            writer.flush();
-            writer.close();
+            try (Writer writer = new FileWriter(preset)) {
+                Gson gson = new GsonBuilder()
+                        .registerTypeHierarchyAdapter(getImplementation(), new AbstractAdapter<T>(null))
+                        .registerTypeHierarchyAdapter(ConfigurationSerializable.class, new ConfigurationSerializableAdapter())
+                        .setPrettyPrinting()
+                        .serializeNulls()
+                        .create();
+                gson.toJson(toSave, writer);
+                writer.flush();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -83,15 +83,16 @@ public abstract class QuesteRegistry<T> implements IQuesteRegistry<T> {
         File preset = new File(plugin.getManagers().getPresetFolder(this) + File.separator + name + ".json");
         if (!preset.exists()) return null;
         try {
-            FileReader reader = new FileReader(preset);
-            Gson gson = new GsonBuilder()
-                    .registerTypeAdapter(getImplementation(), new AbstractAdapter<T>(null))
-                    .registerTypeHierarchyAdapter(ConfigurationSerializable.class, new ConfigurationSerializableAdapter())
-                    .setPrettyPrinting()
-                    .serializeNulls()
-                    .create();
-            T implementedClass = gson.fromJson(reader, getImplementation());
-            reader.close();
+            T implementedClass;
+            try (FileReader reader = new FileReader(preset)) {
+                Gson gson = new GsonBuilder()
+                        .registerTypeAdapter(getImplementation(), new AbstractAdapter<T>(null))
+                        .registerTypeHierarchyAdapter(ConfigurationSerializable.class, new ConfigurationSerializableAdapter())
+                        .setPrettyPrinting()
+                        .serializeNulls()
+                        .create();
+                implementedClass = gson.fromJson(reader, getImplementation());
+            }
             return implementedClass;
         } catch (IOException e) {
             e.printStackTrace();

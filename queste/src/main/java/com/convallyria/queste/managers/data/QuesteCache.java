@@ -6,8 +6,8 @@ import org.bukkit.Bukkit;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 import java.io.Reader;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -34,8 +34,11 @@ public class QuesteCache implements IQuesteCache {
         if (!folder.exists()) folder.mkdirs();
         for (File file : folder.listFiles()) {
             try {
-                Reader reader = new FileReader(file);
-                Quest quest = plugin.getGson().fromJson(reader, Quest.class);
+                Quest quest;
+                try (Reader reader = new FileReader(file)) {
+                    quest = plugin.getGson().fromJson(reader, Quest.class);
+                    if (quest == null) continue;
+                }
                 quest.getObjectives().forEach(questObjective -> {
                     Bukkit.getPluginManager().registerEvents(questObjective, plugin);
                 });
@@ -43,7 +46,7 @@ public class QuesteCache implements IQuesteCache {
                     plugin.getLogger().info("Loaded quest " + quest.getName() + ".");
                 }
                 addQuest(quest);
-            } catch (FileNotFoundException e) {
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }

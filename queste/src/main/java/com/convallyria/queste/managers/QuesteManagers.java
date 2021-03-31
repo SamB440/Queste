@@ -79,14 +79,15 @@ public class QuesteManagers implements IQuesteManagers {
         if (!folder.exists()) folder.mkdirs();
         for (File file : folder.listFiles()) {
             try {
-                Reader reader = new FileReader(file);
-                Quest quest = plugin.getGson().fromJson(reader, Quest.class);
-                if (quest == null) {
-                    plugin.getLogger().severe("Unable to load quest " + file.getName() + ". Json invalid.");
-                    continue;
+                Quest quest;
+                try (Reader reader = new FileReader(file)) {
+                    quest = plugin.getGson().fromJson(reader, Quest.class);
+                    if (quest == null) {
+                        plugin.getLogger().severe("Unable to load quest " + file.getName() + ". Json invalid.");
+                        continue;
+                    }
                 }
 
-                reader.close();
                 if (!quest.isDummy()) {
                     quest.getObjectives().forEach(questObjective -> {
                         if (questObjective.getPluginRequirement() != null
@@ -142,15 +143,12 @@ public class QuesteManagers implements IQuesteManagers {
             sortedMap.put(objective.getStoryModeKey(), objective);
         }
 
-        if (plugin.debug()) {
-            plugin.getLogger().info("Data sorted: ");
-            plugin.getLogger().info(sortedMap.toString());
-        }
+        plugin.debug("Data sorted: " + sortedMap.toString());
 
         QuestObjective previousObjective = null;
-        for (Integer key : sortedMap.keySet()) {
+        for (Map.Entry<Integer, QuestObjective> entry : sortedMap.entrySet()) {
             NamespacedKey namespacedKey = previousObjective == null ? quest.getKey() : previousObjective.getKey();
-            QuestObjective objective = previousObjective = sortedMap.get(key);
+            QuestObjective objective = previousObjective = entry.getValue();
             new Advancement(objective.getKey(), new ItemObject().setItem(Material.TOTEM_OF_UNDYING),
                     new TextComponent(objective.getDisplayName()), new TextComponent(""))
                     .addTrigger("impossible", new ImpossibleTrigger())

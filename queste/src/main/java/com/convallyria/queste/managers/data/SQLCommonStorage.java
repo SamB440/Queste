@@ -109,7 +109,7 @@ public abstract class SQLCommonStorage implements IStorageManager {
                 else account.addActiveQuest(quest, startTime);
             }
 
-            cachedAccounts.put(uuid, account);
+            cachedAccounts.putIfAbsent(uuid, account);
             Bukkit.getScheduler().runTask(plugin, () -> future.complete(account)); // Enforce main thread completion
         }).exceptionally(t -> {
             t.printStackTrace();

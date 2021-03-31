@@ -415,11 +415,11 @@ public final class Quest implements Keyed {
     public boolean save(IQuesteAPI plugin) {
         File file = new File(plugin.getDataFolder() + "/quests/" + this.getName() + ".json");
         try {
-            Writer writer = new FileWriter(file);
-            Gson gson = plugin.getGson();
-            gson.toJson(this, writer);
-            writer.flush();
-            writer.close();
+            try (Writer writer = new FileWriter(file)) {
+                Gson gson = plugin.getGson();
+                gson.toJson(this, writer);
+                writer.flush();
+            }
             return true;
         } catch (IOException e) {
             e.printStackTrace();
