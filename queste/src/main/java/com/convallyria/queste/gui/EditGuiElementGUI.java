@@ -120,9 +120,11 @@ public class EditGuiElementGUI extends QuesteGUI {
                                 .onComplete((player, text) -> {
                                     if (ICustomGuiFeedback.class.isAssignableFrom(guiEditable.getClass())) {
                                         ICustomGuiFeedback customGuiFeedback = (ICustomGuiFeedback) guiEditable;
-                                        customGuiFeedback.feedback(player, text);
-                                        player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 1f);
-                                        return AnvilGUI.Response.close();
+                                        boolean flag = customGuiFeedback.feedback(player, text);
+                                        if (flag) {
+                                            player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 1f);
+                                            return AnvilGUI.Response.close();
+                                        }
                                     }
 
                                     element.set(player, guiEditable, field, text).thenAccept(done -> {

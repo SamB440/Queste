@@ -27,19 +27,16 @@ repositories {
         url = 'https://oss.sonatype.org/content/groups/public/'
     }
 
-    maven { url = "https://repo.aikar.co/content/groups/aikar/" }
-
-    maven { url 'https://jitpack.io' }
-
     // PAPI
     maven {
         url = 'http://repo.extendedclip.com/content/repositories/placeholderapi/'
     }
 
+    maven { url 'https://repo.aikar.co/content/groups/aikar/' }
+    maven { url 'https://jitpack.io' }
     maven { url 'http://erethon.de/repo' }
     maven { url 'https://dl.bintray.com/kotlin/kotlin-eap' }
     maven { url 'https://repo.citizensnpcs.co/' }
-    flatDir { dir 'libraries' }
 }
 
 dependencies {
