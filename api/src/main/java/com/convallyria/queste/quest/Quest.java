@@ -350,6 +350,11 @@ public final class Quest implements Keyed {
     public CompletableFuture<DenyReason> tryStart(@NotNull Player player) {
         CompletableFuture<DenyReason> future = new CompletableFuture<>();
         getPlugin().getManagers().getStorageManager().getAccount(player.getUniqueId()).thenAccept(account -> {
+            if (account.getActiveQuests().contains(this)) {
+                future.complete(DenyReason.ALREADY_STARTED);
+                return;
+            }
+
             if (isCompleted(player) && !canRestart) {
                 future.complete(DenyReason.CANNOT_RESTART);
                 return;
@@ -436,6 +441,7 @@ public final class Quest implements Keyed {
         REQUIREMENTS_NOT_MET,
         CANNOT_RESTART,
         COOLDOWN,
+        ALREADY_STARTED,
         NONE
     }
 }

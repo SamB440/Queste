@@ -323,6 +323,23 @@ class QuestCommand(private val plugin: Queste) : BaseCommand(), IQuesteCommand {
         }
     }
 
+    @Subcommand("reset")
+    @CommandCompletion("@players @quests")
+    fun onReset(sender: CommandSender, playerName: String, quest: Quest) {
+        val player = Bukkit.getPlayer(playerName)
+        if (player != null) {
+            plugin.managers.storageManager.getAccount(player.uniqueId).thenAccept { account ->
+                run {
+                    account.removeActiveQuest(quest)
+                    account.removeCompletedQuest(quest)
+                    sender.sendMessage(translate("&aQuest has been reset."))
+                }
+            }
+        } else {
+            sender.sendMessage(translate("&cThat player is not online."))
+        }
+    }
+
     @Subcommand("addplayer|start")
     @CommandCompletion("@players @quests @options")
     fun onAddPlayer(sender: CommandSender, playerName: String, quest: Quest, arguments: Array<String>) {

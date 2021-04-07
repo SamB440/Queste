@@ -61,6 +61,7 @@ import com.convallyria.queste.quest.start.NPCQuestStart;
 import com.convallyria.queste.quest.start.QuestStart;
 import com.convallyria.queste.quest.start.QuestStartRegistry;
 import com.convallyria.queste.task.ExpiringQuestTask;
+import com.convallyria.queste.task.QuestStartParticleTask;
 import com.convallyria.queste.task.UpdateBossbarTask;
 import com.convallyria.queste.translation.Translations;
 import com.google.common.collect.ImmutableList;
@@ -81,7 +82,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.java.JavaPluginLoader;
 
 import java.io.File;
-import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 
 public final class Queste extends JavaPlugin implements IQuesteAPI, LanguagyPluginHook {
@@ -147,11 +147,7 @@ public final class Queste extends JavaPlugin implements IQuesteAPI, LanguagyPlug
                         account.removeActiveQuest(activeQuest);
                     }
                 }
-                try {
-                    storageManager.removeCachedAccount(account.getUuid()).get();
-                } catch (InterruptedException | ExecutionException e) {
-                    Thread.currentThread().interrupt();
-                }
+                storageManager.removeCachedAccount(account.getUuid()).join(); // Block
             }
 
             getManagers().getQuesteCache().getQuests().clear();
@@ -288,6 +284,7 @@ public final class Queste extends JavaPlugin implements IQuesteAPI, LanguagyPlug
             Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new UpdateBossbarTask(this), 20L, interval);
         }
         Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new ExpiringQuestTask(this), 20L, 20L);
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new QuestStartParticleTask(this), 20L, 20L);
     }
 
     @Override

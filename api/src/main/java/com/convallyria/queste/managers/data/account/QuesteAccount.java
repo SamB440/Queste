@@ -1,6 +1,7 @@
 package com.convallyria.queste.managers.data.account;
 
 import com.convallyria.queste.quest.Quest;
+import com.convallyria.queste.quest.objective.QuestObjective;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
@@ -73,11 +74,17 @@ public class QuesteAccount {
     }
 
     public void removeActiveQuest(Quest quest) {
+        for (QuestObjective objective : quest.getObjectives()) {
+            objective.untrack(uuid);
+        }
         activeQuests.remove(quest);
         startTimes.remove(quest);
     }
 
     public void removeCompletedQuest(Quest quest) {
+        for (QuestObjective objective : quest.getObjectives()) {
+            objective.untrack(uuid);
+        }
         completedQuests.remove(quest);
         completedTimes.remove(quest);
     }

@@ -32,6 +32,11 @@ repositories {
         url = 'http://repo.extendedclip.com/content/repositories/placeholderapi/'
     }
 
+    maven {
+        name = 'codemc-snapshots'
+        url = 'https://repo.codemc.io/repository/maven-snapshots/'
+    }
+
     maven { url 'https://repo.aikar.co/content/groups/aikar/' }
     maven { url 'https://jitpack.io' }
     maven { url 'http://erethon.de/repo' }

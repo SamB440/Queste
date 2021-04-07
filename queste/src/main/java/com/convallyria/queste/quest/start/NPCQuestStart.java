@@ -12,6 +12,8 @@ public class NPCQuestStart extends QuestStart {
 
     @GuiEditable("NPC id")
     private int npcId;
+    @GuiEditable("Show Particles")
+    private boolean showNpcParticles;
 
     public NPCQuestStart(IQuesteAPI plugin, Quest quest) {
         super(plugin, quest);
@@ -29,5 +31,21 @@ public class NPCQuestStart extends QuestStart {
         if (npc.getId() == npcId) {
             getQuest().tryStart(player);
         }
+    }
+
+    public int getNpcId() {
+        return npcId;
+    }
+
+    public void setNpcId(int npcId) {
+        this.npcId = npcId;
+    }
+
+    public void setShowNpcParticles(boolean showNpcParticles) {
+        this.showNpcParticles = showNpcParticles;
+    }
+
+    public boolean showNpcParticles() {
+        return showNpcParticles;
     }
 }

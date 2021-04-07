@@ -212,7 +212,11 @@ public abstract class QuestObjective implements Listener, Keyed, IGuiEditable {
     }
 
     public void setIncrement(@NotNull Player player, int increment) {
-        progress.put(player.getUniqueId(), increment);
+        setIncrement(player.getUniqueId(), increment);
+    }
+
+    public void setIncrement(@NotNull UUID uuid, int increment) {
+        progress.put(uuid, increment);
     }
 
     public void untrack(UUID uuid) {
