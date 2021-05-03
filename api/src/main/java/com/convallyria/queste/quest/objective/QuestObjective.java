@@ -124,8 +124,14 @@ public abstract class QuestObjective implements Listener, Keyed, IGuiEditable {
     }
 
     /**
+     * @see #getIncrement(UUID)
+     */
+    public int getIncrement(@NotNull Player player) {
+        return getIncrement(player.getUniqueId());
+    }
+    /**
      * Gets the current completion amount for the specified player.
-     * @param player player to check
+     * @param uuid player to check
      * @return completion amount
      * @see #getCompletionAmount()
      * @see #setCompletionAmount(int)
@@ -133,8 +139,8 @@ public abstract class QuestObjective implements Listener, Keyed, IGuiEditable {
      * @see #checkIfCanIncrement(Quest, Player)
      * @see #setIncrement(Player, int)
      */
-    public int getIncrement(@NotNull Player player) {
-        return progress.getOrDefault(player.getUniqueId(), 0);
+    public int getIncrement(@NotNull UUID uuid) {
+        return progress.getOrDefault(uuid, 0);
     }
 
     /**
@@ -232,12 +238,19 @@ public abstract class QuestObjective implements Listener, Keyed, IGuiEditable {
     }
 
     /**
-     * Returns whether the player has completed this objective.
-     * @param player player to check
-     * @return true if completed, false otherwise
+     * @see #hasCompleted(UUID)
      */
     public boolean hasCompleted(@NotNull Player player) {
-        return progress.getOrDefault(player.getUniqueId(), 0) >= completionAmount;
+        return hasCompleted(player.getUniqueId());
+    }
+
+    /**
+     * Returns whether the player has completed this objective.
+     * @param uuid player to check
+     * @return true if completed, false otherwise
+     */
+    public boolean hasCompleted(@NotNull UUID uuid) {
+        return progress.getOrDefault(uuid, 0) >= completionAmount;
     }
 
     public String getDisplayName() {

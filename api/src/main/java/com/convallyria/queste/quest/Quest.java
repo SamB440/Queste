@@ -32,6 +32,7 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -290,14 +291,20 @@ public final class Quest implements Keyed {
     }
 
     /**
-     * Checks if a player has completed this quest.
-     * @param player player to check
-     * @return true if all quest objectives are completed, false otherwise
+     * @see #isCompleted(UUID)
      */
     public boolean isCompleted(@NotNull Player player) {
+        return isCompleted(player.getUniqueId());
+    }
+    /**
+     * Checks if a player has completed this quest.
+     * @param uuid player to check
+     * @return true if all quest objectives are completed, false otherwise
+     */
+    public boolean isCompleted(@NotNull UUID uuid) {
         boolean objectivesCompleted = true;
         for (QuestObjective objective : objectives) {
-            if (!objective.hasCompleted(player)) {
+            if (!objective.hasCompleted(uuid)) {
                 objectivesCompleted = false;
                 break;
             }

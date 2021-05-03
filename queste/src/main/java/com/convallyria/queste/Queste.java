@@ -61,6 +61,7 @@ import com.convallyria.queste.quest.start.NPCQuestStart;
 import com.convallyria.queste.quest.start.QuestStart;
 import com.convallyria.queste.quest.start.QuestStartRegistry;
 import com.convallyria.queste.task.ExpiringQuestTask;
+import com.convallyria.queste.task.JournalUpdateTask;
 import com.convallyria.queste.task.QuestStartParticleTask;
 import com.convallyria.queste.task.UpdateBossbarTask;
 import com.convallyria.queste.translation.Translations;
@@ -99,6 +100,7 @@ public final class Queste extends JavaPlugin implements IQuesteAPI, LanguagyPlug
     @LanguagyImplementation(Language.ENGLISH)
     private Translator translator;
 
+    @Override
     public Translator getTranslator() {
         return translator;
     }
@@ -285,6 +287,9 @@ public final class Queste extends JavaPlugin implements IQuesteAPI, LanguagyPlug
         }
         Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new ExpiringQuestTask(this), 20L, 20L);
         Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new QuestStartParticleTask(this), 20L, 20L);
+        if (Configurations.JOURNAL_ENABLED.getBoolean()) {
+            Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new JournalUpdateTask(this), 20L, 20L);
+        }
     }
 
     @Override

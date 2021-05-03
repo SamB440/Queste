@@ -8,7 +8,6 @@ import com.convallyria.queste.quest.Quest;
 import com.convallyria.queste.quest.objective.QuestObjective;
 import com.convallyria.queste.util.TimeUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -90,8 +89,7 @@ public abstract class SQLCommonStorage implements IStorageManager {
 
                     quest.getObjectives().forEach(objective -> {
                         if (currentProgress.containsKey(objective.getUuid())) {
-                            Player player = Bukkit.getPlayer(uuid);
-                            objective.setIncrement(player, currentProgress.get(objective.getUuid()));
+                            objective.setIncrement(uuid, currentProgress.get(objective.getUuid()));
                         }
                     });
                 } catch (SQLException throwables) {
@@ -134,7 +132,6 @@ public abstract class SQLCommonStorage implements IStorageManager {
     @Override
     public CompletableFuture<Void> removeCachedAccount(UUID uuid) {
         QuesteAccount account = cachedAccounts.get(uuid);
-        Player player = Bukkit.getPlayer(uuid);
         return DB.getResultsAsync(SELECT_QUEST, getDatabaseUuid(uuid)).thenAccept(results -> {
             Map<String, Boolean> current = new HashMap<>();
             for (DbRow row : results) {
@@ -152,17 +149,17 @@ public abstract class SQLCommonStorage implements IStorageManager {
                             long time = TimeUtils.convertTicks(allQuest.getTime(), TimeUnit.MILLISECONDS);
                             if (System.currentTimeMillis() >= (account.getStartTime(allQuest) + time)) continue;
                         }
-                        plugin.debug("Inserting: " + allQuest.getSafeName() + ", completed? " + allQuest.isCompleted(player));
+                        plugin.debug("Inserting: " + allQuest.getSafeName() + ", completed? " + allQuest.isCompleted(uuid));
                         DB.executeInsert(INSERT_QUEST, getDatabaseUuid(uuid), allQuest.getSafeName(),
-                                allQuest.isCompleted(player), account.getStartTime(allQuest), account.getCompletedTime(allQuest));
+                                allQuest.isCompleted(uuid), account.getStartTime(allQuest), account.getCompletedTime(allQuest));
                     } else {
-                        plugin.debug("Updating: " + allQuest.getSafeName() + ", completed? " + allQuest.isCompleted(player));
+                        plugin.debug("Updating: " + allQuest.getSafeName() + ", completed? " + allQuest.isCompleted(uuid));
                         if (allQuest.getTime() != 0) {
                             plugin.debug("Remove timed");
                             DB.executeUpdate(DELETE_OBJECTIVE_ALL_QUEST, getDatabaseUuid(uuid), allQuest.getSafeName());
                             DB.executeUpdate(DELETE_QUEST, getDatabaseUuid(uuid), allQuest.getSafeName());
                         } else {
-                            DB.executeUpdate(UPDATE_QUEST, allQuest.isCompleted(player), account.getStartTime(allQuest),
+                            DB.executeUpdate(UPDATE_QUEST, allQuest.isCompleted(uuid), account.getStartTime(allQuest),
                                     account.getCompletedTime(allQuest), getDatabaseUuid(uuid), allQuest.getSafeName());
                         }
                     }
@@ -173,7 +170,7 @@ public abstract class SQLCommonStorage implements IStorageManager {
                     }
 
                     for (QuestObjective objective : allQuest.getObjectives()) {
-                        int progress = objective.getIncrement(player);
+                        int progress = objective.getIncrement(uuid);
                         if (!currentProgress.containsKey(objective.getUuid())) {
                             DB.executeInsert(INSERT_OBJECTIVE, getDatabaseUuid(uuid), allQuest.getSafeName(),
                                     getDatabaseUuid(objective.getUuid()), progress);
