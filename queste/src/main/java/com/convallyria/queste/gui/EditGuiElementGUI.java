@@ -1,12 +1,11 @@
 package com.convallyria.queste.gui;
 
 import com.convallyria.queste.Queste;
-import com.convallyria.queste.chat.QuesteConversationPrefix;
-import com.convallyria.queste.chat.QuesteStringPrompt;
 import com.convallyria.queste.gui.element.ICustomGuiFeedback;
 import com.convallyria.queste.gui.element.IGuiFieldElement;
 import com.convallyria.queste.quest.Quest;
 import com.convallyria.queste.translation.Translations;
+import com.convallyria.queste.utils.ConversationUtils;
 import com.convallyria.queste.utils.ItemStackBuilder;
 import com.convallyria.queste.utils.ReflectionUtils;
 import com.github.stefvanschie.inventoryframework.gui.GuiItem;
@@ -20,7 +19,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.conversations.Conversation;
-import org.bukkit.conversations.ConversationFactory;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -86,15 +84,7 @@ public class EditGuiElementGUI extends QuesteGUI {
                             if (annotation.type() == GuiEditable.GuiEditableType.CHAT) {
                                 String info = getInfoIfApplicable(field.getName());
                                 if (info != null) player.sendMessage(ChatColor.GREEN + "Info provided: " + ChatColor.GRAY + info);
-                                ConversationFactory factory = new ConversationFactory(plugin)
-                                        .withModality(true)
-                                        .withPrefix(new QuesteConversationPrefix())
-                                        .withFirstPrompt(new QuesteStringPrompt("Enter value:"))
-                                        .withEscapeSequence("quit")
-                                        .withLocalEcho(true)
-                                        .withTimeout(60);
-                                Conversation conversation = factory.buildConversation(player);
-                                conversation.begin();
+                                Conversation conversation = ConversationUtils.getNewConversation(player, true);
                                 conversation.addConversationAbandonedListener(abandonedEvent -> {
                                     String input = (String) abandonedEvent.getContext().getSessionData("input");
                                     boolean flag = false;

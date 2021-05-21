@@ -3,6 +3,7 @@ package com.convallyria.queste.managers;
 import com.convallyria.queste.Queste;
 import com.convallyria.queste.config.Configurations;
 import com.convallyria.queste.gui.element.BooleanGuiFieldElement;
+import com.convallyria.queste.gui.element.EnchantmentGuiFieldElement;
 import com.convallyria.queste.gui.element.GuiFieldElementRegistry;
 import com.convallyria.queste.gui.element.IGuiFieldElementRegistry;
 import com.convallyria.queste.gui.element.IntegerGuiFieldElement;
@@ -125,6 +126,7 @@ public class QuesteManagers implements IQuesteManagers {
         guiFieldElementRegistry.register(new BooleanGuiFieldElement());
         guiFieldElementRegistry.register(new IntegerGuiFieldElement());
         guiFieldElementRegistry.register(new ItemStackGuiFieldElement());
+        guiFieldElementRegistry.register(new EnchantmentGuiFieldElement());
     }
 
     private void loadAdvancements(Quest quest, Queste plugin) {
@@ -143,7 +145,7 @@ public class QuesteManagers implements IQuesteManagers {
             sortedMap.put(objective.getStoryModeKey(), objective);
         }
 
-        plugin.debug("Data sorted: " + sortedMap.toString());
+        plugin.debug("Data sorted: " + sortedMap);
 
         QuestObjective previousObjective = null;
         for (Map.Entry<Integer, QuestObjective> entry : sortedMap.entrySet()) {

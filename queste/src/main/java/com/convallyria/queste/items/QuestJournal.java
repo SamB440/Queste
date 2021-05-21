@@ -12,6 +12,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.Nullable;
 import xyz.upperlevel.spigot.book.BookUtil;
 
 import java.util.ArrayList;
@@ -71,7 +72,7 @@ public class QuestJournal {
         return builder.pages(pages).build();
     }
 
-    public static boolean isJournal(final QuesteAccount account, ItemStack item) {
-        return item.isSimilar(getQuestJournal(account));
+    public static boolean isJournal(final QuesteAccount account, @Nullable ItemStack item) {
+        return item != null && item.isSimilar(getQuestJournal(account));
     }
 }

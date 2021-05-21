@@ -1,7 +1,7 @@
 plugins {
     id 'com.github.johnrengelman.shadow'
     id 'java'
-    id 'org.jetbrains.kotlin.jvm'
+    id 'org.jetbrains.kotlin.jvm' version '1.5.0'
 }
 
 group = pluginGroup
@@ -10,45 +10,7 @@ version = pluginVersion
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 
-repositories {
-    mavenCentral()
-    maven {
-        name = 'spigotmc-repo'
-        url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/'
-    }
-
-    maven {
-        name = 'papermc-repo'
-        url = 'https://papermc.io/repo/repository/maven-public/'
-    }
-
-    maven {
-        name = 'sonatype'
-        url = 'https://oss.sonatype.org/content/groups/public/'
-    }
-
-    // PAPI
-    maven {
-        url = 'http://repo.extendedclip.com/content/repositories/placeholderapi/'
-    }
-
-    maven {
-        name = 'codemc-snapshots'
-        url = 'https://repo.codemc.io/repository/maven-snapshots/'
-    }
-
-    maven { url 'https://repo.aikar.co/content/groups/aikar/' }
-    maven { url 'https://jitpack.io' }
-    maven { url 'http://erethon.de/repo' }
-    maven { url 'https://dl.bintray.com/kotlin/kotlin-eap' }
-    maven { url 'https://repo.citizensnpcs.co/' }
-}
-
 dependencies {
-    testCompile group: 'junit', name: 'junit', version: '4.5'
-    testImplementation 'com.github.seeseemelk:MockBukkit-v1.16:0.5.0'
-    testImplementation 'org.reflections:reflections:0.9.12'
-
     implementation 'com.gitlab.samb440.languagy:api:3ba744c0f1' // languagy
     implementation 'co.aikar:acf-paper:0.5.0-SNAPSHOT' // commands
     implementation 'co.aikar:idb-core:1.0.0-SNAPSHOT' // database
@@ -62,21 +24,29 @@ dependencies {
     compileOnly 'org.spigotmc:spigot-api:1.16.5-R0.1-SNAPSHOT'
     compileOnly 'org.jetbrains:annotations:20.1.0'
     compileOnly 'me.clip:placeholderapi:2.10.4' // PAPI
-    compileOnly 'com.github.MilkBowl:VaultAPI:1.7' // vault
-    compileOnly 'net.citizensnpcs:citizens:2.0.27-SNAPSHOT'
+    compileOnly ('com.github.MilkBowl:VaultAPI:1.7') { // vault
+        exclude group: 'org.bukkit'
+    }
+    compileOnly 'net.citizensnpcs:citizens-main:2.0.27-SNAPSHOT'
     compileOnly 'de.erethon.dungeonsxl:dungeonsxl-api:0.18-SNAPSHOT'
     compileOnly 'com.gitlab.SamB440:RPGRegions-2:011fa42402' // 1.3.5
-    compile project(':api')
+    implementation project(':api')
 }
 
+javadoc {
+    exclude 'xyz/upperlevel/spigot/book/**'
+    exclude 'hu/trigary/advancementcreator/**'
+}
+
+compileKotlin.dependsOn project(':api').shadowJar
+build.dependsOn project(':api').shadowJar
+build.dependsOn javadoc
 build.dependsOn shadowJar
 
 import org.apache.tools.ant.filters.ReplaceTokens
 
 processResources {
-    from(sourceSets.main.resources.srcDirs) {
-        filter ReplaceTokens, tokens: [version: version]
-    }
+    filter ReplaceTokens, tokens: [version: version]
 }
 
 compileKotlin {

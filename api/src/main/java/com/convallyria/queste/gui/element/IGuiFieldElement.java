@@ -7,9 +7,9 @@ import java.lang.reflect.Field;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-public interface IGuiFieldElement {
+public interface IGuiFieldElement<T> {
 
-    CompletableFuture<Void> set(Player player, IGuiEditable guiEditable, Field field, Object value);
+    CompletableFuture<T> set(Player player, IGuiEditable guiEditable, Field field, Object value);
 
     List<Class<?>> getType();
 

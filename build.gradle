@@ -1,7 +1,13 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        mavenLocal()
+    }
+}
+
 plugins {
     id 'com.github.johnrengelman.shadow' version '4.0.4'
     id 'java'
-    id 'org.jetbrains.kotlin.jvm' version '1.4.30-M1'
 }
 
 group = pluginGroup
@@ -12,45 +18,65 @@ targetCompatibility = JavaVersion.VERSION_1_8
 
 repositories {
     mavenCentral()
-    maven {
-        name = 'spigotmc-repo'
-        url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/'
-    }
-
-    maven {
-        name = 'papermc-repo'
-        url = 'https://papermc.io/repo/repository/maven-public/'
-    }
-
-    maven {
-        name = 'sonatype'
-        url = 'https://oss.sonatype.org/content/groups/public/'
-    }
-
-    // PAPI
-    maven {
-        url = 'http://repo.extendedclip.com/content/repositories/placeholderapi/'
-    }
-
-    maven {
-        name = 'codemc-snapshots'
-        url = 'https://repo.codemc.io/repository/maven-snapshots/'
-    }
-
-    maven { url 'https://repo.aikar.co/content/groups/aikar/' }
-    maven { url 'https://jitpack.io' }
-    maven { url 'http://erethon.de/repo' }
-    maven { url 'https://dl.bintray.com/kotlin/kotlin-eap' }
-    maven { url 'https://repo.citizensnpcs.co/' }
+    mavenLocal()
 }
 
 dependencies {
-    testCompile group: 'junit', name: 'junit', version: '4.5'
-    testImplementation 'com.github.seeseemelk:MockBukkit-v1.16:0.5.0'
-    testImplementation 'org.reflections:reflections:0.9.12'
+    implementation project(':queste')
+    implementation project(':api')
+}
 
-    compile project(':queste')
-    compile project(':api')
+allprojects {
+    apply plugin: 'com.github.johnrengelman.shadow'
+    apply plugin: 'java'
+
+    repositories {
+        maven { url 'https://repo.citizensnpcs.co/' }
+
+        maven {
+            name = 'spigotmc-repo'
+            url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/'
+        }
+
+        maven {
+            name = 'papermc-repo'
+            url = 'https://papermc.io/repo/repository/maven-public/'
+        }
+
+        maven {
+            name = 'sonatype'
+            url = 'https://oss.sonatype.org/content/groups/public/'
+        }
+
+        // PAPI
+        maven {
+            url = 'https://repo.extendedclip.com/content/repositories/placeholderapi/'
+        }
+
+        maven {
+            name = 'codemc-snapshots'
+            url = 'https://repo.codemc.io/repository/maven-snapshots/'
+        }
+
+        maven { url 'https://repo.aikar.co/content/groups/aikar/' }
+        maven { url 'https://jitpack.io' }
+        maven { url 'https://erethon.de/repo' }
+        maven { url 'https://dl.bintray.com/kotlin/kotlin-eap' }
+    }
+
+    javadoc.options.encoding = 'UTF-8'
+
+    dependencies {
+        testImplementation group: 'junit', name: 'junit', version: '4.5'
+        testImplementation 'com.github.seeseemelk:MockBukkit-v1.16:0.5.0'
+        testImplementation 'org.reflections:reflections:0.9.12'
+    }
+
+    processResources {
+        filter ReplaceTokens, tokens: [version: version]
+    }
+
+    build.dependsOn javadoc
 }
 
 shadowJar {
@@ -62,24 +88,36 @@ shadowJar {
     relocate 'io.papermc.lib', 'com.convallyria.queste.libs.paperlib'
 }
 
+task aggregatedJavadocs(type: Javadoc, description: "Generate javadocs from all child projects as if it was a single project", group: "Documentation") {
+    destinationDir = file("./docs/javadoc")
+    title = "$project.name $version API"
+    options.author true
+    options.links "http://docs.spring.io/spring/docs/4.3.x/javadoc-api/", "http://docs.oracle.com/javase/8/docs/api/", "http://docs.spring.io/spring-ws/docs/2.3.0.RELEASE/api/", "http://docs.spring.io/spring-security/site/docs/4.0.4.RELEASE/apidocs/"
+    //options.addStringOption("Xdoclint:none", "-quiet")
+
+    delete("./docs")
+
+    subprojects.each { proj ->
+        proj.tasks.withType(Javadoc).each { javadocTask ->
+            source += javadocTask.source
+            classpath += javadocTask.classpath
+            excludes += javadocTask.excludes
+            includes += javadocTask.includes
+        }
+    }
+}
+
+build.dependsOn project(':api').build
+shadowJar.dependsOn project(':queste').shadowJar
+build.dependsOn project(':queste').build
 build.dependsOn shadowJar
+build.dependsOn aggregatedJavadocs
+aggregatedJavadocs.dependsOn javadoc
+aggregatedJavadocs.dependsOn project(':api').build
+aggregatedJavadocs.dependsOn project(':queste').build
 
 import org.apache.tools.ant.filters.ReplaceTokens
 
 processResources {
-    from(sourceSets.main.resources.srcDirs) {
-        filter ReplaceTokens, tokens: [version: version]
-    }
-}
-
-compileKotlin {
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
-}
-
-compileTestKotlin {
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
+    filter ReplaceTokens, tokens: [version: version]
 }

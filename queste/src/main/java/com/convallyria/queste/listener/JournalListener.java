@@ -10,9 +10,12 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
+import xyz.upperlevel.spigot.book.BookUtil;
 
 import java.util.Iterator;
 import java.util.concurrent.ExecutionException;
@@ -67,5 +70,17 @@ public class JournalListener implements Listener {
         Player player = event.getPlayer();
         QuesteAccount account = plugin.getManagers().getStorageManager().getAccount(player.getUniqueId()).get();
         player.getInventory().setItem(Configurations.JOURNAL_SLOT.getInt(), QuestJournal.getQuestJournal(account));
+    }
+
+    @EventHandler
+    public void onBookOpen(PlayerInteractEvent event) throws ExecutionException, InterruptedException {
+        Player player = event.getPlayer();
+        if (event.getHand() != EquipmentSlot.HAND) return;
+        ItemStack book = event.getItem();
+        QuesteAccount account = plugin.getManagers().getStorageManager().getAccount(player.getUniqueId()).get();
+        if (QuestJournal.isJournal(account, book)) {
+            event.setCancelled(true);
+            BookUtil.openPlayer(player, book);
+        }
     }
 }
