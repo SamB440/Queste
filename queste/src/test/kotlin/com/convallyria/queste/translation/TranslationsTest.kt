@@ -1,12 +1,12 @@
 package com.convallyria.queste.translation
 
+import org.bukkit.configuration.file.YamlConfiguration
+import org.junit.Assert
+import org.junit.Test
 import org.reflections.Reflections
 import org.reflections.scanners.ResourcesScanner
 import java.io.BufferedReader
 import java.io.InputStreamReader
-import org.bukkit.configuration.file.YamlConfiguration
-import org.junit.Assert
-import org.junit.Test
 import java.util.function.Consumer
 import java.util.regex.Pattern
 
@@ -21,7 +21,7 @@ class TranslationsTest {
             val reader = BufferedReader(InputStreamReader(input))
             val config = YamlConfiguration.loadConfiguration(reader)
             for (translation in Translations.values()) {
-                if (config[translation.toString().toLowerCase()] == null) {
+                if (config[translation.toString().lowercase()] == null) {
                     Assert.fail("$translation($translation) not found in $fileName.")
                 }
             }

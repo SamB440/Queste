@@ -13,9 +13,6 @@ plugins {
 group = pluginGroup
 version = pluginVersion
 
-sourceCompatibility = JavaVersion.VERSION_1_8
-targetCompatibility = JavaVersion.VERSION_1_8
-
 repositories {
     mavenCentral()
     mavenLocal()
@@ -29,6 +26,10 @@ dependencies {
 allprojects {
     apply plugin: 'com.github.johnrengelman.shadow'
     apply plugin: 'java'
+
+    // Will be bumped to Java 16 in Minecraft 1.17
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
 
     repositories {
         maven { url 'https://repo.citizensnpcs.co/' }
