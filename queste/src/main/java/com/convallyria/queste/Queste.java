@@ -125,16 +125,16 @@ public final class Queste extends JavaPlugin implements IQuesteAPI, LanguagyPlug
         this.registerRewards();
         this.registerRequirements();
         this.registerStarters();
+        this.hook(this);
         try {
-            this.hook(this);
             this.registerCommands();
-            this.registerListeners();
             new Metrics(this, 9954);
-            this.advancementFactory = new AdvancementFactory(this, true, false);
-            this.startTasks();
         } catch (Exception e) { // MockBukkit support. Throws an exception stating commands are unsupported.
-            getLogger().log(Level.WARNING, "Unable to initialise listeners/commands", e);
+            getLogger().log(Level.WARNING, "Running within test environment", e);
         }
+        this.registerListeners();
+        this.advancementFactory = new AdvancementFactory(this, true, false);
+        this.startTasks();
     }
 
     @Override
