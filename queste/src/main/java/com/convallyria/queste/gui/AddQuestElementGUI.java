@@ -85,6 +85,7 @@ public class AddQuestElementGUI extends QuesteGUI {
                     quest.addStarter((QuestStart) newInstance);
                 }
 
+                new EditQuestElementGUI(plugin, player, quest, registry).open();
                 player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 1f);
             });
             items.add(guiItem);

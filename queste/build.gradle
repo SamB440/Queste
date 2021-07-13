@@ -12,7 +12,7 @@ dependencies {
     implementation 'com.github.stefvanschie.inventoryframework:IF:0.9.1' // inventory framework
     implementation 'org.bstats:bstats-bukkit:1.8' // plugin stats
     implementation 'io.papermc:paperlib:1.0.4' // paperlib - async teleport on Paper
-    implementation 'net.wesjd:anvilgui:1.5.0-SNAPSHOT' // anvilgui
+    implementation 'net.wesjd:anvilgui:1.5.1-SNAPSHOT' // anvilgui
     implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
     implementation 'xyz.upperlevel.spigot.book:spigot-book-api:1.5'
 

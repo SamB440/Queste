@@ -2,5 +2,6 @@
 /.gradle/
 /.settings/
 /doc/
+/docs/
 /target/
 /.idea/
