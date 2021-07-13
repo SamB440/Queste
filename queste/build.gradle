@@ -14,6 +14,7 @@ dependencies {
     implementation 'io.papermc:paperlib:1.0.4' // paperlib - async teleport on Paper
     implementation 'net.wesjd:anvilgui:1.5.0-SNAPSHOT' // anvilgui
     implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
+    implementation 'xyz.upperlevel.spigot.book:spigot-book-api:1.5'
 
     compileOnly 'org.spigotmc:spigot-api:1.16.5-R0.1-SNAPSHOT'
     compileOnly 'org.jetbrains:annotations:20.1.0'
@@ -35,13 +36,6 @@ javadoc {
 compileKotlin.dependsOn project(':api').shadowJar
 build.dependsOn project(':api').shadowJar
 build.dependsOn javadoc
-build.dependsOn shadowJar
-
-import org.apache.tools.ant.filters.ReplaceTokens
-
-processResources {
-    filter ReplaceTokens, tokens: [version: version]
-}
 
 compileKotlin {
     kotlinOptions {

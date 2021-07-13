@@ -6,7 +6,7 @@ buildscript {
 }
 
 plugins {
-    id 'com.github.johnrengelman.shadow' version '4.0.4'
+    id 'com.github.johnrengelman.shadow' version '7.0.0'
     id 'java'
 }
 
@@ -27,9 +27,8 @@ allprojects {
     apply plugin: 'com.github.johnrengelman.shadow'
     apply plugin: 'java'
 
-    // Will be bumped to Java 16 in Minecraft 1.17
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
+    sourceCompatibility = JavaVersion.VERSION_16
+    targetCompatibility = JavaVersion.VERSION_16
 
     repositories {
         maven { url 'https://repo.citizensnpcs.co/' }
@@ -77,6 +76,7 @@ allprojects {
         filter ReplaceTokens, tokens: [version: version]
     }
 
+    build.dependsOn shadowJar
     build.dependsOn javadoc
 }
 
@@ -87,6 +87,7 @@ shadowJar {
     relocate 'com.github.stefvanschie.inventoryframework', 'com.convallyria.queste.libs.inventoryframework'
     relocate 'org.bstats', 'com.convallyria.queste.libs.bstats'
     relocate 'io.papermc.lib', 'com.convallyria.queste.libs.paperlib'
+    relocate 'xyz.upperlevel.spigot', 'com.convallyria.queste.libs.book'
 }
 
 task aggregatedJavadocs(type: Javadoc, description: "Generate javadocs from all child projects as if it was a single project", group: "Documentation") {
