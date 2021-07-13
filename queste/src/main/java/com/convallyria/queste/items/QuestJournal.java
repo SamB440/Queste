@@ -59,8 +59,7 @@ public class QuestJournal {
                     pageBuilder = new BookUtil.PageBuilder();
                 }
                 BookUtil.TextBuilder textBuilder = BookUtil.TextBuilder.of("\n" + ChatColor.RESET + reward.getName());
-                if (reward instanceof ItemReward) {
-                    ItemReward itemReward = (ItemReward) reward;
+                if (reward instanceof ItemReward itemReward) {
                     textBuilder.onHover(BookUtil.HoverAction.showItem(itemReward.getItem()));
                 }
                 pageBuilder.add(textBuilder.build());

@@ -13,6 +13,7 @@ import com.convallyria.queste.command.QuesteCommand;
 import com.convallyria.queste.command.QuestsCommand;
 import com.convallyria.queste.config.Configurations;
 import com.convallyria.queste.gson.ConfigurationSerializableAdapter;
+import com.convallyria.queste.gson.ItemStackAdapter;
 import com.convallyria.queste.gson.QuestAdapter;
 import com.convallyria.queste.listener.JournalListener;
 import com.convallyria.queste.listener.PlayerConnectionListener;
@@ -78,6 +79,7 @@ import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -298,6 +300,7 @@ public final class Queste extends JavaPlugin implements IQuesteAPI, LanguagyPlug
     public Gson getGson() {
         return new GsonBuilder()
                 .registerTypeAdapter(Quest.class, new QuestAdapter())
+                .registerTypeHierarchyAdapter(ItemStack.class, new ItemStackAdapter())
                 .registerTypeHierarchyAdapter(ConfigurationSerializable.class, new ConfigurationSerializableAdapter())
                 .setPrettyPrinting()
                 .serializeNulls()

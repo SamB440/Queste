@@ -13,6 +13,9 @@ plugins {
 group = pluginGroup
 version = pluginVersion
 
+sourceCompatibility = JavaVersion.VERSION_16
+targetCompatibility = JavaVersion.VERSION_16
+
 repositories {
     mavenCentral()
     mavenLocal()
@@ -31,6 +34,9 @@ allprojects {
     targetCompatibility = JavaVersion.VERSION_16
 
     repositories {
+        mavenCentral()
+        mavenLocal()
+
         maven { url 'https://repo.citizensnpcs.co/' }
 
         maven {
@@ -61,7 +67,6 @@ allprojects {
         maven { url 'https://repo.aikar.co/content/groups/aikar/' }
         maven { url 'https://jitpack.io' }
         maven { url 'https://erethon.de/repo' }
-        maven { url 'https://dl.bintray.com/kotlin/kotlin-eap' }
     }
 
     javadoc.options.encoding = 'UTF-8'
@@ -89,6 +94,7 @@ shadowJar {
     relocate 'io.papermc.lib', 'com.convallyria.queste.libs.paperlib'
     relocate 'xyz.upperlevel.spigot', 'com.convallyria.queste.libs.book'
     relocate 'org.apache.commons:commons-lang3', 'com.convallyria.queste.libs.apache.commons'
+    relocate 'me.lucko.helper', 'com.convallyria.queste.libs.me.lucko.helper'
 }
 
 task aggregatedJavadocs(type: Javadoc, description: "Generate javadocs from all child projects as if it was a single project", group: "Documentation") {
