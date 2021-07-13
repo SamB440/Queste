@@ -21,8 +21,10 @@ public class GuiFieldElementRegistry implements IGuiFieldElementRegistry {
 
     public IGuiFieldElement<?> fromClass(Class<?> clazz) {
         for (IGuiFieldElement<?> type : guiFieldElements) {
-            if (type.getType().contains(clazz)) {
-                return type;
+            for (Class<?> aClass : type.getType()) {
+                if (aClass.isAssignableFrom(clazz)) {
+                    return type;
+                }
             }
         }
         return new DefaultGuiFieldElement();

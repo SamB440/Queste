@@ -4,10 +4,12 @@ import com.convallyria.queste.Queste;
 import com.convallyria.queste.config.Configurations;
 import com.convallyria.queste.gui.element.BooleanGuiFieldElement;
 import com.convallyria.queste.gui.element.EnchantmentGuiFieldElement;
+import com.convallyria.queste.gui.element.EnumGuiFieldElement;
 import com.convallyria.queste.gui.element.GuiFieldElementRegistry;
 import com.convallyria.queste.gui.element.IGuiFieldElementRegistry;
 import com.convallyria.queste.gui.element.IntegerGuiFieldElement;
 import com.convallyria.queste.gui.element.ItemStackGuiFieldElement;
+import com.convallyria.queste.gui.element.PotionEffectGuiFieldElement;
 import com.convallyria.queste.managers.data.IStorageManager;
 import com.convallyria.queste.managers.data.QuesteCache;
 import com.convallyria.queste.managers.data.StorageType;
@@ -127,6 +129,8 @@ public class QuesteManagers implements IQuesteManagers {
         guiFieldElementRegistry.register(new IntegerGuiFieldElement());
         guiFieldElementRegistry.register(new ItemStackGuiFieldElement());
         guiFieldElementRegistry.register(new EnchantmentGuiFieldElement());
+        guiFieldElementRegistry.register(new PotionEffectGuiFieldElement());
+        guiFieldElementRegistry.register(new EnumGuiFieldElement());
     }
 
     private void loadAdvancements(Quest quest, Queste plugin) {
