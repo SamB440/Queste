@@ -34,6 +34,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.util.Locale;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -58,7 +59,7 @@ public class QuesteManagers implements IQuesteManagers {
 
     public QuesteManagers(Queste plugin) {
         this.plugin = plugin;
-        StorageType.valueOf(Configurations.STORAGE_MODE.getString().toUpperCase())
+        StorageType.valueOf(Configurations.STORAGE_MODE.getString().toUpperCase(Locale.ROOT))
             .get(plugin)
             .ifPresent(generatedManager -> storageManager = generatedManager);
         if (storageManager == null) throw new IllegalStateException("Could not find StorageManager!");

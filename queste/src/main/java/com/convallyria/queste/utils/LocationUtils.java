@@ -6,11 +6,13 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Locale;
+
 public class LocationUtils {
 
     @Nullable
     public static Location getLocationFromInput(Player player, String input) {
-        String upperInput = input.toUpperCase();
+        String upperInput = input.toUpperCase(Locale.ROOT);
         switch (upperInput) {
             case "SELF":
                 return player.getLocation();

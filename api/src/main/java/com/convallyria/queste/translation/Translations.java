@@ -13,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public enum Translations {
     NEXT_PAGE("&aNext Page"),
@@ -51,7 +52,7 @@ public enum Translations {
     }
 
     private String getPath() {
-        return this.toString().toLowerCase();
+        return this.toString().toLowerCase(Locale.ROOT);
     }
 
     public void send(Player player) {
@@ -116,9 +117,9 @@ public enum Translations {
             if (file.exists()) {
                 FileConfiguration config = YamlConfiguration.loadConfiguration(file);
                 for (Translations key : values()) {
-                    if (config.get(key.toString().toLowerCase()) == null) {
+                    if (config.get(key.toString().toLowerCase(Locale.ROOT)) == null) {
                         plugin.getLogger().warning("No value in translation file for key "
-                                + key.toString() + " was found. Regenerate language files?");
+                                + key + " was found. Regenerate language files?");
                     }
                 }
             }

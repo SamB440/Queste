@@ -7,6 +7,7 @@ import org.reflections.Reflections
 import org.reflections.scanners.ResourcesScanner
 import java.io.BufferedReader
 import java.io.InputStreamReader
+import java.util.*
 import java.util.function.Consumer
 import java.util.regex.Pattern
 
@@ -21,7 +22,7 @@ class TranslationsTest {
             val reader = BufferedReader(InputStreamReader(input))
             val config = YamlConfiguration.loadConfiguration(reader)
             for (translation in Translations.values()) {
-                if (config[translation.toString().lowercase()] == null) {
+                if (config[translation.toString().lowercase(Locale.ROOT)] == null) {
                     Assert.fail("$translation($translation) not found in $fileName.")
                 }
             }
