@@ -11,7 +11,7 @@ import org.bukkit.event.player.PlayerStatisticIncrementEvent;
 
 import java.util.Locale;
 
-public class StatisticIncrementObjective extends QuestObjective {
+public final class StatisticIncrementObjective extends QuestObjective {
 
     @GuiEditable(value = "Statistic", type = GuiEditable.GuiEditableType.CHAT)
     private Statistic statistic;

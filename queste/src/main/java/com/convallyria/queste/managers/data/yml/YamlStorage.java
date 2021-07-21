@@ -37,17 +37,17 @@ public class YamlStorage implements IStorageManager {
             future.complete(cachedAccounts.get(uuid));
         } else {
             Player player = Bukkit.getPlayer(uuid);
-            File file = new File(plugin.getDataFolder() + "/accounts/" + uuid.toString() + ".yml");
+            File file = new File(plugin.getDataFolder() + "/accounts/" + uuid + ".yml");
             FileConfiguration config = YamlConfiguration.loadConfiguration(file);
             QuesteAccount account = new QuesteAccount(uuid);
             for (String activeQuest : config.getStringList("Quests")) {
                 if (plugin.getManagers().getQuesteCache().getQuests().containsKey(activeQuest)) {
                     Quest quest = plugin.getManagers().getQuesteCache().getQuests().get(activeQuest);
                     quest.getObjectives().forEach(objective -> {
-                        int progress = config.getInt(quest.getName() + "." + objective.getSafeName() + "." + uuid.toString());
+                        int progress = config.getInt(quest.getName() + "." + objective.getSafeName() + "." + uuid);
                         objective.setIncrement(player, progress);
                     });
-                    long time = config.getLong(quest.getName() + "." + "startTime" + "." + uuid.toString());
+                    long time = config.getLong(quest.getName() + "." + "startTime" + "." + uuid);
                     account.addActiveQuest(quest, time);
                 } else {
                     plugin.getLogger().warning(activeQuest + " quest not found.");
@@ -58,7 +58,7 @@ public class YamlStorage implements IStorageManager {
                 if (plugin.getManagers().getQuesteCache().getQuests().containsKey(completedQuest)) {
                     Quest quest = plugin.getManagers().getQuesteCache().getQuests().get(completedQuest);
                     quest.getObjectives().forEach(objective -> {
-                        int progress = config.getInt(quest.getName() + "." + objective.getSafeName() + "." + uuid.toString());
+                        int progress = config.getInt(quest.getName() + "." + objective.getSafeName() + "." + uuid);
                         objective.setIncrement(player, progress);
                     });
                     account.addCompletedQuest(quest);
@@ -67,6 +67,7 @@ public class YamlStorage implements IStorageManager {
                 }
             }
 
+            account.setQuestes(config.getInt("Questes"));
             cachedAccounts.putIfAbsent(uuid, account);
             future.complete(account);
         }
@@ -83,7 +84,7 @@ public class YamlStorage implements IStorageManager {
         File file = new File(plugin.getDataFolder() + "/accounts/" + uuid.toString() + ".yml");
         try {
             if (!Files.deleteIfExists(file.toPath())) {
-                plugin.getLogger().warning("Could not delete file " + file.toPath().toString() + ".");
+                plugin.getLogger().warning("Could not delete file " + file.toPath() + ".");
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -100,7 +101,7 @@ public class YamlStorage implements IStorageManager {
         List<String> activeQuests = new ArrayList<>();
         account.getActiveQuests().forEach(quest -> {
             activeQuests.add(quest.getName());
-            config.set(quest.getName() + "." + "startTime" + "." + uuid.toString(), account.getStartTime(quest));
+            config.set(quest.getName() + "." + "startTime" + "." + uuid, account.getStartTime(quest));
         });
 
         List<String> completedQuests = new ArrayList<>();
@@ -113,11 +114,12 @@ public class YamlStorage implements IStorageManager {
             quest.getObjectives().forEach(objective -> {
                 Player player = Bukkit.getPlayer(uuid);
                 int progress = objective.getIncrement(player);
-                config.set(quest.getName() + "." + objective.getSafeName() + "." + uuid.toString(), progress);
+                config.set(quest.getName() + "." + objective.getSafeName() + "." + uuid, progress);
                 objective.untrack(uuid);
             });
         });
 
+        config.set("Questes", account.getQuestes());
         try {
             config.save(file);
         } catch (IOException e) {

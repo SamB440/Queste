@@ -18,6 +18,7 @@ public class SqliteStorage extends SQLCommonStorage {
         DB.setGlobalDatabase(db);
         try {
             db.executeUpdate(CREATE_TABLE);
+            db.executeUpdate(CREATE_QUESTES_TABLE);
             db.executeUpdate(CREATE_OBJECTIVE_TABLE);
         } catch (SQLException e) {
             e.printStackTrace();

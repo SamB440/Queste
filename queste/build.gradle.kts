@@ -34,7 +34,7 @@ tasks.javadoc {
 }
 
 tasks.build {
-    dependsOn(project(":api"))
+    dependsOn(project(":api").tasks.build)
     dependsOn(tasks.javadoc)
 }
 

@@ -21,6 +21,8 @@ public class QuesteAccount {
     private final ConcurrentMap<Quest, Long> startTimes;
     private final ConcurrentMap<Quest, Long> completedTimes;
 
+    private int questes;
+
     public QuesteAccount(UUID uuid) {
         this.uuid = uuid;
         this.activeQuests = new ArrayList<>();
@@ -53,6 +55,14 @@ public class QuesteAccount {
 
     public ImmutableMap<Quest, Long> getCompletedTimes() {
         return ImmutableMap.copyOf(completedTimes);
+    }
+
+    public int getQuestes() {
+        return questes;
+    }
+
+    public void setQuestes(int questes) {
+        this.questes = questes;
     }
 
     public long getStartTime(Quest quest) {

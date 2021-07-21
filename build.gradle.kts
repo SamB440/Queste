@@ -16,40 +16,6 @@ var version by extra("1.0.0")
 java.sourceCompatibility = JavaVersion.VERSION_16
 java.targetCompatibility = JavaVersion.VERSION_16
 
-repositories {
-    mavenCentral()
-    mavenLocal()
-
-    maven("https://repo.citizensnpcs.co/")
-
-    maven {
-        name = "spigotmc-repo"
-        uri("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
-    }
-
-    maven {
-        name = "papermc-repo"
-        uri("https://papermc.io/repo/repository/maven-public/")
-    }
-
-    maven {
-        name = "sonatype"
-        uri("https://oss.sonatype.org/content/groups/public/")
-    }
-
-    // PAPI
-    maven("https://repo.extendedclip.com/content/repositories/placeholderapi")
-
-    maven {
-        name = "codemc-snapshots"
-        uri("https://repo.codemc.io/repository/maven-snapshots/")
-    }
-
-    maven("https://repo.aikar.co/content/groups/aikar/")
-    maven("https://jitpack.io")
-    maven("https://erethon.de/repo")
-}
-
 dependencies {
     implementation(project(":queste"))
     implementation(project(":api"))
@@ -66,29 +32,29 @@ allprojects {
         mavenCentral()
         mavenLocal()
 
-        maven("https://repo.citizensnpcs.co/")
-
         maven {
-            name = "spigotmc-repo"
-            uri("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
+            url = uri("https://repo.citizensnpcs.co/")
         }
 
         maven {
-            name = "papermc-repo"
-            uri("https://papermc.io/repo/repository/maven-public/")
+            url = uri("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
         }
 
         maven {
-            name = "sonatype"
-            uri("https://oss.sonatype.org/content/groups/public/")
+            url = uri("https://papermc.io/repo/repository/maven-public/")
+        }
+
+        maven {
+            url = uri("https://oss.sonatype.org/content/groups/public/")
         }
 
         // PAPI
-        maven("https://repo.extendedclip.com/content/repositories/placeholderapi")
+        maven {
+            url = uri("https://repo.extendedclip.com/content/repositories/placeholderapi")
+        }
 
         maven {
-            name = "codemc-snapshots"
-            uri("https://repo.codemc.io/repository/maven-snapshots/")
+            url = uri("https://repo.codemc.io/repository/maven-snapshots/")
         }
 
         maven("https://repo.aikar.co/content/groups/aikar/")
@@ -117,7 +83,7 @@ allprojects {
 }
 
 tasks.shadowJar {
-    dependsOn(project(":queste"))
+    dependsOn(project(":queste").tasks.build)
     relocate("net.islandearth.languagy", "com.convallyria.queste.libs.languagy")
     relocate("co.aikar.commands", "com.convallyria.queste.libs.acf")
     relocate("co.aikar.idb", "com.convallyria.queste.libs.idb")
