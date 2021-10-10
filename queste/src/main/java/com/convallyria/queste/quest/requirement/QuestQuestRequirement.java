@@ -15,7 +15,7 @@ public final class QuestQuestRequirement extends QuestRequirement {
     @GuiEditable("The Quest")
     private String questName;
 
-    protected QuestQuestRequirement(IQuesteAPI api) {
+    public QuestQuestRequirement(IQuesteAPI api) {
         super(api);
         this.questName = "example";
     }

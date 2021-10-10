@@ -313,7 +313,7 @@ public final class Quest implements Keyed {
 
         try {
             if (!objectivesCompleted
-                    && plugin.getManagers().getStorageManager().getAccount(uuid).get().getCompletedQuests().contains(this)) {
+                    && getPlugin().getManagers().getStorageManager().getAccount(uuid).get().getCompletedQuests().contains(this)) {
                 return true;
             }
         } catch (InterruptedException | ExecutionException e) {
