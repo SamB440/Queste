@@ -28,9 +28,4 @@ public final class CitizenInteractQuestObjective extends CitizensQuestObjective 
     public String getName() {
         return "Interact with NPC";
     }
-
-    @Override
-    public String getPluginRequirement() {
-        return "Citizens";
-    }
 }

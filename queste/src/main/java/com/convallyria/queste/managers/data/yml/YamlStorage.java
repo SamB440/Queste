@@ -5,6 +5,7 @@ import com.convallyria.queste.managers.data.IStorageManager;
 import com.convallyria.queste.managers.data.account.QuesteAccount;
 import com.convallyria.queste.quest.Quest;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -36,7 +37,7 @@ public class YamlStorage implements IStorageManager {
         if (cachedAccounts.containsKey(uuid)) {
             future.complete(cachedAccounts.get(uuid));
         } else {
-            Player player = Bukkit.getPlayer(uuid);
+            OfflinePlayer player = Bukkit.getOfflinePlayer(uuid);
             File file = new File(plugin.getDataFolder() + "/accounts/" + uuid + ".yml");
             FileConfiguration config = YamlConfiguration.loadConfiguration(file);
             QuesteAccount account = new QuesteAccount(uuid);
@@ -114,7 +115,7 @@ public class YamlStorage implements IStorageManager {
             quest.getObjectives().forEach(objective -> {
                 Player player = Bukkit.getPlayer(uuid);
                 int progress = objective.getIncrement(player);
-                config.set(quest.getName() + "." + objective.getSafeName() + "." + uuid, progress);
+                config.set(quest.getName() + "." + objective.getSafeName(), progress);
                 objective.untrack(uuid);
             });
         });

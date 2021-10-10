@@ -1,7 +1,7 @@
 name: Queste
-version: @version@
+version: '${version}'
 main: com.convallyria.queste.Queste
-api-version: 1.16
+api-version: 1.17
 softdepend: [Languagy, RPGRegions, Citizens, PlaceholderAPI]
 authors: [SamB440]
 description: A river of adventure in a land of quests

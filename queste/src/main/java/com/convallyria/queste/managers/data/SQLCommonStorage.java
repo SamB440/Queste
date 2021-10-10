@@ -29,7 +29,7 @@ public abstract class SQLCommonStorage implements IStorageManager {
             "  PRIMARY KEY (`uuid`)" +
             ");";
 
-    @Language("SQL") protected static final String CREATE_TABLE = "CREATE TABLE IF NOT EXISTS `queste_quests` (" +
+    @Language("SQL") protected static final String CREATE_TABLE = "CREATE TABLE IF NOT EXISTS `queste_users` (" +
             "  `uuid` varchar(32) NOT NULL," +
             "  `quest` varchar(64) NOT NULL," +
             "  `completed` boolean NOT NULL," +

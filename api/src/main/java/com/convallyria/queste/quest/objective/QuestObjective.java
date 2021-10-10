@@ -13,6 +13,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Keyed;
 import org.bukkit.NamespacedKey;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
@@ -63,7 +64,7 @@ public abstract class QuestObjective implements Listener, Keyed, IGuiEditable {
     /**
      * @deprecated Use discouraged. Only used internally.
      * @see #increment(Player)
-     * @see #setIncrement(Player, int)
+     * @see #setIncrement(OfflinePlayer, int)
      * @see #getIncrement(Player)
      * @see #checkIfCanIncrement(Quest, Player)
      * @param progress progress map
@@ -137,7 +138,7 @@ public abstract class QuestObjective implements Listener, Keyed, IGuiEditable {
      * @see #setCompletionAmount(int)
      * @see #increment(Player)
      * @see #checkIfCanIncrement(Quest, Player)
-     * @see #setIncrement(Player, int)
+     * @see #setIncrement(OfflinePlayer, int)
      */
     public int getIncrement(@NotNull UUID uuid) {
         return progress.getOrDefault(uuid, 0);
@@ -151,7 +152,7 @@ public abstract class QuestObjective implements Listener, Keyed, IGuiEditable {
      * @see #setCompletionAmount(int)
      * @see #increment(Player)
      * @see #checkIfCanIncrement(Quest, Player)
-     * @see #setIncrement(Player, int)
+     * @see #setIncrement(OfflinePlayer, int)
      */
     public CompletableFuture<Boolean> increment(@NotNull Player player) {
         CompletableFuture<Boolean> future = new CompletableFuture<>();
@@ -198,7 +199,7 @@ public abstract class QuestObjective implements Listener, Keyed, IGuiEditable {
      * @see #setCompletionAmount(int)
      * @see #increment(Player)
      * @see #checkIfCanIncrement(Quest, Player)
-     * @see #setIncrement(Player, int)
+     * @see #setIncrement(OfflinePlayer, int)
      */
     public boolean checkIfCanIncrement(@NotNull Quest quest, @NotNull Player player) {
         for (QuestObjective otherObjective : quest.getObjectives()) {
@@ -217,7 +218,7 @@ public abstract class QuestObjective implements Listener, Keyed, IGuiEditable {
         return true;
     }
 
-    public void setIncrement(@NotNull Player player, int increment) {
+    public void setIncrement(OfflinePlayer player, int increment) {
         setIncrement(player.getUniqueId(), increment);
     }
 

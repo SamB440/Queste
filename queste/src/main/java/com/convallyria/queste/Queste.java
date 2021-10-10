@@ -39,6 +39,7 @@ import com.convallyria.queste.quest.objective.QuestObjectiveRegistry;
 import com.convallyria.queste.quest.objective.ReachLocationObjective;
 import com.convallyria.queste.quest.objective.ShearSheepQuestObjective;
 import com.convallyria.queste.quest.objective.StatisticIncrementObjective;
+import com.convallyria.queste.quest.objective.citizens.CitizenDeliverItemQuestObjective;
 import com.convallyria.queste.quest.objective.citizens.CitizenInteractQuestObjective;
 import com.convallyria.queste.quest.objective.dungeonsxl.FinishDungeonFloorQuestObjective;
 import com.convallyria.queste.quest.objective.dungeonsxl.FinishDungeonQuestObjective;
@@ -236,6 +237,7 @@ public final class Queste extends JavaPlugin implements IQuesteAPI, LanguagyPlug
         registry.register(LevelQuestObjective.class);
         registry.register(PlaceBlockQuestObjective.class);
         registry.register(CitizenInteractQuestObjective.class);
+        registry.register(CitizenDeliverItemQuestObjective.class);
         registry.register(FinishDungeonFloorQuestObjective.class);
         registry.register(FinishDungeonQuestObjective.class);
         registry.register(KillDungeonMobQuestObjective.class);

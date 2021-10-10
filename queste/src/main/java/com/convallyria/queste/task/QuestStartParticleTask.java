@@ -22,8 +22,7 @@ public class QuestStartParticleTask implements Runnable {
     public void run() {
         plugin.getManagers().getQuesteCache().getQuests().forEach((name, quest) -> {
             for (QuestStart starter : quest.getStarters()) {
-                if (starter instanceof NPCQuestStart) {
-                    NPCQuestStart npcQuestStart = (NPCQuestStart) starter;
+                if (starter instanceof NPCQuestStart npcQuestStart) {
                     if (!npcQuestStart.showNpcParticles()) continue;
                     NPC npc = CitizensAPI.getNPCRegistry().getById(npcQuestStart.getNpcId());
                     Location location = npc.getStoredLocation();

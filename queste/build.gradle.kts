@@ -16,7 +16,7 @@ dependencies {
     implementation("xyz.upperlevel.spigot.book:spigot-book-api:1.5")
     implementation("org.apache.commons:commons-lang3:3.12.0")
 
-    compileOnly("org.spigotmc:spigot:1.17-R0.1-SNAPSHOT")
+    compileOnly("org.spigotmc:spigot:1.17.1-R0.1-SNAPSHOT")
     compileOnly("org.jetbrains:annotations:20.1.0")
     compileOnly("me.clip:placeholderapi:2.10.4") // PAPI
     compileOnly ("com.github.MilkBowl:VaultAPI:1.7") { // vault

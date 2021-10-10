@@ -21,4 +21,9 @@ public abstract class CitizensQuestObjective extends QuestObjective {
     public void setNpcId(int npcId) {
         this.npcId = npcId;
     }
+
+    @Override
+    public String getPluginRequirement() {
+        return "Citizens";
+    }
 }

@@ -34,6 +34,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -309,6 +310,15 @@ public final class Quest implements Keyed {
                 break;
             }
         }
+
+        try {
+            if (!objectivesCompleted
+                    && plugin.getManagers().getStorageManager().getAccount(uuid).get().getCompletedQuests().contains(this)) {
+                return true;
+            }
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
         return objectivesCompleted;
     }
 
@@ -335,7 +345,7 @@ public final class Quest implements Keyed {
     }
 
     private void giveEffectsAndRewards(Player player) {
-        player.sendTitle(Translations.QUEST_COMPLETED_TITLE.get(player), getName(), 40, 60, 40);
+        player.sendTitle(Translations.QUEST_COMPLETED_TITLE.get(player), getDisplayName(), 40, 60, 40);
         player.playSound(player.getLocation(),
                 completeSound == null ? Sound.UI_TOAST_CHALLENGE_COMPLETE : completeSound, 1f, 1f);
         if (getPlugin().getConfig().getBoolean("settings.server.quest.completed.use_entity_totem_effect")) { // Use default effect
@@ -379,7 +389,7 @@ public final class Quest implements Keyed {
                 return;
             }
 
-            player.sendTitle(Translations.QUEST_STARTED.get(player), getName(), 40, 60, 40);
+            player.sendTitle(Translations.QUEST_STARTED.get(player), getDisplayName(), 40, 60, 40);
             if (account.getActiveQuests().contains(this)) account.removeActiveQuest(this);
             account.addActiveQuest(this);
             objectives.forEach(objective -> objective.setIncrement(player, 0));
@@ -410,6 +420,7 @@ public final class Quest implements Keyed {
 
     public void forceStart(@NotNull Player player) {
         getPlugin().getManagers().getStorageManager().getAccount(player.getUniqueId()).thenAccept(account -> {
+            account.removeCompletedQuest(this);
             objectives.forEach(objective -> objective.setIncrement(player, 0));
             player.sendTitle(Translations.QUEST_STARTED.get(player), getName(), 40, 60, 40);
             account.addActiveQuest(this);

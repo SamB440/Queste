@@ -57,6 +57,10 @@ allprojects {
             url = uri("https://repo.codemc.io/repository/maven-snapshots/")
         }
 
+        maven {
+            url = uri("https://repo.codemc.io/repository/nms/")
+        }
+
         maven("https://repo.aikar.co/content/groups/aikar/")
         maven("https://jitpack.io")
         maven("https://erethon.de/repo")
