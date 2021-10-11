@@ -6,6 +6,7 @@ import com.convallyria.queste.quest.Quest;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockBreakEvent;
 
 public final class BreakBlockQuestObjective extends QuestObjective {
@@ -17,7 +18,7 @@ public final class BreakBlockQuestObjective extends QuestObjective {
         super(api, quest);
     }
 
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
     public void onBreak(BlockBreakEvent event) {
         Player player = event.getPlayer();
         if (this.hasCompleted(player)) return;

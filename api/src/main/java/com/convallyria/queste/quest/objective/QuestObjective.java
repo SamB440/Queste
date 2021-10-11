@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
 
 public abstract class QuestObjective implements Listener, Keyed, IGuiEditable {
 
@@ -251,7 +252,12 @@ public abstract class QuestObjective implements Listener, Keyed, IGuiEditable {
      * @return true if completed, false otherwise
      */
     public boolean hasCompleted(@NotNull UUID uuid) {
-        return progress.getOrDefault(uuid, 0) >= completionAmount;
+        try {
+            return progress.getOrDefault(uuid, 0) >= completionAmount || plugin.getManagers().getStorageManager().getAccount(uuid).get().getCompletedQuests().contains(getQuest());
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     public String getDisplayName() {

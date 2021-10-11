@@ -310,15 +310,6 @@ public final class Quest implements Keyed {
                 break;
             }
         }
-
-        try {
-            if (!objectivesCompleted
-                    && getPlugin().getManagers().getStorageManager().getAccount(uuid).get().getCompletedQuests().contains(this)) {
-                return true;
-            }
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
         return objectivesCompleted;
     }
 

@@ -58,10 +58,6 @@ public class YamlStorage implements IStorageManager {
             for (String completedQuest : config.getStringList("CompletedQuests")) {
                 if (plugin.getManagers().getQuesteCache().getQuests().containsKey(completedQuest)) {
                     Quest quest = plugin.getManagers().getQuesteCache().getQuests().get(completedQuest);
-                    quest.getObjectives().forEach(objective -> {
-                        int progress = config.getInt(quest.getName() + "." + objective.getSafeName() + "." + uuid);
-                        objective.setIncrement(player, progress);
-                    });
                     account.addCompletedQuest(quest);
                 } else {
                     plugin.getLogger().warning(completedQuest + " quest not found.");
@@ -111,14 +107,11 @@ public class YamlStorage implements IStorageManager {
         config.set("Quests", activeQuests);
         config.set("CompletedQuests", completedQuests);
 
-        account.getAllQuests().forEach(quest -> {
-            quest.getObjectives().forEach(objective -> {
-                Player player = Bukkit.getPlayer(uuid);
-                int progress = objective.getIncrement(player);
-                config.set(quest.getName() + "." + objective.getSafeName(), progress);
-                objective.untrack(uuid);
-            });
-        });
+        account.getActiveQuests().forEach(quest -> quest.getObjectives().forEach(objective -> {
+            int progress = objective.getIncrement(uuid);
+            config.set(quest.getName() + "." + objective.getSafeName() + "." + uuid, progress);
+            objective.untrack(uuid);
+        }));
 
         config.set("Questes", account.getQuestes());
         try {
