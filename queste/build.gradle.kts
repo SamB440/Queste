@@ -26,6 +26,7 @@ dependencies {
 tasks.javadoc {
     exclude("xyz/upperlevel/spigot/book/**")
     exclude("hu/trigary/advancementcreator/**")
+    exclude("me/lucko/helper")
 }
 
 tasks.build {
