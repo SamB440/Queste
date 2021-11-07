@@ -21,20 +21,16 @@ public class EnumGuiFieldElement implements IGuiFieldElement {
         CompletableFuture<Void> completableFuture = new CompletableFuture<>();
         try {
             if (!field.get(guiEditable).getClass().isEnum()) {
-                System.out.println("aaa");
                 completableFuture.complete(null);
                 return completableFuture;
             }
 
-            System.out.println("bbb");
             Class<? extends Enum> enumClazz = (Class<? extends Enum>) field.get(guiEditable).getClass();
             System.out.println(Enum.class.isAssignableFrom(enumClazz));
             List<? extends Enum<?>> enumList = EnumUtils.getEnumList(enumClazz);
 
-
-            Class<? extends Enum> finalEnumClazz = enumClazz; // This is a mess
             new ReturnValueConversationPreset(player, "Enter the value, valid entries are: " + enumList, input -> {
-                Optional<?> enumValue = Enums.getIfPresent(finalEnumClazz, input.toUpperCase(Locale.ROOT));
+                Optional<?> enumValue = Enums.getIfPresent(enumClazz, input.toUpperCase(Locale.ROOT));
                 if (!enumValue.isPresent()) {
                     player.sendMessage(ChatColor.RED + "No enum value by that name was found.");
                     completableFuture.complete(null);

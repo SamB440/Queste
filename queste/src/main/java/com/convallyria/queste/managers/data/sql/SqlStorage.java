@@ -14,7 +14,7 @@ public class SqlStorage extends SQLCommonStorage {
 
     public SqlStorage(Queste plugin) {
         super(plugin);
-        DatabaseOptions options = DatabaseOptions.builder().mysql(plugin.getConfig().getString("settings.sql.user"),
+        DatabaseOptions options = DatabaseOptions.builder().mysql(Configurations.SQL_USER.getString(),
                 Configurations.SQL_PASS.getString(),
                 Configurations.SQL_DB.getString(),
                 Configurations.SQL_HOST.getString() + ":" + Configurations.SQL_PORT.getInt()).build();

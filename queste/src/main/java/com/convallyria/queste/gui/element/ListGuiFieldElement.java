@@ -20,7 +20,6 @@ public class ListGuiFieldElement implements IGuiFieldElement {
         Class<?> type = getType(field);
         if (type != null) {
             IGuiFieldElement<?> element = QuesteAPI.getAPI().getManagers().getGuiFieldElementRegistry().fromClass(type);
-            System.out.println("update");
             return element.set(player, guiEditable, field, value);
         }
         return completableFuture;
@@ -31,21 +30,20 @@ public class ListGuiFieldElement implements IGuiFieldElement {
         return Arrays.asList(List.class);
     }
 
-    @Override
-    public boolean needsValue() {
-        return true;
-    }
-
     @Nullable
     private Class<?> getType(Field field) {
         Type genericFieldType = field.getGenericType();
-        if (genericFieldType instanceof ParameterizedType) {
-            ParameterizedType aType = (ParameterizedType) genericFieldType;
+        if (genericFieldType instanceof ParameterizedType aType) {
             Type[] fieldArgTypes = aType.getActualTypeArguments();
             for (Type fieldArgType : fieldArgTypes) {
                 return (Class<?>) fieldArgType;
             }
         }
         return null;
+    }
+
+    @Override
+    public boolean needsValue() {
+        return true;
     }
 }

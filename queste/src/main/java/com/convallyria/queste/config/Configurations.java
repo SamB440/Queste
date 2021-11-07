@@ -2,10 +2,7 @@ package com.convallyria.queste.config;
 
 import com.convallyria.queste.Queste;
 import com.convallyria.queste.api.QuesteAPI;
-import org.bukkit.Material;
-import org.bukkit.configuration.file.FileConfiguration;
 
-import java.util.Arrays;
 import java.util.List;
 
 public enum Configurations {

@@ -16,8 +16,7 @@ public final class BreedQuestObjective extends QuestObjective {
     @EventHandler
     public void onBreed(EntityBreedEvent event) {
         LivingEntity breeder = event.getBreeder();
-        if (breeder instanceof Player) {
-            Player player = (Player) breeder;
+        if (breeder instanceof Player player) {
             if (this.hasCompleted(player)) return;
             this.increment(player);
         }

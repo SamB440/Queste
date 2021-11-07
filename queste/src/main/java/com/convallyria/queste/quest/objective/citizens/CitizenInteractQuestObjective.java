@@ -1,6 +1,5 @@
 package com.convallyria.queste.quest.objective.citizens;
 
-import com.convallyria.queste.Queste;
 import com.convallyria.queste.api.IQuesteAPI;
 import com.convallyria.queste.quest.Quest;
 import net.citizensnpcs.api.event.NPCRightClickEvent;

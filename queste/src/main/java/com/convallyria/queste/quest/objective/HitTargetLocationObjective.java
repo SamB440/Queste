@@ -24,10 +24,8 @@ public final class HitTargetLocationObjective extends LocationObjective {
     public void onMove(ProjectileHitEvent event) {
         Entity entity = event.getEntity();
         if (event.getHitBlock() == null) return;
-        if (entity instanceof AbstractArrow) {
-            AbstractArrow arrow = (AbstractArrow) entity;
-            if (arrow.getShooter() instanceof Player) {
-                Player player = (Player) arrow.getShooter();
+        if (entity instanceof AbstractArrow arrow) {
+            if (arrow.getShooter() instanceof Player player) {
                 Location hitBlock = event.getHitBlock().getLocation();
                 int x = hitBlock.getBlockX();
                 int y = hitBlock.getBlockY();

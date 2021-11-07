@@ -98,6 +98,8 @@ public abstract class QuestObjective implements Listener, Keyed, IGuiEditable {
 
     /**
      * Gets the quest this objective is associated with.
+     * This method may return null if the requested quest is not loaded yet.
+     *
      * @return linked quest, possibly null
      */
     @Nullable
