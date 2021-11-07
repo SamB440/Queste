@@ -46,6 +46,8 @@ public abstract class QuesteGUI {
     protected final int iPaneL;
     protected final int iPaneH;
 
+    protected StaticPane exitPane;
+
     protected QuesteGUI(Queste plugin, Player player) {
         this.plugin = plugin;
         this.player = player;
@@ -82,6 +84,10 @@ public abstract class QuesteGUI {
 
     public abstract void render();
 
+    public StaticPane getExitPane() {
+        return exitPane;
+    }
+
     public PaginatedPane generateDefaultConfig() {
         ChestGui gui = getGui();
 
@@ -92,7 +98,7 @@ public abstract class QuesteGUI {
         OutlinePane innerPane = new OutlinePane(iPaneX, iPaneY, iPaneL, iPaneH);
         StaticPane back = new StaticPane(backX, backY, backL, backH);
         StaticPane forward = new StaticPane(forwardX, forwardY, forwardL, forwardH);
-        StaticPane exit = new StaticPane(exitX, exitY, exitL, exitH);
+        StaticPane exit = new StaticPane(exitX, exitY, exitL, exitH, Pane.Priority.HIGH);
 
         pane.setPriority(Pane.Priority.HIGHEST);
         back.setPriority(Pane.Priority.HIGH);
@@ -177,6 +183,8 @@ public abstract class QuesteGUI {
             gui.update();
             player.closeInventory();
         }), 0, 0);
+
+        this.exitPane = exit;
 
         gui.addPane(exit);
         gui.addPane(back);

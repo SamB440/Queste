@@ -11,18 +11,14 @@ import com.convallyria.queste.quest.reward.QuestReward;
 import com.convallyria.queste.quest.reward.QuestRewardRegistry;
 import com.convallyria.queste.quest.start.QuestStart;
 import com.convallyria.queste.quest.start.QuestStartRegistry;
-import com.convallyria.queste.translation.Translations;
 import com.convallyria.queste.utils.ItemStackBuilder;
 import com.github.stefvanschie.inventoryframework.gui.GuiItem;
 import com.github.stefvanschie.inventoryframework.gui.type.ChestGui;
 import com.github.stefvanschie.inventoryframework.pane.PaginatedPane;
-import com.github.stefvanschie.inventoryframework.pane.Pane;
-import com.github.stefvanschie.inventoryframework.pane.StaticPane;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
@@ -51,19 +47,12 @@ public class EditQuestElementGUI extends QuesteGUI {
         gui.setOnGlobalClick(click -> click.setCancelled(true));
 
         PaginatedPane pane = super.generateDefaultConfig();
-        StaticPane exit = new StaticPane(exitX, exitY, exitL, exitH, Pane.Priority.HIGHEST);
-        // Exit item
-        Material em = Material.valueOf(plugin.getConfig().getString("settings.server.gui.exit.exit"));
-        ItemStack exitItem = new ItemStackBuilder(em)
-                .withName(Translations.EXIT.get(player))
-                .withLore(Translations.EXIT_LORE.getList(player))
-                .addFlags(ItemFlag.HIDE_ATTRIBUTES)
-                .build();
-        exit.addItem(new GuiItem(exitItem, event -> {
-            new QuestCreateGUI(plugin, player, quest).open();
-            player.playSound(player.getLocation(), Sound.BLOCK_TRIPWIRE_CLICK_ON, 1f, 1f);
-        }), 0, 0);
-        gui.addPane(exit);
+        for (GuiItem item : getExitPane().getItems()) { // Set exit pane action
+            item.setAction(event -> {
+                new QuestCreateGUI(plugin, player, quest).open();
+                player.playSound(player.getLocation(), Sound.BLOCK_TRIPWIRE_CLICK_ON, 1f, 1f);
+            });
+        }
 
         List<GuiItem> items = new ArrayList<>();
         if (registry instanceof QuestObjectiveRegistry) {
