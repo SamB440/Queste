@@ -10,7 +10,8 @@
   </p>
 </p>
 
-![Contributors](https://img.shields.io/github/contributors/SamB440/Queste?color=dark-green) ![Forks](https://img.shields.io/github/forks/SamB440/Queste?style=social) ![Stargazers](https://img.shields.io/github/stars/SamB440/Queste?style=social) ![Issues](https://img.shields.io/github/issues/SamB440/Queste) ![License](https://img.shields.io/github/license/SamB440/Queste)
+[![CodeFactor](https://www.codefactor.io/repository/github/samb440/queste/badge?s=423044de775c341aa4bc557dc41d390344d16556)](https://www.codefactor.io/repository/github/samb440/queste) ![Contributors](https://img.shields.io/github/contributors/SamB440/Queste?color=dark-green) ![Issues](https://img.shields.io/github/issues/SamB440/Queste) ![License](https://img.shields.io/github/license/SamB440/Queste)
+![Forks](https://img.shields.io/github/forks/SamB440/Queste?style=social) ![Stargazers](https://img.shields.io/github/stars/SamB440/Queste?style=social)
 
 ## Table Of Contents
 
