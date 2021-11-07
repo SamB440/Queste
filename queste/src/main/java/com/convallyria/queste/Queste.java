@@ -299,11 +299,11 @@ public final class Queste extends JavaPlugin implements IQuesteAPI, LanguagyPlug
     }
 
     @Override
-    public Gson getGson() {
+    public Gson getGson() { // Order is important! Last hierarchy adapter takes priority.
         return new GsonBuilder()
                 .registerTypeAdapter(Quest.class, new QuestAdapter())
-                .registerTypeHierarchyAdapter(ItemStack.class, new ItemStackAdapter())
                 .registerTypeHierarchyAdapter(ConfigurationSerializable.class, new ConfigurationSerializableAdapter())
+                .registerTypeHierarchyAdapter(ItemStack.class, new ItemStackAdapter())
                 .setPrettyPrinting()
                 .serializeNulls()
                 .create();

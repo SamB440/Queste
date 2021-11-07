@@ -35,7 +35,7 @@ public class AbstractAdapter<T> implements JsonSerializer<T>, JsonDeserializer<T
         else
             result.add("type", new JsonPrimitive(src.getClass().getPackage().getName() + "." + src.getClass().getSimpleName()));
         Gson newGson = QuesteAPI.getAPI().getGson();
-        result.add("properties", newGson.toJsonTree(src, src.getClass()));
+        result.add("properties", newGson.toJsonTree(src));
         return result;
     }
 
