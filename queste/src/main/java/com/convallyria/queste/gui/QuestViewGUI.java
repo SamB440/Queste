@@ -50,9 +50,7 @@ public class QuestViewGUI extends QuesteGUI {
                         .withLore(lore)
                         .addFlags(ItemFlag.HIDE_ATTRIBUTES)
                         .build();
-                guiItems.add(new GuiItem(itemStack, event -> {
-                    event.setCancelled(true);
-                }));
+                guiItems.add(new GuiItem(itemStack, event -> event.setCancelled(true)));
             }
         }).exceptionally(err -> {
             err.printStackTrace();

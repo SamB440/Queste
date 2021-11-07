@@ -3,7 +3,20 @@ package hu.trigary.advancementcreator
 import be.seeseemelk.mockbukkit.MockBukkit
 import be.seeseemelk.mockbukkit.ServerMock
 import com.convallyria.queste.Queste
-import hu.trigary.advancementcreator.shared.*
+import hu.trigary.advancementcreator.shared.BlockObject
+import hu.trigary.advancementcreator.shared.DamageFlagsObject
+import hu.trigary.advancementcreator.shared.DamageObject
+import hu.trigary.advancementcreator.shared.Dimension
+import hu.trigary.advancementcreator.shared.DistanceObject
+import hu.trigary.advancementcreator.shared.Effect
+import hu.trigary.advancementcreator.shared.EffectObject
+import hu.trigary.advancementcreator.shared.EnchantObject
+import hu.trigary.advancementcreator.shared.EntityObject
+import hu.trigary.advancementcreator.shared.ItemObject
+import hu.trigary.advancementcreator.shared.LocationObject
+import hu.trigary.advancementcreator.shared.Potion
+import hu.trigary.advancementcreator.shared.RangeObject
+import hu.trigary.advancementcreator.shared.StatusEffectsObject
 import hu.trigary.advancementcreator.trigger.InventoryChangedTrigger
 import hu.trigary.advancementcreator.trigger.LocationTrigger
 import hu.trigary.advancementcreator.trigger.PlacedBlockTrigger
@@ -15,10 +28,10 @@ import org.bukkit.StructureType
 import org.bukkit.block.Biome
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.EntityType
-import org.junit.After
-import org.junit.Assert
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 
 /**
  * Automatically converted to Kotlin.
@@ -29,14 +42,14 @@ class AdvancementTest {
     private lateinit var plugin: Queste
     private var factory: AdvancementFactory? = null
 
-    @Before
+    @BeforeEach
     fun setUp() {
         server = MockBukkit.mock()
         plugin = MockBukkit.load(Queste::class.java)
         factory = AdvancementFactory(plugin, false, false)
     }
 
-    @After
+    @AfterEach
     fun tearDown() {
         MockBukkit.unmock()
     }
@@ -48,7 +61,7 @@ class AdvancementTest {
 
     @Test
     fun testEquals() {
-        Assert.assertEquals(createLongAdvancement(), createLongAdvancement())
+        Assertions.assertEquals(createLongAdvancement(), createLongAdvancement())
     }
 
     @Test
@@ -73,7 +86,7 @@ class AdvancementTest {
             Material.BEACON, 3
         )
             .setFrame(Advancement.Frame.GOAL)
-        Assert.assertEquals(manual, automated)
+        Assertions.assertEquals(manual, automated)
     }
 
     private fun createLongAdvancement(): Advancement {

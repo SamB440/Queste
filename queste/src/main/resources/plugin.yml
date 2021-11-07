@@ -1,7 +1,9 @@
 name: Queste
-version: '${version}'
+version: "${version}"
 main: com.convallyria.queste.Queste
-api-version: 1.17
+api-version: 1.16
+libraries:
+  - "com.zaxxer:HikariCP:4.0.3" # database
 softdepend: [Languagy, RPGRegions, Citizens, PlaceholderAPI]
 authors: [SamB440]
 description: A river of adventure in a land of quests

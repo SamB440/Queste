@@ -1,7 +1,15 @@
 package com.convallyria.queste.gson;
 
-import com.google.gson.*;
-import org.bukkit.configuration.serialization.ConfigurationSerializable;
+import com.convallyria.queste.api.QuesteAPI;
+import com.google.gson.Gson;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Type;
@@ -26,10 +34,7 @@ public class AbstractAdapter<T> implements JsonSerializer<T>, JsonDeserializer<T
             result.add("type", new JsonPrimitive(src.getClass().getSimpleName()));
         else
             result.add("type", new JsonPrimitive(src.getClass().getPackage().getName() + "." + src.getClass().getSimpleName()));
-        Gson newGson = new GsonBuilder()
-                .serializeNulls()
-                .setPrettyPrinting()
-                .registerTypeHierarchyAdapter(ConfigurationSerializable.class, new ConfigurationSerializableAdapter()).create();
+        Gson newGson = QuesteAPI.getAPI().getGson();
         result.add("properties", newGson.toJsonTree(src, src.getClass()));
         return result;
     }

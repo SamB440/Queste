@@ -76,7 +76,7 @@ public class EditGuiElementGUI extends QuesteGUI {
                         .withLore("&e&lClick &7to set value.")
                         .generation(null).build();
                 GuiItem guiItem = new GuiItem(item, click -> {
-                    IGuiFieldElement element = plugin.getManagers().getGuiFieldElementRegistry().fromClass(field.getType());
+                    IGuiFieldElement<?> element = plugin.getManagers().getGuiFieldElementRegistry().fromClass(field.getType());
                     if (element != null) {
                         if (!element.needsValue()) { // Just toggle it.
                             element.set(player, guiEditable, field, null).thenAccept(done -> open());
@@ -104,9 +104,7 @@ public class EditGuiElementGUI extends QuesteGUI {
                             }
 
                             new AnvilGUI.Builder()
-                                .onClose(player -> {
-                                    open();
-                                })
+                                .onClose(player -> open())
                                 .onComplete((player, text) -> {
                                     if (ICustomGuiFeedback.class.isAssignableFrom(guiEditable.getClass())) {
                                         ICustomGuiFeedback customGuiFeedback = (ICustomGuiFeedback) guiEditable;

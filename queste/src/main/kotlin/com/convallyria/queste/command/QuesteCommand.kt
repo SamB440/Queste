@@ -24,8 +24,7 @@ class QuesteCommand(private val plugin: Queste) : BaseCommand(), IQuesteCommand 
         for (quest in plugin.managers.questeCache.quests.values) {
             objectives += quest.objectives.size
         }
-        sender.sendMessage("" +
-                primaryColour + "" +
+        sender.sendMessage(primaryColour +
                 plugin.managers.questeCache.quests.size
                 + " quests are loaded with " + objectives + " objectives."
         )

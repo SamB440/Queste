@@ -1,0 +1,87 @@
+# This is the config for Queste.
+# ------ Useful information ------
+# Documentation can be found at https://fortitude.islandearth.net
+# Sounds can be found at https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html
+# ------ Support ------
+# Found a bug? Create an issue at https://gitlab.com/convallyria/queste/issues
+# Need help? Join our discord at https://discord.gg/fh62mxU
+
+settings:
+  server:
+    use_roman_numerals: false
+    advancements:
+      generate: true
+    player:
+      journal:
+        enabled: true
+        slot: 8
+        removable: false
+    tasks:
+      bossbar:
+        async: false
+        interval: 1
+    quest:
+      completed:
+        use_entity_totem_effect: true
+    gui:
+      general:
+        rows: 6
+      back:
+        posX: 0
+        posY: 5
+        length: 1
+        height: 1
+        back: ARROW
+      forward:
+        posX: 8
+        posY: 5
+        length: 1
+        height: 1
+        forward: ARROW
+      exit:
+        posX: 4
+        posY: 5
+        length: 1
+        height: 1
+        command: ''
+        show: true
+        exit: BARRIER
+      pane:
+        posX: 1
+        posY: 1
+        length: 7
+        height: 4
+      outlinePane:
+        posX: 0
+        posY: 0
+        length: 9
+        height: 6
+        show: true
+        mask:
+          - '111111111'
+          - '100000001'
+          - '100000001'
+          - '100000001'
+          - '100000001'
+          - '111111111'
+        outlinePane: GRAY_STAINED_GLASS_PANE
+      innerPane:
+        posX: 1
+        posY: 1
+        length: 7
+        height: 4
+        show: true
+        mask:
+          - '1111111'
+          - '1111111'
+          - '1111111'
+          - '1111111'
+        innerPane: WHITE_STAINED_GLASS_PANE
+  dev:
+    debug: false
+  storage:
+    mode: file
+  sql:
+    host: pass
+    port: 3306
+    user: user

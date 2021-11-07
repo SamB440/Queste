@@ -6,11 +6,13 @@ import com.convallyria.queste.Queste
 import com.convallyria.queste.quest.Quest
 import com.convallyria.queste.quest.objective.PlaceBlockQuestObjective
 import org.bukkit.entity.Player
-import org.junit.After
-import org.junit.Assert
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.AfterAll
+import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestInstance
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class AccountTest {
 
     private lateinit var server: ServerMock
@@ -18,17 +20,18 @@ class AccountTest {
     private lateinit var player: Player
     private lateinit var quest: Quest
 
-    @Before
+    @BeforeAll
     fun setUp() {
         server = MockBukkit.mock()
         plugin = MockBukkit.load(Queste::class.java)
+
         player = server.addPlayer()
         quest = Quest("Test")
         quest.addObjective(PlaceBlockQuestObjective(plugin, quest))
         plugin.managers.questeCache.addQuest(quest)
     }
 
-    @After
+    @AfterAll
     fun tearDown() {
         MockBukkit.unmock()
     }
@@ -38,7 +41,7 @@ class AccountTest {
         val account = plugin.managers.storageManager.getAccount(player.uniqueId).get()
         account.addActiveQuest(quest)
         plugin.managers.storageManager.removeCachedAccount(player.uniqueId)
-        Assert.assertFalse(plugin.managers.storageManager.cachedAccounts.containsKey(player.uniqueId))
+        Assertions.assertFalse(plugin.managers.storageManager.cachedAccounts.containsKey(player.uniqueId))
     }
 
     @Test
@@ -46,6 +49,6 @@ class AccountTest {
         saveTest() // Save so we can load
 
         val account = plugin.managers.storageManager.getAccount(player.uniqueId).get()
-        Assert.assertFalse(account.activeQuests.isEmpty())
+        Assertions.assertFalse(account.activeQuests.isEmpty())
     }
 }

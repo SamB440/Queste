@@ -4,26 +4,27 @@ import be.seeseemelk.mockbukkit.MockBukkit
 import be.seeseemelk.mockbukkit.ServerMock
 import com.convallyria.queste.Queste
 import com.convallyria.queste.quest.objective.QuestObjectiveRegistry
-import com.convallyria.queste.quest.reward.QuestRewardRegistry
 import com.convallyria.queste.quest.requirement.QuestRequirementRegistry
-import org.junit.After
-import org.junit.Assert
-import org.junit.Before
-import org.junit.Test
+import com.convallyria.queste.quest.reward.QuestRewardRegistry
+import org.junit.jupiter.api.AfterAll
+import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestInstance
 
-
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class RegistryTest {
 
     private lateinit var server: ServerMock
     private lateinit var plugin: Queste
 
-    @Before
+    @BeforeAll
     fun setUp() {
         server = MockBukkit.mock()
         plugin = MockBukkit.load(Queste::class.java)
     }
 
-    @After
+    @AfterAll
     fun tearDown() {
         MockBukkit.unmock()
     }
@@ -31,10 +32,10 @@ class RegistryTest {
     @Test
     fun registryTest() {
         val objectiveRegistry = plugin.managers.getQuestRegistry(QuestObjectiveRegistry::class.java)
-        Assert.assertNotNull(objectiveRegistry)
+        Assertions.assertNotNull(objectiveRegistry)
         val rewardRegistry = plugin.managers.getQuestRegistry(QuestRewardRegistry::class.java)
-        Assert.assertNotNull(rewardRegistry)
+        Assertions.assertNotNull(rewardRegistry)
         val requirementRegistry = plugin.managers.getQuestRegistry(QuestRequirementRegistry::class.java)
-        Assert.assertNotNull(requirementRegistry)
+        Assertions.assertNotNull(requirementRegistry)
     }
 }

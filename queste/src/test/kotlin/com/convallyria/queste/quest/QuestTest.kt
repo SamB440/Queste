@@ -6,17 +6,18 @@ import com.convallyria.queste.Queste
 import com.convallyria.queste.quest.objective.PlaceBlockQuestObjective
 import com.convallyria.queste.quest.objective.QuestObjective
 import org.bukkit.entity.Player
-import org.junit.After
-import org.junit.Assert
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.AfterAll
+import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestInstance
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.FileReader
 import java.io.Reader
 import java.lang.reflect.Modifier
 
-
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class QuestTest {
 
     private lateinit var server: ServerMock
@@ -24,7 +25,7 @@ class QuestTest {
     private lateinit var player: Player
     private lateinit var quest: Quest
 
-    @Before
+    @BeforeAll
     fun setUp() {
         server = MockBukkit.mock()
         plugin = MockBukkit.load(Queste::class.java)
@@ -34,7 +35,7 @@ class QuestTest {
         plugin.managers.questeCache.addQuest(quest)
     }
 
-    @After
+    @AfterAll
     fun tearDown() {
         MockBukkit.unmock()
     }
@@ -45,7 +46,7 @@ class QuestTest {
         account.addActiveQuest(quest)
         quest.objectives.forEach { questObjective: QuestObjective ->
             questObjective.increment(player)
-            Assert.assertEquals(1, questObjective.getIncrement(player))
+            Assertions.assertEquals(1, questObjective.getIncrement(player))
         }
     }
 
@@ -53,13 +54,13 @@ class QuestTest {
     fun completeTest() {
         quest.objectives.forEach { questObjective: QuestObjective ->
             questObjective.setIncrement(player, questObjective.completionAmount)
-            Assert.assertTrue(questObjective.hasCompleted(player))
+            Assertions.assertTrue(questObjective.hasCompleted(player))
         }
     }
 
     @Test
     fun saveTest() {
-        Assert.assertTrue(quest.save(plugin))
+        Assertions.assertTrue(quest.save(plugin))
     }
 
     @Test
@@ -72,7 +73,7 @@ class QuestTest {
             try {
                 val reader: Reader = FileReader(file)
                 val quest = plugin.gson.fromJson(reader, Quest::class.java)
-                Assert.assertNotNull(quest)
+                Assertions.assertNotNull(quest)
             } catch (e: FileNotFoundException) {
                 e.printStackTrace()
             }
@@ -103,15 +104,13 @@ class QuestTest {
                     for (loadedQuestField in loadedQuest.javaClass.declaredFields) {
                         loadedQuestField.isAccessible = true
                         if (loadedQuestField.name == declaredField.name) {
-                            if (loadedQuestField.get(loadedQuest) == null) {
-                                Assert.fail(loadedQuestField.name + " was null at loading after save")
-                            }
+                            Assertions.assertFalse(loadedQuestField.get(loadedQuest) == null, loadedQuestField.name + " was null at loading after save")
                         }
                     }
                 }
             }
         } else {
-            Assert.fail("loadedQuest is null")
+            Assertions.fail("loadedQuest is null")
         }
     }
 }

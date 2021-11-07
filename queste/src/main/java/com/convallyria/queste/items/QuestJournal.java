@@ -22,6 +22,7 @@ public class QuestJournal {
 
     public static ItemStack getQuestJournal(final QuesteAccount account) {
         Player player = Bukkit.getPlayer(account.getUuid());
+        if (player == null) return null;
         BookUtil.BookBuilder builder = BookUtil.writtenBook().author(player.getName()).title(Translations.JOURNAL_TITLE.get(player));
         List<BaseComponent[]> pages = new ArrayList<>();
         if (account.getActiveQuests().isEmpty()) {

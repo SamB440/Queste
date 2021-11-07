@@ -1,13 +1,13 @@
 package com.convallyria.queste.translation
 
 import org.bukkit.configuration.file.YamlConfiguration
-import org.junit.Assert
-import org.junit.Test
+import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Test
 import org.reflections.Reflections
 import org.reflections.scanners.ResourcesScanner
 import java.io.BufferedReader
 import java.io.InputStreamReader
-import java.util.*
+import java.util.Locale
 import java.util.function.Consumer
 import java.util.regex.Pattern
 
@@ -22,9 +22,8 @@ class TranslationsTest {
             val reader = BufferedReader(InputStreamReader(input))
             val config = YamlConfiguration.loadConfiguration(reader)
             for (translation in Translations.values()) {
-                if (config[translation.toString().lowercase(Locale.ROOT)] == null) {
-                    Assert.fail("$translation($translation) not found in $fileName.")
-                }
+                Assertions.assertFalse(config[translation.toString().lowercase(Locale.ROOT)] == null,
+                    "$translation($translation) not found in $fileName.")
             }
         })
     }

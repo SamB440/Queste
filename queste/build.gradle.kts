@@ -1,16 +1,18 @@
 plugins {
     id("com.github.johnrengelman.shadow")
     id("java")
-    id("org.jetbrains.kotlin.jvm") version "1.5.0"
+    kotlin("jvm") version "1.5.31"
 }
 
 dependencies {
-    implementation("com.gitlab.samb440.languagy:api:3ba744c0f1") // languagy
+    implementation("com.gitlab.samb440.languagy:api:3ba744c0f1") {
+        isTransitive = false
+    } // languagy
     implementation("co.aikar:acf-paper:0.5.0-SNAPSHOT") // commands
     implementation("co.aikar:idb-core:1.0.0-SNAPSHOT") // database
-    implementation("com.zaxxer:HikariCP:2.4.1") // database
+    // implementation("com.zaxxer:HikariCP:4.0.3") // database // Added to plugin.yml
     implementation("com.github.stefvanschie.inventoryframework:IF:0.9.1") // inventory framework
-    implementation("org.bstats:bstats-bukkit:1.8") // plugin stats
+    implementation("org.bstats:bstats-bukkit:2.2.1") // plugin stats
     implementation("io.papermc:paperlib:1.0.4") // paperlib - async teleport on Paper
     implementation("net.wesjd:anvilgui:1.5.1-SNAPSHOT") // anvilgui
     implementation("xyz.upperlevel.spigot.book:spigot-book-api:1.5")
@@ -23,7 +25,7 @@ dependencies {
         exclude(group = "org.bukkit")
     }
     compileOnly("net.citizensnpcs:citizens-main:2.0.27-SNAPSHOT")
-    compileOnly("de.erethon.dungeonsxl:dungeonsxl-api:0.18-SNAPSHOT")
+    compileOnly("de.erethon.dungeonsxl:dungeonsxl-api:0.18-PRE-02")
     compileOnly("com.gitlab.SamB440:RPGRegions-2:011fa42402") // 1.3.5
     implementation(project(":api"))
 }

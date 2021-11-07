@@ -11,7 +11,7 @@ plugins {
 }
 
 val group = "com.convallyria.queste"
-var version by extra("1.0.0")
+
 
 java.sourceCompatibility = JavaVersion.VERSION_16
 java.targetCompatibility = JavaVersion.VERSION_16
@@ -27,6 +27,14 @@ allprojects {
 
     java.sourceCompatibility = JavaVersion.VERSION_16
     java.targetCompatibility = JavaVersion.VERSION_16
+
+    val ver by extra("1.0.0")
+    var versuffix by extra("-SNAPSHOT")
+    val versionsuffix: String? by project
+    if (versionsuffix != null) {
+        versuffix = "-$versionsuffix"
+    }
+    project.version = ver + versuffix
 
     repositories {
         mavenCentral()
@@ -69,8 +77,8 @@ allprojects {
     //tasks.javadoc.options.encoding = "UTF-8"
 
     dependencies {
-        testImplementation(group = "junit", name = "junit", version = "4.5")
-        testImplementation("com.github.seeseemelk:MockBukkit-v1.16:0.5.0")
+        testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
+        testImplementation("com.github.seeseemelk:MockBukkit-v1.17:1.10.0")
         testImplementation("org.reflections:reflections:0.9.12")
     }
 
@@ -84,12 +92,27 @@ allprojects {
         dependsOn(tasks.shadowJar)
         dependsOn(tasks.javadoc)
     }
+
+    tasks.withType(Test::class.java) {
+        useJUnitPlatform()
+
+        testLogging {
+            events("passed", "skipped", "failed")
+        }
+    }
+
+    tasks.processResources {
+        filesMatching("plugin.yml") {
+            expand("version" to project.version)
+        }
+    }
 }
 
 tasks.shadowJar {
     dependsOn(project(":queste").tasks.build)
     relocate("net.islandearth.languagy", "com.convallyria.queste.libs.languagy")
     relocate("co.aikar.commands", "com.convallyria.queste.libs.acf")
+    relocate("co.aikar.locales", "com.convallyria.queste.libs.acf.locales")
     relocate("co.aikar.idb", "com.convallyria.queste.libs.idb")
     relocate("com.github.stefvanschie.inventoryframework", "com.convallyria.queste.libs.inventoryframework")
     relocate("org.bstats", "com.convallyria.queste.libs.bstats")
@@ -140,10 +163,4 @@ tasks.build {
     dependsOn(project(":queste").tasks.build)
     dependsOn(tasks.shadowJar)
     //dependsOn(tasks.aggregatedJavadocs)
-}
-
-tasks.processResources {
-    filesMatching("plugin.yml") {
-        expand("version" to version)
-    }
 }
