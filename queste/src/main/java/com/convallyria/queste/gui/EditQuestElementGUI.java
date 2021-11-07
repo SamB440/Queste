@@ -2,7 +2,6 @@ package com.convallyria.queste.gui;
 
 import com.convallyria.queste.Queste;
 import com.convallyria.queste.managers.registry.IQuesteRegistry;
-import com.convallyria.queste.managers.registry.QuesteRegistry;
 import com.convallyria.queste.quest.Quest;
 import com.convallyria.queste.quest.objective.QuestObjective;
 import com.convallyria.queste.quest.objective.QuestObjectiveRegistry;
@@ -35,10 +34,10 @@ public class EditQuestElementGUI extends QuesteGUI {
     private final Queste plugin;
     private final Player player;
     private final Quest quest;
-    private final QuesteRegistry<?> registry;
+    private final IQuesteRegistry<?> registry;
     private ChestGui gui;
 
-    public EditQuestElementGUI(Queste plugin, Player player, Quest quest, QuesteRegistry<?> registry) {
+    public EditQuestElementGUI(Queste plugin, Player player, Quest quest, IQuesteRegistry<?> registry) {
         super(plugin, player);
         this.plugin = plugin;
         this.player = player;

@@ -18,6 +18,7 @@ import com.convallyria.queste.gson.QuestAdapter;
 import com.convallyria.queste.listener.JournalListener;
 import com.convallyria.queste.listener.PlayerConnectionListener;
 import com.convallyria.queste.listener.QuestAdvancementListener;
+import com.convallyria.queste.listener.ServerReloadListener;
 import com.convallyria.queste.managers.QuesteManagers;
 import com.convallyria.queste.managers.data.IStorageManager;
 import com.convallyria.queste.managers.data.account.QuesteAccount;
@@ -116,11 +117,8 @@ public final class Queste extends JavaPlugin implements IQuesteAPI, LanguagyPlug
         return advancementFactory;
     }
 
-    private boolean isShuttingDown;
-
     @Override
     public void onEnable() {
-        this.isShuttingDown = false;
         QuesteAPI.setAPI(this);
         this.createConfig();
         this.generateLang();
@@ -143,7 +141,6 @@ public final class Queste extends JavaPlugin implements IQuesteAPI, LanguagyPlug
 
     @Override
     public void onDisable() {
-        this.isShuttingDown = true;
         IStorageManager storageManager = getManagers().getStorageManager();
         if (getManagers() != null) {
             getManagers().getQuesteCache().getQuests().values().forEach(quest -> quest.save(this));
@@ -162,10 +159,6 @@ public final class Queste extends JavaPlugin implements IQuesteAPI, LanguagyPlug
         }
         QuesteAPI.setAPI(null);
         DB.close();
-    }
-
-    public boolean isShuttingDown() {
-        return isShuttingDown;
     }
 
     private void createConfig() {
@@ -217,6 +210,7 @@ public final class Queste extends JavaPlugin implements IQuesteAPI, LanguagyPlug
         pm.registerEvents(new PlayerConnectionListener(this), this);
         if (Configurations.JOURNAL_ENABLED.getBoolean()) pm.registerEvents(new JournalListener(this), this);
         pm.registerEvents(new QuestAdvancementListener(), this);
+        pm.registerEvents(new ServerReloadListener(this), this);
     }
 
     private void registerObjectives() {

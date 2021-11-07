@@ -34,7 +34,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -431,8 +430,13 @@ public final class Quest implements Keyed {
         try {
             try (Writer writer = new FileWriter(file)) {
                 Gson gson = plugin.getGson();
-                gson.toJson(this, writer);
-                writer.flush();
+                try {
+                    gson.toJson(this, writer);
+                    writer.flush();
+                } catch (Exception e) { // We're catching all exceptions so the file cannot be randomly wiped
+                    plugin.getLogger().severe("Unable to save " + this.name + "! Please report this.");
+                    e.printStackTrace();
+                }
             }
             return true;
         } catch (IOException e) {

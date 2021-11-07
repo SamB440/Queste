@@ -30,9 +30,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import me.lucko.helper.utils.annotation.NonnullByDefault;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiConsumer;
@@ -44,7 +44,7 @@ import java.util.stream.Stream;
 /**
  * Builder utilities for creating GSON Objects/Arrays.
  */
-@NonnullByDefault
+@NotNull
 public final class JsonBuilder {
 
     /**

@@ -8,6 +8,7 @@ import org.bukkit.Material;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Constructor;
+import java.util.List;
 
 public final class QuestStartRegistry extends QuesteRegistry<QuestStart> {
 
@@ -39,7 +40,7 @@ public final class QuestStartRegistry extends QuesteRegistry<QuestStart> {
 
     @Override
     public String getRegistryName() {
-        return "starters";
+        return "Starters";
     }
 
     @Override
@@ -49,6 +50,11 @@ public final class QuestStartRegistry extends QuesteRegistry<QuestStart> {
 
     @Override
     public Material getIcon() {
-        return Material.STICKY_PISTON;
+        return Material.STICK;
+    }
+
+    @Override
+    public List<String> getDescription() {
+        return List.of("&7Starters for how the quest", "&7can be started by a player", "&e&lClick &7to edit quest starters.");
     }
 }

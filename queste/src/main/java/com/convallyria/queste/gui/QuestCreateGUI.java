@@ -3,11 +3,8 @@ package com.convallyria.queste.gui;
 import com.convallyria.queste.Queste;
 import com.convallyria.queste.chat.QuesteConversationPrefix;
 import com.convallyria.queste.chat.QuesteStringPrompt;
+import com.convallyria.queste.managers.registry.QuesteRegistry;
 import com.convallyria.queste.quest.Quest;
-import com.convallyria.queste.quest.objective.QuestObjectiveRegistry;
-import com.convallyria.queste.quest.requirement.QuestRequirementRegistry;
-import com.convallyria.queste.quest.reward.QuestRewardRegistry;
-import com.convallyria.queste.quest.start.QuestStartRegistry;
 import com.convallyria.queste.utils.ItemStackBuilder;
 import com.github.stefvanschie.inventoryframework.gui.GuiItem;
 import com.github.stefvanschie.inventoryframework.gui.type.ChestGui;
@@ -22,8 +19,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
-
-import java.util.Arrays;
 
 public class QuestCreateGUI extends QuesteGUI {
 
@@ -51,6 +46,24 @@ public class QuestCreateGUI extends QuesteGUI {
                 .addFlags(ItemFlag.HIDE_ATTRIBUTES)
                 .build()));
         gui.addPane(oPane);
+
+        // Add all the registry editors
+        int x = 2;
+        for (QuesteRegistry<?> registry : plugin.getManagers().getRegistries()) {
+            StaticPane registryPane = new StaticPane(x, 2, 1, 1, Pane.Priority.HIGH);
+            ItemStackBuilder registryItem = new ItemStackBuilder(registry.getIcon())
+                    .withName("&6" + registry.getRegistryName());
+            for (String description : registry.getDescription()) {
+                registryItem.withLore(description); // Use this to translate colours
+            }
+
+            registryPane.addItem(new GuiItem(registryItem.build(), event -> {
+                player.playSound(player.getLocation(), Sound.BLOCK_ENDER_CHEST_OPEN, 1f, 1f);
+                new QueryGUI(plugin, player, quest, registry).open();
+            }),0, 0);
+            gui.addPane(registryPane);
+            x = x + 2;
+        }
 
         StaticPane questInfo = new StaticPane(4, 0, 1, 1, Pane.Priority.HIGH);
         ItemStack questInfoItem = new ItemStackBuilder(Material.TOTEM_OF_UNDYING)
@@ -122,81 +135,6 @@ public class QuestCreateGUI extends QuesteGUI {
         }),0, 0);
         gui.addPane(delete);
 
-        StaticPane starters = new StaticPane(2, 2, 1, 1, Pane.Priority.HIGH);
-        ItemStack startersItem = new ItemStackBuilder(Material.STICK)
-                .withName("&6Starters")
-                .withLore("&7Starters for how the quest", "&7can be started by a player", "&e&lClick &7to edit quest starters.")
-                .build();
-        starters.addItem(new GuiItem(startersItem, event -> {
-            player.playSound(player.getLocation(), Sound.BLOCK_COMPARATOR_CLICK, 1f, 1f);
-            ItemStack editStarters = new ItemStackBuilder(Material.WRITABLE_BOOK)
-                    .withName("&6Edit starters")
-                    .build();
-            ItemStack addStarters = new ItemStackBuilder(Material.WRITABLE_BOOK)
-                    .withName("&6Add starters")
-                    .build();
-            GuiItem editStartersGuiItem = new GuiItem(editStarters, click -> {
-                new EditQuestElementGUI(plugin, player, quest, plugin.getManagers().getQuestRegistry(QuestStartRegistry.class)).open();
-                player.playSound(player.getLocation(), Sound.ITEM_BOOK_PAGE_TURN, 1f, 1f);
-            });
-            GuiItem addStarterGuiItem = new GuiItem(addStarters, click -> {
-                new AddQuestElementGUI(plugin, player, quest, plugin.getManagers().getQuestRegistry(QuestStartRegistry.class)).open();
-                player.playSound(player.getLocation(), Sound.ITEM_BOOK_PAGE_TURN, 1f, 1f);
-            });
-            new QueryGUI(plugin, player, Arrays.asList(addStarterGuiItem, editStartersGuiItem)).open();
-        }),0, 0);
-        gui.addPane(starters);
-
-        StaticPane requirements = new StaticPane(4, 2, 1, 1, Pane.Priority.HIGH);
-        ItemStack requirementsItem = new ItemStackBuilder(Material.COMPARATOR)
-                .withName("&6Requirements")
-                .withLore("&7Requirements before a quest can", "&7be started by a player", "&e&lClick &7to edit quest requirements.")
-                .build();
-        requirements.addItem(new GuiItem(requirementsItem, event -> {
-            player.playSound(player.getLocation(), Sound.BLOCK_COMPARATOR_CLICK, 1f, 1f);
-            ItemStack editRequirements = new ItemStackBuilder(Material.WRITABLE_BOOK)
-                    .withName("&6Edit requirements")
-                    .build();
-            ItemStack addObjectives = new ItemStackBuilder(Material.WRITABLE_BOOK)
-                    .withName("&6Add requirements")
-                    .build();
-            GuiItem editRequirementGuiItem = new GuiItem(editRequirements, click -> {
-                new EditQuestElementGUI(plugin, player, quest, plugin.getManagers().getQuestRegistry(QuestRequirementRegistry.class)).open();
-                player.playSound(player.getLocation(), Sound.ITEM_BOOK_PAGE_TURN, 1f, 1f);
-            });
-            GuiItem addRequirementGuiItem = new GuiItem(addObjectives, click -> {
-                new AddQuestElementGUI(plugin, player, quest, plugin.getManagers().getQuestRegistry(QuestRequirementRegistry.class)).open();
-                player.playSound(player.getLocation(), Sound.ITEM_BOOK_PAGE_TURN, 1f, 1f);
-            });
-            new QueryGUI(plugin, player, Arrays.asList(addRequirementGuiItem, editRequirementGuiItem)).open();
-        }),0, 0);
-        gui.addPane(requirements);
-
-        StaticPane objectives = new StaticPane(6, 2, 1, 1, Pane.Priority.HIGH);
-        ItemStack objectivesItem = new ItemStackBuilder(Material.WRITABLE_BOOK)
-                .withName("&6Objectives")
-                .withLore("&7Tasks required to complete the quest", "&e&lClick &7to edit quest objectives.")
-                .build();
-        objectives.addItem(new GuiItem(objectivesItem, event -> {
-            player.playSound(player.getLocation(), Sound.ITEM_BOOK_PAGE_TURN, 1f, 1f);
-            ItemStack editObjectives = new ItemStackBuilder(Material.WRITABLE_BOOK)
-                    .withName("&6Edit objectives")
-                    .build();
-            ItemStack addObjectives = new ItemStackBuilder(Material.WRITABLE_BOOK)
-                    .withName("&6Add objectives")
-                    .build();
-            GuiItem editObjectiveGuiItem = new GuiItem(editObjectives, click -> {
-                new EditQuestElementGUI(plugin, player, quest, plugin.getManagers().getQuestRegistry(QuestObjectiveRegistry.class)).open();
-                player.playSound(player.getLocation(), Sound.ITEM_BOOK_PAGE_TURN, 1f, 1f);
-            });
-            GuiItem addObjectiveGuiItem = new GuiItem(addObjectives, click -> {
-                new AddQuestElementGUI(plugin, player, quest, plugin.getManagers().getQuestRegistry(QuestObjectiveRegistry.class)).open();
-                player.playSound(player.getLocation(), Sound.ITEM_BOOK_PAGE_TURN, 1f, 1f);
-            });
-            new QueryGUI(plugin, player, Arrays.asList(addObjectiveGuiItem, editObjectiveGuiItem)).open();
-        }),0, 0);
-        gui.addPane(objectives);
-
         StaticPane story = new StaticPane(6, 3, 1, 1, Pane.Priority.HIGH);
         ItemStack storyItem = new ItemStackBuilder(Material.ORANGE_BANNER)
                 .withName("&6Toggle story quest &7- &6" + quest.isStoryMode())
@@ -238,31 +176,6 @@ public class QuestCreateGUI extends QuesteGUI {
             }
         }),0, 0);
         gui.addPane(dummy);
-
-        StaticPane rewards = new StaticPane(8, 2, 1, 1, Pane.Priority.HIGH);
-        ItemStack rewardsItem = new ItemStackBuilder(Material.CHEST)
-                .withName("&6Rewards")
-                .withLore("&7Rewards are granted upon quest completion", "&e&lClick &7to edit quest rewards.")
-                .build();
-        rewards.addItem(new GuiItem(rewardsItem, event -> {
-            player.playSound(player.getLocation(), Sound.BLOCK_CHEST_OPEN, 1f, 1f);
-            ItemStack editRewards = new ItemStackBuilder(Material.WRITABLE_BOOK)
-                    .withName("&6Edit rewards")
-                    .build();
-            ItemStack addRewards = new ItemStackBuilder(Material.WRITABLE_BOOK)
-                    .withName("&6Add rewards")
-                    .build();
-            GuiItem editRewardGuiItem = new GuiItem(editRewards, click -> {
-                new EditQuestElementGUI(plugin, player, quest, plugin.getManagers().getQuestRegistry(QuestRewardRegistry.class)).open();
-                player.playSound(player.getLocation(), Sound.ITEM_BOOK_PAGE_TURN, 1f, 1f);
-            });
-            GuiItem addRewardGuiItem = new GuiItem(addRewards, click -> {
-                new AddQuestElementGUI(plugin, player, quest, plugin.getManagers().getQuestRegistry(QuestRewardRegistry.class)).open();
-                player.playSound(player.getLocation(), Sound.ITEM_BOOK_PAGE_TURN, 1f, 1f);
-            });
-            new QueryGUI(plugin, player, Arrays.asList(addRewardGuiItem, editRewardGuiItem)).open();
-        }),0, 0);
-        gui.addPane(rewards);
         gui.update();
     }
 

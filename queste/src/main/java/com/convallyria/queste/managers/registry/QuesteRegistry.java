@@ -125,4 +125,7 @@ public abstract class QuesteRegistry<T> implements IQuesteRegistry<T> {
 
     @Override
     public abstract Material getIcon();
+
+    @Override
+    public abstract List<String> getDescription();
 }

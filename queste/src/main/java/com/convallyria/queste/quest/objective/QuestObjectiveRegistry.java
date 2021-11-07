@@ -8,6 +8,7 @@ import org.bukkit.Material;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Constructor;
+import java.util.List;
 
 public final class QuestObjectiveRegistry extends QuesteRegistry<QuestObjective> {
 
@@ -44,7 +45,7 @@ public final class QuestObjectiveRegistry extends QuesteRegistry<QuestObjective>
 
     @Override
     public String getRegistryName() {
-        return "objectives";
+        return "Objectives";
     }
 
     @Override
@@ -54,6 +55,11 @@ public final class QuestObjectiveRegistry extends QuesteRegistry<QuestObjective>
 
     @Override
     public Material getIcon() {
-        return Material.WRITTEN_BOOK;
+        return Material.WRITABLE_BOOK;
+    }
+
+    @Override
+    public List<String> getDescription() {
+        return List.of("&7Tasks required to complete the quest", "&e&lClick &7to edit quest objectives.");
     }
 }

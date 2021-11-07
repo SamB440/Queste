@@ -6,6 +6,7 @@ import org.bukkit.Material;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Constructor;
+import java.util.List;
 
 public final class QuestRewardRegistry extends QuesteRegistry<QuestReward> {
 
@@ -22,7 +23,7 @@ public final class QuestRewardRegistry extends QuesteRegistry<QuestReward> {
 
     @Override
     public String getRegistryName() {
-        return "rewards";
+        return "Rewards";
     }
 
     @Override
@@ -32,6 +33,11 @@ public final class QuestRewardRegistry extends QuesteRegistry<QuestReward> {
 
     @Override
     public Material getIcon() {
-        return Material.GOLD_NUGGET;
+        return Material.CHEST;
+    }
+
+    @Override
+    public List<String> getDescription() {
+        return List.of("&7Rewards are granted upon quest completion", "&e&lClick &7to edit quest rewards.");
     }
 }

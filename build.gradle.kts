@@ -80,6 +80,15 @@ allprojects {
         testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
         testImplementation("com.github.seeseemelk:MockBukkit-v1.17:1.10.0")
         testImplementation("org.reflections:reflections:0.9.12")
+
+        implementation("io.papermc:paperlib:1.0.6") // paperlib - async teleport on Paper
+        implementation("com.github.stefvanschie.inventoryframework:IF:0.10.3") // inventory framework
+        implementation("com.gitlab.samb440.languagy:api:3ba744c0f1") {
+            isTransitive = false
+        } // languagy
+
+        compileOnly("org.spigotmc:spigot-api:1.17.1-R0.1-SNAPSHOT")
+        compileOnly("org.jetbrains:annotations:20.1.0")
     }
 
     tasks.processResources {

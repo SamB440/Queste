@@ -6,6 +6,7 @@ import org.bukkit.Material;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Constructor;
+import java.util.List;
 
 public final class QuestRequirementRegistry extends QuesteRegistry<QuestRequirement> {
 
@@ -22,7 +23,7 @@ public final class QuestRequirementRegistry extends QuesteRegistry<QuestRequirem
 
     @Override
     public String getRegistryName() {
-        return "requirements";
+        return "Requirements";
     }
 
     @Override
@@ -32,6 +33,11 @@ public final class QuestRequirementRegistry extends QuesteRegistry<QuestRequirem
 
     @Override
     public Material getIcon() {
-        return Material.REDSTONE;
+        return Material.COMPARATOR;
+    }
+
+    @Override
+    public List<String> getDescription() {
+        return List.of("&7Requirements before a quest can", "&7be started by a player", "&e&lClick &7to edit quest requirements.");
     }
 }

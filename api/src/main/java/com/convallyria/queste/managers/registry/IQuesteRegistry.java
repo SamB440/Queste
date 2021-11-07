@@ -39,4 +39,7 @@ public interface IQuesteRegistry<T> {
     Class<T> getImplementation();
 
     Material getIcon();
+
+    List<String> getDescription();
+
 }
