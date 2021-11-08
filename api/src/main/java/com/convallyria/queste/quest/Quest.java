@@ -4,6 +4,8 @@ import com.convallyria.queste.api.IQuesteAPI;
 import com.convallyria.queste.api.QuesteAPI;
 import com.convallyria.queste.api.event.QuestCompleteEvent;
 import com.convallyria.queste.api.event.QuestStartEvent;
+import com.convallyria.queste.gui.IGuiEditable;
+import com.convallyria.queste.managers.registry.RegistryAccepting;
 import com.convallyria.queste.quest.objective.QuestObjective;
 import com.convallyria.queste.quest.requirement.QuestRequirement;
 import com.convallyria.queste.quest.reward.QuestReward;
@@ -37,7 +39,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-public final class Quest implements Keyed {
+public final class Quest implements Keyed, RegistryAccepting {
 
     private transient IQuesteAPI plugin;
     private final String name;
@@ -448,6 +450,33 @@ public final class Quest implements Keyed {
     public boolean delete() throws IOException {
         File file = new File(getPlugin().getDataFolder() + "/quests/" + this.getName() + ".json");
         return Files.deleteIfExists(file.toPath());
+    }
+
+    // Need to clean this up, find a better way...
+    @Override
+    public void add(IGuiEditable element) {
+        if (element instanceof QuestRequirement requirement) {
+            requirements.add(requirement);
+        } else if (element instanceof QuestReward reward) {
+            rewards.add(reward);
+        } else if (element instanceof QuestStart start) {
+            starters.add(start);
+        } else if (element instanceof QuestObjective objective) {
+            objectives.add(objective);
+        }
+    }
+
+    @Override
+    public void remove(IGuiEditable element) {
+        if (element instanceof QuestRequirement requirement) {
+            requirements.remove(requirement);
+        } else if (element instanceof QuestReward reward) {
+            rewards.remove(reward);
+        } else if (element instanceof QuestStart start) {
+            starters.remove(start);
+        } else if (element instanceof QuestObjective objective) {
+            objectives.remove(objective);
+        }
     }
 
     public enum DenyReason {

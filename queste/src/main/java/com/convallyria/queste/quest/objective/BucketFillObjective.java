@@ -11,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
 
 public final class BucketFillObjective extends QuestObjective {
 
-    @GuiEditable("Liquid Type")
+    @GuiEditable(value = "Liquid Type", icon = Material.BUCKET)
     private Material blockType;
 
     public BucketFillObjective(IQuesteAPI api, Quest quest) {

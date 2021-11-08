@@ -3,12 +3,13 @@ package com.convallyria.queste.quest.reward;
 import com.convallyria.queste.gui.GuiEditable;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
 public final class MoneyReward extends QuestReward {
 
-    @GuiEditable("Amount")
+    @GuiEditable(value = "Amount", icon = Material.EMERALD)
     private final int amount;
 
     public MoneyReward() {

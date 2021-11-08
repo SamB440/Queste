@@ -3,14 +3,6 @@ package com.convallyria.queste.gui;
 import com.convallyria.queste.Queste;
 import com.convallyria.queste.managers.registry.IQuesteRegistry;
 import com.convallyria.queste.quest.Quest;
-import com.convallyria.queste.quest.objective.QuestObjective;
-import com.convallyria.queste.quest.objective.QuestObjectiveRegistry;
-import com.convallyria.queste.quest.requirement.QuestRequirement;
-import com.convallyria.queste.quest.requirement.QuestRequirementRegistry;
-import com.convallyria.queste.quest.reward.QuestReward;
-import com.convallyria.queste.quest.reward.QuestRewardRegistry;
-import com.convallyria.queste.quest.start.QuestStart;
-import com.convallyria.queste.quest.start.QuestStartRegistry;
 import com.convallyria.queste.utils.ItemStackBuilder;
 import com.github.stefvanschie.inventoryframework.gui.GuiItem;
 import com.github.stefvanschie.inventoryframework.gui.type.ChestGui;
@@ -64,15 +56,7 @@ public class AddQuestElementGUI extends QuesteGUI {
                     return;
                 }
 
-                if (registry instanceof QuestObjectiveRegistry) {
-                    quest.addObjective((QuestObjective) newInstance);
-                } else if (registry instanceof QuestRewardRegistry) {
-                    quest.addReward((QuestReward) newInstance);
-                } else if (registry instanceof QuestRequirementRegistry) {
-                    quest.addRequirement((QuestRequirement) newInstance);
-                } else if (registry instanceof QuestStartRegistry) {
-                    quest.addStarter((QuestStart) newInstance);
-                }
+                quest.add((IGuiEditable) newInstance);
 
                 new EditQuestElementGUI(plugin, player, quest, registry).open();
                 player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 1f);

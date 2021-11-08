@@ -7,6 +7,7 @@ import com.convallyria.queste.quest.Quest;
 import com.convallyria.queste.utils.LocationUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -14,7 +15,7 @@ import java.util.List;
 
 public abstract class LocationObjective extends QuestObjective implements ICustomGuiFeedback {
 
-    @GuiEditable(value = "Locations", type = GuiEditable.GuiEditableType.CHAT)
+    @GuiEditable(value = "Locations", type = GuiEditable.GuiEditableType.CHAT, icon = Material.ENDER_PEARL)
     private List<Location> locations;
 
     protected LocationObjective(IQuesteAPI api, Quest quest) {

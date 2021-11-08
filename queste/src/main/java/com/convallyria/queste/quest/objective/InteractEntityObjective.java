@@ -3,6 +3,7 @@ package com.convallyria.queste.quest.objective;
 import com.convallyria.queste.api.IQuesteAPI;
 import com.convallyria.queste.gui.GuiEditable;
 import com.convallyria.queste.quest.Quest;
+import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -11,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 
 public final class InteractEntityObjective extends QuestObjective {
 
-    @GuiEditable("Entity Type")
+    @GuiEditable(value = "Entity Type", icon = Material.WOODEN_SWORD)
     private EntityType entityType;
 
     public InteractEntityObjective(IQuesteAPI api, Quest quest) {

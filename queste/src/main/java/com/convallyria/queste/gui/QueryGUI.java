@@ -23,22 +23,23 @@ public class QueryGUI extends QuesteGUI {
     public QueryGUI(Queste plugin, Player player, Quest quest, IQuesteRegistry<?> registry) {
         super(plugin, player);
         this.items = new ArrayList<>();
-        ItemStack edit = new ItemStackBuilder(Material.WRITABLE_BOOK)
-                .withName("&6Edit " + registry.getRegistryName())
-                .build();
         ItemStack add = new ItemStackBuilder(Material.WRITABLE_BOOK)
                 .withName("&6Add " + registry.getRegistryName())
+                .build();
+        GuiItem addRegistryGuiItem = new GuiItem(add, click -> {
+            new AddQuestElementGUI(plugin, player, quest, registry).open();
+            XSound.ITEM_BOOK_PAGE_TURN.play(player, 1f, 1f);
+        });
+        items.add(addRegistryGuiItem);
+
+        ItemStack edit = new ItemStackBuilder(Material.WRITABLE_BOOK)
+                .withName("&6Edit " + registry.getRegistryName())
                 .build();
         GuiItem editRegistryGuiItem = new GuiItem(edit, click -> {
             new EditQuestElementGUI(plugin, player, quest, registry).open();
             XSound.ITEM_BOOK_PAGE_TURN.play(player, 1f, 1f);
         });
-        GuiItem addRegistryGuiItem = new GuiItem(add, click -> {
-            new AddQuestElementGUI(plugin, player, quest, registry).open();
-            XSound.ITEM_BOOK_PAGE_TURN.play(player, 1f, 1f);
-        });
         items.add(editRegistryGuiItem);
-        items.add(addRegistryGuiItem);
     }
 
     @Override

@@ -71,10 +71,9 @@ public class EditGuiElementGUI extends QuesteGUI {
             for (Field field : fields) {
                 GuiEditable annotation = field.getAnnotation(GuiEditable.class);
                 String name = annotation.value();
-                ItemStack item = new ItemStackBuilder(Material.WRITTEN_BOOK)
+                ItemStack item = new ItemStackBuilder(annotation.icon())
                         .withName("&6" + name + "&7 - &6" + getField(field))
-                        .withLore("&e&lClick &7to set value.")
-                        .generation(null).build();
+                        .withLore("&e&lClick &7to set value.").build();
                 GuiItem guiItem = new GuiItem(item, click -> {
                     IGuiFieldElement<?> element = plugin.getManagers().getGuiFieldElementRegistry().fromClass(field.getType());
                     if (element != null) {

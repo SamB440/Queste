@@ -55,6 +55,8 @@ public class EditQuestElementGUI extends QuesteGUI {
         }
 
         List<GuiItem> items = new ArrayList<>();
+
+        // This is a mess
         if (registry instanceof QuestObjectiveRegistry) {
             for (QuestObjective objective : quest.getObjectives()) {
                 ItemStack item = new ItemStackBuilder(Material.WRITTEN_BOOK)
@@ -63,6 +65,7 @@ public class EditQuestElementGUI extends QuesteGUI {
                                     "&6Display name: " + objective.getDisplayName(),
                                     "&6Story key: " + objective.getStoryModeKey(),
                                     " ",
+                                    "&e&lClick &7to edit.",
                                     "&c&lShift-Click &cto remove.")
                         .build();
                 GuiItem guiItem = new GuiItem(item, click -> {
@@ -77,7 +80,7 @@ public class EditQuestElementGUI extends QuesteGUI {
             }
         } else if (registry instanceof QuestRewardRegistry) {
             for (QuestReward reward : quest.getRewards()) {
-                items.add(getDefaultGuiItem(reward, registry, clickType -> {
+                items.add(getDefaultGuiItem(reward, clickType -> {
                     if (clickType == ClickType.SHIFT_LEFT) {
                         quest.getRewards().remove(reward);
                         return true;
@@ -87,7 +90,7 @@ public class EditQuestElementGUI extends QuesteGUI {
             }
         } else if (registry instanceof QuestRequirementRegistry) {
             for (QuestRequirement requirement : quest.getRequirements()) {
-                items.add(getDefaultGuiItem(requirement, registry, clickType -> {
+                items.add(getDefaultGuiItem(requirement, clickType -> {
                     if (clickType == ClickType.SHIFT_LEFT) {
                         quest.getRequirements().remove(requirement);
                         return true;
@@ -97,7 +100,7 @@ public class EditQuestElementGUI extends QuesteGUI {
             }
         } else if (registry instanceof QuestStartRegistry) {
             for (QuestStart start : quest.getStarters()) {
-                items.add(getDefaultGuiItem(start, registry, clickType -> {
+                items.add(getDefaultGuiItem(start, clickType -> {
                     if (clickType == ClickType.SHIFT_LEFT) {
                         quest.getStarters().remove(start);
                         return true;
@@ -110,8 +113,8 @@ public class EditQuestElementGUI extends QuesteGUI {
         gui.update();
     }
 
-    public GuiItem getDefaultGuiItem(IGuiEditable guiEditable, IQuesteRegistry<?> registry, Predicate<ClickType> function) {
-        ItemStack item = new ItemStackBuilder(registry.getIcon())
+    public GuiItem getDefaultGuiItem(IGuiEditable guiEditable, Predicate<ClickType> function) {
+        ItemStack item = new ItemStackBuilder(guiEditable.getIcon())
                 .withName("&6" + guiEditable.getName())
                 .withLore("&7No additional data to display", "&c&lShift-Click &cto remove.")
                 .build();

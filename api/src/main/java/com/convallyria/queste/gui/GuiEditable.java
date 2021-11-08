@@ -1,5 +1,7 @@
 package com.convallyria.queste.gui;
 
+import org.bukkit.Material;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -17,6 +19,8 @@ public @interface GuiEditable {
     String value();
 
     GuiEditableType type() default GuiEditableType.DEFAULT;
+
+    Material icon() default Material.WRITTEN_BOOK;
 
     enum GuiEditableType {
         CHAT,

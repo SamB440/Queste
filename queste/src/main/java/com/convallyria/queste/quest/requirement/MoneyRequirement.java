@@ -4,12 +4,13 @@ import com.convallyria.queste.api.IQuesteAPI;
 import com.convallyria.queste.gui.GuiEditable;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
 public final class MoneyRequirement extends QuestRequirement {
 
-    @GuiEditable("Amount")
+    @GuiEditable(value = "Amount", icon = Material.EMERALD)
     private final int amount;
 
     public MoneyRequirement(IQuesteAPI api) {

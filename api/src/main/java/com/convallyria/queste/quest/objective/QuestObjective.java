@@ -12,6 +12,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Keyed;
+import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -32,14 +33,14 @@ public abstract class QuestObjective implements Listener, Keyed, IGuiEditable {
 
     private final UUID uuid;
     private final String questName;
-    @GuiEditable("Completion Amount")
+    @GuiEditable(value = "Completion Amount", icon = Material.RED_CANDLE)
     private int completionAmount;
     private transient Map<UUID, Integer> progress;
-    @GuiEditable("Story Mode Key")
+    @GuiEditable(value = "Story Mode Key", icon = Material.TRIPWIRE_HOOK)
     private int storyModeKey;
-    @GuiEditable("Display Name")
+    @GuiEditable(value = "Display Name", icon = Material.PAPER)
     private String displayName;
-    @GuiEditable("Show Particle Effects")
+    @GuiEditable(value = "Show Particle Effects", icon = Material.REDSTONE)
     private boolean particles;
 
     protected QuestObjective(IQuesteAPI plugin, Quest quest) {

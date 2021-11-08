@@ -3,6 +3,7 @@ package com.convallyria.queste.quest.objective;
 import com.convallyria.queste.api.IQuesteAPI;
 import com.convallyria.queste.gui.GuiEditable;
 import com.convallyria.queste.quest.Quest;
+import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -13,7 +14,7 @@ import java.util.List;
 
 public final class EnchantQuestObjective extends QuestObjective {
 
-    @GuiEditable("Valid enchantments")
+    @GuiEditable(value = "Valid enchantments", icon = Material.ENCHANTED_BOOK)
     private List<Enchantment> enchantments;
 
     public EnchantQuestObjective(IQuesteAPI api, Quest quest) {

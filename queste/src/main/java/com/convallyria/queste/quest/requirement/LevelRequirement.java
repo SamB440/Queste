@@ -2,11 +2,12 @@ package com.convallyria.queste.quest.requirement;
 
 import com.convallyria.queste.api.IQuesteAPI;
 import com.convallyria.queste.gui.GuiEditable;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 public final class LevelRequirement extends QuestRequirement {
 
-    @GuiEditable("Level")
+    @GuiEditable(value = "Level", icon = Material.EXPERIENCE_BOTTLE)
     private final int level;
 
     public LevelRequirement(IQuesteAPI api) {
