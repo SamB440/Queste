@@ -8,6 +8,12 @@
     <br/>
     <a href="https://github.com/SamB440/Queste/issues">Report Bug / Feature request</a>
   </p>
+
+  <center>
+    <a href="https://discord.gg/convallyria">
+      <img alt="Discord" src="https://img.shields.io/discord/282242806695591938">
+    </a>
+  </center>
 </p>
 
 [![CodeFactor](https://www.codefactor.io/repository/github/samb440/queste/badge?s=423044de775c341aa4bc557dc41d390344d16556)](https://www.codefactor.io/repository/github/samb440/queste) ![Contributors](https://img.shields.io/github/contributors/SamB440/Queste?color=dark-green) ![Issues](https://img.shields.io/github/issues/SamB440/Queste) ![License](https://img.shields.io/github/license/SamB440/Queste)
